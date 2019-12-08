@@ -1,0 +1,1017 @@
+% This is a general template file for the LaTeX package SVJour3
+% for Springer journals. Original by Springer Heidelberg, 2010/09/16
+%
+% Use it as the basis for your article. Delete % signs as needed.
+%
+% This template includes a few options for different layouts and
+% content for various journals. Please consult a previous issue of
+% your journal as needed.
+%
+\RequirePackage{amsmath}
+\RequirePackage{fix-cm}
+%
+\documentclass{svjour3}                     % onecolumn (standard format)
+%\documentclass[smallcondensed]{svjour3}     % onecolumn (ditto)
+%\documentclass[smallextended]{svjour3}       % onecolumn (second format)
+%\documentclass[twocolumn]{svjour3}          % twocolumn
+%
+\smartqed  % flush right qed marks, e.g. at end of proof
+%
+\usepackage{natbib}
+\usepackage{xspace}
+\usepackage{graphicx}
+\usepackage{amssymb}
+
+%
+% insert here the call for the packages your document requires
+%\usepackage{mathptmx}      % use Times fonts if available on your TeX system
+%\usepackage{latexsym}
+% etc.
+%
+% Jag's 
+\usepackage{tabu}
+\usepackage{cancel}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+%\usepackage[caption=false]{subfig}
+\usepackage{subcaption}
+\usepackage{booktabs, mathtools}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{url}
+\usepackage[titletoc,title]{appendix}
+%\usepackage{refcheck}  % points out unused labels, refs ...
+
+\captionsetup{compatibility=false}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+\DeclareMathOperator{\Order}{{\mathcal O}}
+
+% please place your own definitions here and don't use \def but
+% \newcommand{}{}
+\newtheorem{prop}{Proposition}
+\newtheorem{defn}{Definition}
+\providecommand{\HickernellFJ}{Hickernell\xspace}
+\newcommand{\bm}[1]{\boldsymbol{#1}}
+\newcommand{\mSigma}{\mathsf{\Sigma}}
+\newcommand{\mB}{\mathsf{B}}
+\newcommand{\smallocite}[1]{{\small\ocite{#1}}}
+\newcommand{\dif}[1]{\text{d}{#1}}
+\newcommand{\D}[1]{\text{d}{#1}}
+\newcommand{\trace}[1]{\textup{trace}{#1}}
+
+\newcommand{\naturals}{\mathbb{N}}
+\newcommand{\natzero}{\mathbb{N}_0}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\posIntegers}{\mathbb{Z}_{> 0}}
+\newcommand{\complex}{\mathbb{C}}
+\newcommand{\hilbert}{\mathbb{H}}
+\newcommand{\Ex}{\mathbb{E}}
+
+\newcommand{\cf}{\mathcal{F}}
+\newcommand{\cx}{\mathcal{X}}
+\newcommand{\tcx}{\widetilde{\cx}}
+\newcommand{\rC}{\mathring{C}}
+\newcommand{\ry}{\mathring{y}}
+\newcommand{\rlambda}{\mathring{\lambda}}
+
+\newcommand{\valpha}{{\bm{\alpha}}}
+\newcommand{\vbeta}{{\bm{\beta}}}
+\newcommand{\vDelta}{{\boldsymbol{\Delta}}}
+\newcommand{\veta}{{\bm{\eta}}}
+\newcommand{\vlambda}{{\bm{\lambda}}}
+\newcommand{\vphi}{{\bm{\phi}}}
+\newcommand{\vpsi}{{\bm{\psi}}}
+\newcommand{\vtheta}{{\bm{\theta}}}
+\newcommand{\vzeta}{{\bm{\zeta}}}
+\newcommand{\vthetaMLE}{\bm{\theta}_{\MLE}}
+\newcommand{\hvtheta}{\hat{\vtheta}}
+\newcommand{\va}{\bm{a}}
+\newcommand{\vA}{\bm{A}}
+\newcommand{\vb}{\bm{b}}
+\newcommand{\vc}{\bm{c}}
+\newcommand{\vC}{\bm{C}}
+\newcommand{\tvc}{\tilde{\bm{c}}}
+\newcommand{\vg}{\bm{g}}
+\newcommand{\vh}{\bm{h}}
+\newcommand{\vf}{\bm{f}}
+\newcommand{\vk}{\bm{k}}
+\newcommand{\vl}{\bm{l}}
+\newcommand{\vm}{\bm{m}}
+\newcommand{\vs}{\bm{s}}
+\newcommand{\vt}{\bm{t}}
+\newcommand{\vv}{\bm{v}}
+\newcommand{\vV}{\bm{V}}
+\newcommand{\vw}{\bm{w}}
+\newcommand{\vW}{\bm{W}}
+\newcommand{\vx}{\bm{x}}
+\newcommand{\dx}{\dif{{x}}}
+\newcommand{\dt}{\dif{{t}}}
+\newcommand{\dvx}{\dif{\bm{x}}}
+\newcommand{\dvs}{\dif{\bm{s}}}
+\newcommand{\dvt}{\dif{\bm{t}}}
+\newcommand{\vrho}{\bm{\rho}}
+\newcommand{\hy}{\hat{y}}
+\newcommand{\vy}{\bm{y}}
+\newcommand{\vY}{\bm{Y}}
+\newcommand{\hvy}{\hat{\vy}}
+\newcommand{\vz}{\bm{z}}
+\newcommand{\vZ}{\bm{Z}}
+\newcommand{\dvz}{\dif{\bm{z}}}
+\newcommand{\tf}{\tilde{f}}
+\newcommand{\vPsi}{\boldsymbol{\Psi}}
+
+\newcommand{\tvv}{\tilde{\vv}}
+\newcommand{\tvz}{\tilde{\vz}}
+
+\newcommand{\vCvtheta}{{C_\vtheta}}
+\newcommand{\hc}{\widehat{c}}
+
+\newcommand{\hatvy}{\hat{\bm{y}}}
+\newcommand{\haty}{\hat{y}}
+\newcommand{\tvy}{\tilde{\bm{y}}}
+\newcommand{\ty}{\tilde{y}}
+\newcommand{\vzero}{\bm{0}}
+\newcommand{\vone}{\bm{1}}
+\newcommand{\tvone}{\tilde{\bm{1}}}
+\newcommand{\mA}{\mathsf{A}}
+\newcommand{\mC}{\mathsf{C}}
+\newcommand{\mP}{\mathsf{P}}
+\newcommand{\mK}{\mathsf{K}}
+\newcommand{\rmC}{\mathring{\mathsf{C}}}
+\newcommand{\mCtheta}{{\mathsf{C}_{\vtheta}}}
+%\newcommand{\mCthetaInv}{{\mathsf{C}^{-1}_{\vtheta}}}
+%\newcommand{\mCthetaMLE}{{\mathsf{C}_{\vthetaMLE}}}
+%\newcommand{\mCthetaInvMLE}{{\mathsf{C}^{-1}_{\vthetaMLE}}}
+\newcommand{\mCInv}{\mathsf{C}^{-1}}
+\newcommand{\cov}{{\textup{cov}}}
+\newcommand{\var}{{\textup{var}}}
+\newcommand{\opt}{{\textup{opt}}}
+
+
+\newcommand{\tmC}{\widetilde{\mathsf{C}}}
+\newcommand{\tlambda}{\tilde{\lambda}}
+
+\newcommand{\mL}{\mathsf{L}}
+
+\newcommand{\mLambda}{\mathsf{\Lambda}}
+\newcommand{\mLambdaInv}{\mathsf{\Lambda}^{-1}}
+
+\newcommand{\mG}{\mathsf{G}}
+\newcommand{\mH}{\mathsf{H}}
+\newcommand{\mV}{\mathsf{V}}
+\newcommand{\mW}{\mathsf{W}}
+
+\newcommand{\calN}{\mathcal{N}}
+\newcommand{\me}{\mathrm{e}}
+
+\newcommand{\tvrho}{\widetilde{\vrho}}
+\newcommand{\heta}{\hat{\eta}}
+\newcommand{\hmu}{\widehat{\mu}}
+\newcommand{\hsigma}{\widehat{\sigma}}
+\newcommand{\hnu}{\hat{\nu}}
+\newcommand{\rhoCond}{\mathring{\vrho}}
+
+\newcommand{\MVN}{\textup{MVN}}
+\newcommand{\MLE}{\textup{EB}}
+\newcommand{\full}{\textup{full}}
+\newcommand{\GCV}{\textup{GCV}}
+%\newcommand{\errtol}{\text{tol}}
+\newcommand{\errtol}{\varepsilon}
+\newcommand{\errn}{\text{err}_{n}}
+\newcommand{\diag}{\text{diag}}
+\newcommand{\err}{\textup{err}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\def\abs#1{\ensuremath{\left \lvert #1 \right \rvert}}
+\newcommand{\norm}[2][{}]{\ensuremath{\left \lVert #2 \right \rVert}_{#1}}
+\newcommand{\ip}[3][{}]{\ensuremath{\left \langle #2, #3 \right \rangle_{#1}}}
+
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+\newenvironment{nalign}{
+    \begin{equation}
+    \begin{aligned}
+}{
+    \end{aligned}
+    \end{equation}
+    \ignorespacesafterend
+}
+
+\providecommand{\argmin}{\operatorname*{argmin}}
+\providecommand{\argmax}{\operatorname*{argmax}}
+\newcommand\figref{Figure~\ref}
+\newcommand\secref{Section~\ref}
+
+\graphicspath{{.}{./figures/grey/}{D:/Mega/MyWriteupBackup/Sep_2ndweek_1/}}
+%\graphicspath{{./figures/}}
+
+%
+% Insert the name of "your journal" with
+\journalname{Automatic Bayesian Cubature}
+%
+
+\newcommand{\FJHNote}[1]{{\textcolor{blue}{FJH: #1}}}
+\newcommand{\JRNote}[1]{{\textcolor{green}{JR: #1}}}
+
+
+\allowdisplaybreaks
+\begin{document}
+\setlength\abovedisplayskip{1pt}
+\setlength{\belowdisplayskip}{1pt}
+
+\title{Fast Automatic Bayesian Cubature Using Sobol Sampling
+%\thanks{}
+}
+% Grants or other notes about the article that should go on the front
+% page should be placed within the \thanks{} command in the title
+% (and the %-sign in front of \thanks{} should be deleted)
+%
+% General acknowledgments should be placed at the end of the article.
+
+%\subtitle{Do you have a subtitle?\\ If so, write it here}
+
+%\titlerunning{Short form of title}        % if too long for running head
+
+\author{R. Jagadeeswaran         \and
+        Fred J. Hickernell %etc.
+}
+
+%\authorrunning{Short form of author list} % if too long for running head
+
+\institute{R. Jagadeeswaran \at
+              Department of Applied Mathematics, \\
+              Illinois Institute of Technology \\
+              10 W. 32nd St., Room 208,
+              Chicago IL 60616\\
+              \email{jrathin1@iit.edu}           %  \\
+%             \emph{Present address:} of F. Author  %  if needed
+           \and
+           Fred J. Hickernell \at
+           Center for Interdisciplinary Scientific Computation and \\
+           Department of Applied Mathematics \\
+           Illinois Institute of Technology \\
+           10 W. 32nd St., Room 208, 
+           Chicago IL 60616
+           \\
+           \email{hickernell@iit.edu} 
+}
+
+\date{Received: date / Accepted: date}
+% The correct dates will be entered by the editor
+
+\maketitle
+
+\begin{abstract}
+	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern, but one can automatically determine the
+	sample size, $n$, given a reasonable, fixed sampling pattern. We take this approach here using a Bayesian perspective.  We postulate that the integrand is an instance of a Gaussian stochastic process parameterized by a constant mean and a covariance kernel defined by a scale parameter times a parameterized function specifying how the integrand values at two different points in the domain are related.
+	These hyperparameters are inferred or integrated out using integrand values via one of three techniques:  empirical Bayes, full Bayes, or generalized cross-validation. The sample size, $n$, is increased until the half-width of the credible interval for the Bayesian posterior mean is no greater than the error tolerance. 
+	
+	The process outlined above typically requires a computational cost of $O(N_{\text{opt}}n^3)$, where $N_{\text{opt}}$ is the number of optimization steps required to identify the hyperparameters. Our innovation is to pair low discrepancy nodes with matching covariance kernels to lower the  computational cost to $O(N_{\text{opt}} n \log n)$.   This approach is demonstrated explicitly with rank-1 lattice sequences and shift-invariant kernels.  Our algorithm is  implemented in the Guaranteed Automatic Integration Library (GAIL).
+	
+	
+	\keywords{Bayesian cubature \and Fast automatic cubature \and GAIL \and Probabilistic numeric methods }
+	% \PACS{PACS code1 \and PACS code2 \and more}
+	% \subclass{MSC code1 \and MSC code2 \and more}
+\end{abstract}
+
+
+\section{Introduction}
+\label{intro}
+Your text comes here. Separate text sections with
+
+
+
+\section{Sobol' Nets and Walsh Kernels}
+\label{sec:sobol_walsh}
+
+
+
+The previous section shows an automatic Bayesian cubature algorithm using rank-1 lattice nodes and shift-invariant kernels. 
+In this chapter, we demonstrate a second approach to formulate fast Bayesian transform using matching kernel and point sets. 
+Scrambled Sobol' nets and Walsh kernels are paired to achieve $\Order(n^{-1 + \epsilon})$ order error convergence where $n$ is the sample size. 
+Sobol' nets \cite{Sob67} are low discrepancy points, used extensively in numerical integration, simulation, and optimization. 
+%Higher order digital nets with matching smoother kernels could be combined to provide higher order error convergence $\Order(N^{-\alpha + \epsilon})$ for $\alpha \ge 1$ and $\epsilon > 0$ but it is not covered in this work.
+The results of this chapter can be summarized as a theorem,
+
+% \Section{Summary}
+
+
+\begin{theorem}
+	Any symmetric, positive definite, digital shift-invariant covariance kernel of the form \eqref{eqn:walsh_kernel} scaled to satisfy \eqref{addAssump}, when matched with digital net data-sites, satisfies assumptions \eqref{fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} (FWHT) can be used to expedite the estimates of $\vtheta$ in \eqref{thetaSimple} and the credible interval widths \eqref{fastStoppingCriterions} in $\Order(n \log n)$ operations. The cubature, $\hmu$, is just the sample mean.
+\end{theorem}
+We introduce the necessary concepts and prove this theorem in the remaining of this chapter.
+
+\section{Sobol' Nets}
+
+% Notations
+% \ell - dimesnion
+% i,j - point sequence index
+
+Nets were developed to provide deterministic sample points for quasi-Monte Carlo rules \cite{Nie05a}. Nets are defined geometrically using elementary intervals, which are subintervals of the unit cube $[0,1)^d$.
+The $(t,m, d)$-nets in base $b$, introduced by Niederreiter, 
+%are point sets consisting of $n=b^m$ points in $[0, 1)^d$, 
+whose quality is governed by $t$. Lower values of $t$ correspond to $(t,m, d)$-nets of higher quality \cite{Bald10a}.
+
+\begin{defn}
+	\label{defn:tmd_net}
+	Let $\mathcal{A}$ be the set of all elementary intervals $\mathcal{A} \subset [0, 1)^d$ where
+	$\mathcal{A} = \prod_{\ell=1}^d [\alpha_\ell b^{-\gamma_\ell} , (\alpha_\ell + 1) b^{-\gamma_\ell})$, 
+	% with integers $d \ge 1, b \ge 2, \gamma_\ell \ge 0$,
+	with $d,b,\gamma_\ell \in \naturals, b \ge 2$ 
+	and $b^{\gamma_\ell}
+	> \alpha_\ell \ge 0$. For $m,t \in \naturals, m \ge t \ge 0$, the point set $\mathcal{P}_m \in [0, 1)^d$ with $n = b^m$ points is a $(t, m, d)$ -- net in base $b$ if every $\mathcal{A}$ with volume $b^{t-m}$ contains $b^t$ points of $\mathcal{P}_m$.
+\end{defn}
+
+Digital $(t,m, d)$-nets are a special case of $(t,m, d)$-nets, constructed using matrix-vector multiplications over finite fields. Digital sequences are infinite length digital nets, i.e., the first $n=b^m$ points of a digital sequence comprise a digital net for all integer $m \in \naturals_0$.
+% \JRNote{Higher order nets details serves no purpose}
+% \begin{defn}
+%A $(t,m,d)$-net in base $b$ is a set of $z_i, \; i=0,1,\dots,$ of $b^m$ points of $[0,1)^d$  with the property that every elementary interval in base $b$ of volume $b^{t-m}$ contains precisely $b^t$ points from $z_i$. Here $d \ge 1$, $b\ge 2$ and $0 \le t \le m$. 
+% \end{defn}
+
+
+\begin{defn}
+	For any non-negative integer $i = \dots i_3 i_2 i_1(\textup{base} \, b)$, define the $\infty \times 1$ vector $\vec{\imath}$ as the vector of its digits, that is, $\vec{\imath} = (i_1, i_2, \dots)^T$. 
+	For any point $z = 0.z_1 z_2 \dots (\textup{base}\, b) \in [0, 1)$, define the $\infty \times 1$ vector of the digits of $z$, that is, $\vec{z} = (z_1, z_2, \dots)^T$. 
+	Let $ \mathsf{G}_1, \dots , \mathsf{G}_d$ denote predetermined $\infty \times \infty$ generator matrices. 
+	The digital sequence in \textup{base} $b$ is $\{\vz_0, \vz_1, \vz_2, \dots\}$, where each $\vz_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
+	\begin{align*}
+	\vec{z}_{i\ell} = \mathsf{G}_{\ell} \, \vec{\imath}, \quad \ell = 1, \dots, d, \quad i = 0, 1, \dots \;.
+	\end{align*}
+	The value of $t$ as mentioned in Definition \ref{defn:tmd_net} depends on the choice of $\mathsf{G}_{\ell}$.
+\end{defn}
+
+
+
+% Digital sequences are defined using digitwise operations. 
+Digital nets have a group structure under digitwise addition, which is a very useful property exploited in our algorithm, especially to develop a fast Bayesian transform that speedups computations.
+Digitwise addition, $\oplus$, and subtraction $\ominus$, are defined in terms of $b$-ary expansions of points in $[0, 1)^d$,
+\begin{align*}
+\vz \oplus \vy = \left( \sum_{j=1}^\infty [z_{\ell j} + y_{\ell j} \bmod b] b^{-j} \bmod 1 \right)_{\ell=1}^d,
+\\
+\vz \ominus \vy = \left( \sum_{j=1}^\infty [z_{\ell j} - y_{\ell j} \bmod b] b^{-j} \bmod 1 \right)_{\ell=1}^d,
+\end{align*}
+where
+\begin{align*}
+\vz = \left( \sum_{j=1}^{\infty} z_{\ell j}b^{-j}\right)_{\ell=1}^d, \quad
+\vy = \left( \sum_{j=1}^{\infty} y_{\ell j}b^{-j}\right)_{\ell=1}^d, \quad
+z_{\ell j}, y_{\ell j} \in \{0,\cdots,b-1\}.
+\end{align*}
+
+
+
+Similarly for integer values in $\naturals_0^d$, the digitwise addition, $\oplus$, and subtraction $\ominus$, are defined in terms of their $b$-ary expansions,
+\begin{align*}
+\vk \oplus \vl = \left( \sum_{j=0}^\infty [k_{\ell j} + l_{\ell j} \bmod b] b^{j} \bmod 1 \right)_{\ell=1}^d,
+\\
+\vk \ominus \vl = \left( \sum_{j=0}^\infty [k_{\ell j} - l_{\ell j} \bmod b] b^{j} \bmod 1 \right)_{\ell=1}^d,
+\end{align*}
+where
+\begin{align*}
+\vk = \left( \sum_{j=0}^{\infty} k_{\ell j}b^{j}\right)_{\ell=1}^d, \quad
+\vl = \left( \sum_{j=0}^{\infty} l_{\ell j}b^{j}\right)_{\ell=1}^d, \quad
+\vk_{\ell j}, \vl_{\ell j} \in \{0,\cdots,b-1\}.
+\end{align*}
+
+Let $\{\vz_i\}_{i=0}^{b^m-1}$ be a digital net. Then
+\begin{align*}
+\forall i_1, i_2 \in \{0,\cdots,b^m-1\}, \quad \vz_{j_1} \oplus \vz_{i_2} = \vz_{i_3}, \quad \text{for some} \; i_3 \in \{0,\cdots,b^m-1\}.
+\end{align*}
+
+The following very useful result, which will be further used to obtain the fast Bayesian transform, arises from the fundamental property of digital nets.
+
+\begin{lemma}
+	\label{lemma:digital_net_prop}
+	Let $\{\vz_i\}_{i=0}^{b^{m}-1}$ be the digital-net and the corresponding digitally shifted net be $\{\vx_i\}_{i=0}^{b^{m}-1}$, i.e.,
+	\begin{align*}
+	\vec{x}_{i \ell} = \vec{z}_{i \ell} + \vec{\Delta}_l \bmod 1,
+	\end{align*}
+	where $\vec{x}_{i \ell}$ is the $\ell$th component of $i$th digital net and $\vec{\Delta}_{\ell}$ is the digital shift for the $\ell$th component. 
+	% Let $\vx_i, \vx_j$ be digitally shifted digital nets and $\vz_i, \vz_j$ be the corresponding un-shifted digital nets, 
+	Then,
+	\begin{align}
+	\label{eqn:digital_shift_prop}
+	\vx_i \ominus \vx_j = \vz_i \ominus \vz_j = \vz_{i \ominus j}, \quad \forall i,j \in \naturals_0. 
+	\end{align}
+	Also the digital subtraction is symmetric,
+	\begin{align}
+	\label{eqn:digital_net_symmetric_prop}
+	\vx_i \ominus \vx_i = \boldsymbol{ 0}, \qquad 
+	\vx_i \ominus \vx_j = \vx_j \ominus \vx_i, \quad \forall i,j \in \naturals_0.
+	\end{align}
+\end{lemma}
+
+\begin{proof}
+	
+	The proof can be obtained from the definition of digital nets which stated that the digital nets are obtained using generator matrices, $\vec{z}_{i \ell} = \mG_{\ell} \, \vec{\imath} \bmod b$. Rewriting the subtraction using the generating matrix provides the result,
+	\begin{align*}
+	\vec{z}_{i \ell} - \vec{z}_{j\ell} \bmod b & = (\mG_{\ell} \vec{\imath} \bmod b) - (\mG_{\ell} \vec{\jmath} \bmod b) \\
+	& = (\mG_{\ell} \vec{\imath} - \mG_{\ell} \vec{\jmath} ) \bmod b \\
+	& = \mG_{\ell} (\vec{\imath} - \vec{\jmath} ) \bmod b \\
+	& = \mG_{\ell} (\overrightarrow{i \ominus j} ) \bmod b \\
+	& = \vec{z}_{i \ominus j \; {\ell}}.
+	\end{align*}
+	The rest of the lemma is obvious from the definition of digital nets.
+\end{proof}
+
+% \JRNote{Define and explain scrambling}
+We chose digitally shifted and scrambled nets \cite{HicYue00} for our Bayesian cubature algorithm. Digital shifts help to avoid having nodes at the origin, similar to the random shift used with lattice nodes.
+\iffalse
+Let $\{\vx_0, \vx_1, \vx_2, ...\}$ denote the randomly scrambled version of the original sequence $\{\vz_0, \vz_1, \vz_2, \dots \}$. Let $x_{i{\ell}j}$ denote the $j$\textup{th} digit of the $\ell$\textup{th} component of $\vx_i$, and similarly for $z_{i{\ell}j}$. Then
+\begin{align*}
+x_{i{\ell}1} = \pi_{\ell}( z_{i{\ell}1}), \quad x_{i{\ell}2} = \pi_{z_{i{\ell}1}} ( z_{i{\ell}2}), \quad x_{i{\ell}3} = \pi_{z_{i{\ell}1}, z_{i{\ell}2}} ( z_{i{\ell}3}), \quad \dots , \\
+x_{i{\ell}j} = \pi_{z_{i{\ell} 1}, z_{i{\ell}2}, \dots, z_{i{\ell}j-1}} ( z_{i{\ell}j}), \quad \dots , \qquad \qquad \qquad
+\end{align*}
+where the $\pi_{a_1a_2 \dots}$ are random permutations of the elements in $\{0,\dots,b-1\}$ chosen uniformly and mutually independent. 
+\fi
+Scrambling helps to eliminate bias while retaining the low-discrepancy properties.
+A proof that a scrambled net preserves the property of $(t, m, d)$-net almost surely can be found in Owen \cite{Owe95}. The scrambling method proposed by Matou\v{s}ek \cite{Mat98} is preferred since it is more efficient than the Owen's scrambling.
+
+Sobol' nets \cite{Sob76} are a special case of $(t,m, d)$-nets when base $b=2$. 
+An example of $64$ Sobol' nets in $d=2$ is given in \figref{fig:sobol-fig}.  The even coverage of the unit cube is ensured by a well chosen generating matrix.  The choice of generating vector is typically done offline by computer search.  See \cite{KuoNuyens2016} and \cite{NuySoft} for more on generating matrices. We use randomly scrambled and digitally shifted Sobol' sequences in this research \cite{HonHic00a}. 
+
+\begin{figure}[htp]
+	\label{fig:sobol-fig}
+	\centering
+	\includegraphics[width=0.8\linewidth]{figures/SSobolPoints}
+	\caption{Example of a scrambled Sobol' node set  in $d=2$.  This plot can be reproduced using \code{PlotPoints.m}. \label{sobolfig} }
+\end{figure}
+
+
+\section{Walsh Kernels}
+
+Walsh kernels are product kernels based on the Walsh functions. We introduce the necessary concepts in this section.
+
+\subsection{Walsh functions}
+Like the Fourier transform used with lattice points (Section~\ref{sec:shift_invar_kern}), the Walsh-Hadamard transform, which we will simply call Walsh transform, is used for the digital nets. The Walsh transform is defined using Walsh functions. Recall $\naturals_0 := \lbrace 0,1,2,\cdots \rbrace$.
+The one-dimensional Walsh functions in base $b$ are defined as
+\begin{align}
+\label{eqn:walsh_func}
+\textup{wal}_{b,k}(x) := e^{2\pi \sqrt{-1} (x_1 k_0 + x_2 k_1 + \cdots)/b} 
+=
+e^{2\pi \sqrt{-1} {\vec{k}}^T{\vec{x}}/b},
+\end{align}
+for $x \in [0,1)$ and $k \in \naturals_0$ and the unique base $b$ expansions 
+$x = \sum_{j \ge 1} x_j b^{-i} = (0.x_1 x_2 \cdots)_b$, $\vec{x} =  (x_1,x_2,\cdots )^T$
+$k = \sum_{j \ge 0} k_j b^{j} = ( \cdots k_1 k_0)_b$, $\vec{k} =  (k_0,k_1,\cdots )^T$, and ${\vec{k}}^T{\vec{x}} = x_1 k_0 + x_2 k_1 + \cdots$
+where the number of digits used in \eqref{eqn:walsh_func} are limited to the length required to represent $x$ or $k$, i.e., $\max \left( {\ceil{ -\log_b{x}}, \ceil{\log_b{k}}  } \right)$.
+% with $n$ at least as large as the number of digits to represent $x$ or $k$.
+Multivariate Walsh functions are defined as the product of the one-dimensional Walsh functions,
+\begin{align*}
+\textup{wal}_{b,\vk} (\vx) := \prod_{\ell=1}^d \textup{wal}_{b,k_\ell} (x_\ell
+)
+\end{align*}
+As shown in \eqref{eqn:walsh_func}, for the case of $b=2$, the Walsh functions only take the values in $\{1, -1\}$, i.e., $\textup{wal}_{b,\vk} : [0,1)^d \to {\{-1, 1\}} , \; k \in \naturals_0^d$. Walsh functions form an orthonormal basis of the Hilbert space $L^2[0,1)^d$,
+\begin{align*}
+\int_{[0,1)^d}
+\textup{wal}_{b,\vl} (\vx) \textup{wal}_{b,\vk}(\vx) \dx = \delta_{\vl, \vk}, \quad \forall \vl, \vk \in \naturals_0^d
+\end{align*}
+Digital nets are designed to integrate certain Walsh functions without error.
+Thus our Bayesian cubature algorithm integrates linear combinations of % these ideal integrands
+certain Walsh functions without error. Functions that are well approximated by such linear combinations are then integrated with small errors.
+
+% \JRNote{separate paragraph}
+In this research we use Sobol' nodes which are digital nets with base $b=2$. So here afterwards base $b=2$ is assumed. % if not specified or the notation is dropped.  
+In this case, the Walsh function is simply $$\textup{wal}_{2,\vk} (\vx) = (-1)^{\vec{\vk}^T \vec{\vx}}.$$
+
+\subsection{Walsh kernels}
+Consider the covariance kernels of the form,
+\begin{align}
+\label{eqn:digital_shift_in_kernel}
+C_{\vtheta}(\vx, \vt) = K_{\vtheta} (\vx \ominus \vt) 
+\end{align}
+where $\ominus$ is bitwise subtraction.
+This is called a \emph{digitally shift invariant kernel} because shifting both arguments of the covariance function by the same amount leaves the value unchanged. By a proper scaling of the function $K_{\vtheta}$, it follows that assumption \eqref{addAssump} is satisfied. The function $K_{\vtheta}$ must be of the form that ensures that $C_{\vtheta}$ is symmetric and positive definite, as assumed in \eqref{FJH:eq:CondPosDef}. We drop the ${\vtheta}$ sometimes to make the notation simpler.
+The Walsh kernels are of the form,
+\begin{align}
+\label{eqn:walsh_kernel}
+K_{\vtheta} (\vx \ominus \vt) =  
+\prod_{\ell=1}^d  1 + \eta_\ell \omega_{r} (x_\ell \ominus t_\ell), \quad \veta = (\eta_1, \cdots, \eta_d), \quad \vtheta = (r, \veta)
+\end{align}
+where $r$ is the kernel order, $\veta$ is the kernel shape parameter, and
+\begin{align*}
+\omega_r(x) = \sum_{k=1}^\infty 
+\frac{\textup{wal}_{2,k}(x) }{2^{2r \lfloor \log_2 k \rfloor}}.
+\end{align*}
+Explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \cite{Nuyens2013}, % and Hilbert space setup,
+\begin{align}
+\label{eqn:omega1}
+\omega_1(x) 
+% &= \prod_{l=1}^d \sum_{k=1}^\infty 
+% \frac{\textup{wal}_{b,k}(x_l) }{b^{2 \lfloor \log_b k \rfloor}} 
+= 6\left( \frac 16 - 2^{\lfloor \log_2 x \rfloor -1 }\right).
+\end{align}
+
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{"figures/walsh_kernel dim_1"}
+	\caption[Walsh kernel]{Walsh kernel of order $r=1$ in dimension $d=1$. This figure can be reproduced using \code{plot\_walsh\_kernel.m}. %\JRNote{remove $r=1$ in the figure}
+	}
+	\label{fig:walshkernel-dim1}
+\end{figure}
+
+The \figref{fig:walshkernel-dim1} shows the Walsh kernel \eqref{eqn:walsh_kernel} of order $r=1$ in the interval $[0,1)$. Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. Smaller $\eta_\ell$ implies lesser variation in the amplitude of the kernel. Also, the Walsh kernels are digitally shift invariant but not periodic.
+
+\section{Eigenvectors}
+
+We show the eigenvectors $\mV$ in \eqref{eqn:ftk_factor} of the Gram matrix formed by the covariance kernel \eqref{eqn:walsh_kernel} and Sobol' nets are the columns of the Walsh-Hadamard matrix. First we introduce the necessary concepts.
+
+\subsection{Walsh transform}
+% \JRNote{add subsection for walsh transform, define and explain.}
+The Walsh-Hadamard transform (WHT) is a generalized class of discrete Fourier transform (DFT) and is much simpler to compute than the DFT. The WHT matrices are comprised of only $\pm 1$ values, so the computation usually involves only ordinary additions and subtractions. Hence, the WHT is also sometimes called the integer transform. In comparison, the DFT that was used with lattice nodes,  uses complex exponential functions and the computation involves complex, non-integer multiplications. 
+
+The WHT involves multiplications by $2^m \times 2^m$ Walsh-Hadamard matrices, which is constructed recursively, starting with $\mH^{(0)} = 1$,
+\begin{align}
+\nonumber
+\arraycolsep=1.4pt\def\arraystretch{0.9}
+\mH^{(1)} &=
+\begin{pmatrix}
+1 & 1 \\ 1 & -1
+\end{pmatrix}, \\
+\nonumber
+\mH^{(2)} &= 
+\begin{pmatrix}
+1 & 1 & 1 & 1 \\ 
+1 & -1 & 1 & -1 \\
+1 & 1 & -1 & -1 \\ 
+1 & -1 & -1 & 1 \\
+\end{pmatrix}, \\
+\nonumber
+& \qquad \vdots
+\\
+\label{eqn:hadamard_matrix}
+\mH^{(m)} &= 
+\begin{pmatrix}
+\mH^{(m-1)} & \mH^{(m-1)} \\ \mH^{(m-1)} & -\mH^{(m-1)}
+\end{pmatrix} 
+= \underbrace{\mH^{(1)} \bigotimes \cdots \bigotimes \mH^{(1)}}_{m \ \text{times}} 
+= \mH^{(1)} \bigotimes \mH^{(m-1)}
+\end{align}
+where $\bigotimes$ is Kronecker product. Alternatively for base $b=2$, these matrices can be  directly obtained by,
+\begin{align*}
+\mH^{(m)} % = \bigg(\exp(\pi \sqrt{-1} \vec{\imath}_m^T\vec {\jmath}_m) \bigg)_{i,j=0}^{n-1}  
+= \bigg((-1)^{(\vec{\imath}^T \vec{\jmath})} \bigg)_{i,j=0}^{2^m-1},
+\end{align*}
+where the notation $\vec{\imath}^T \vec{\jmath}$ indicates the bitwise dot product. 
+
+\iffalse
+An example of Walsh matrix of length $n=8$ is given in Table~\ref{tab:hadamard_matrix}. 
+\begin{table} % 
+	% \centering
+	\arraycolsep=1pt\def\arraystretch{0.8}
+	\[
+	%\arraycolsep=1.4pt\def\arraystretch{0.9}
+	\begin{array}{c|@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
+	\hhline{=========}
+	%\vspace{-1.5ex}
+	\text{Zero crossings} & \multicolumn{8}{l}{\text{Walsh function values}} \\
+	\hline
+	0&	1&  1&  1&  1&  1&  1&  1&  1 \\
+	4&	1& -1& -1&  1&  1& -1& -1&  1 \\
+	6&	1& -1&  1& -1& -1&  1& -1&  1 \\
+	2&	1&  1& -1& -1& -1& -1&  1&  1 \\
+	3&	1&  1& -1& -1&  1&  1& -1& -1 \\
+	7&	1& -1&  1& -1&  1& -1&  1& -1 \\
+	5&	1& -1& -1&  1& -1&  1&  1& -1 \\
+	1&	1&  1&  1&  1& -1& -1& -1& -1
+	\end{array}
+	\]
+	\vspace{-5ex}
+	\caption{Walsh transform matrix of for $n=8$, in Hadamard order  \label{tab:hadamard_matrix}}	   
+\end{table}
+\fi
+
+
+\subsection{Eigenvectors of $\mC$ are columns of Walsh-Hadamard matrix}
+\label{sec:eigenvector_hadamard}
+The Gram matrix $\mCtheta$ formed by Walsh kernels and Sobol' nodes have a special structure called  block-Toeplitz, which can be used to construct the fast Bayesian transform. 
+A Toeplitz matrix is a diagonal-constant matrix in which each descending diagonal from left to right is constant. A block Toeplitz matrix is a special block matrix, which contains blocks that are repeated down the diagonals of the matrix.
+%, as a Toeplitz matrix has elements repeated down the diagonal. 
+We prove that the eigenvectors of $\mCtheta$ are columns of a Walsh-Hadamard matrix in two theorems. 
+
+\begin{theorem}
+	\label{thrm:block-toeplitz}
+	Let $\left(\vx_i\right)_{i=0}^{n-1}$ be digitally shifted Sobol' nodes and $K$ be any function,
+	% positive definite kernel function such as \eqref{eqn:omega1} which matches Sobol' nodes.
+	then the Gram matrix,
+	\begin{align*}
+	\mCtheta = \bigl(C(\vx_i, \vx_j)\bigr)_{i,j=0}^{n-1} &= \bigl(K(\vx_i \ominus \vx_j)\bigr)_{i,j=0}^{n-1},   \\ & \text{where} \quad \quad n=2^m, \quad C(\vx, \vt) = K(\vx \ominus \vt), \quad  \vx, \vt \in [0,1)^d, \qquad
+	\end{align*}
+	is a $2\times 2$ block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks, etc. are also $2\times 2$ block-Toeplitz. 
+\end{theorem}
+
+%\Subsubsection
+\begin{proof}
+	
+	
+	%\textbf{Proof of Theorem \ref{thrm:block-toeplitz}}: 
+	We prove this theorem by induction. Let $\mC_{\vtheta}^{(m)}$ denote the Gram matrix of size $2^m \times 2^m$.
+	The relation between sub-block matrices can be deciphered using the properties of digital nets.
+	To help with the proof of block-Toeplitz structure, consider the digital net properties \eqref{eqn:digital_shift_prop},  \eqref{eqn:digital_net_symmetric_prop},
+	%\begin{align*}
+	%\bigl(K(\vz_i \ominus \vz_j)\bigr)_{i,j=0}^{n-1}.
+	%\end{align*}
+	% Now we can prove the block-Toeplitz structure using these properties and facts \JRNote{add refs to properties}.
+	and notations,
+	\begin{align*}
+	\mK^{(m)} &:= 
+	\begin{pmatrix}
+	K({\vz_{i} \ominus \vz_{j}})
+	\end{pmatrix}_{i,j=0}^{2^{m}-1}
+	=
+	\begin{pmatrix}
+	K({\vz_{i \ominus j}})
+	\end{pmatrix}_{i,j=0}^{2^{m}-1}, \quad m=1,2,\cdots,
+	\\
+	\mK^{(m,q)} &:= 
+	\begin{pmatrix}
+	K({\vz_{i \ominus j + q 2^m}})
+	\end{pmatrix}_{i,j=0}^{2^{m}-1},
+	\quad 
+	q = 0,1,\cdots .
+	\end{align*} 
+	These two notations are related by $\mK^{(m)} = \mK^{(m,0)}$. 
+	Please note that $\mC_{\vtheta}^{(m)} = \mK^{(m,0)}$.
+	% Since the digitally shift invariant kernel are used in this research. %, it is sufficient to prove $\mK^{(m,q)}$ as a $2\times 2$ block-Toeplitz. 
+	We will prove $\mK^{(m,q)}$ is a $2\times 2$ block-toeplitz matrix for all $m \in \naturals, q \in \naturals$.
+	
+	% This notation is convenient for the proof as shown below.
+	
+	\iffalse
+	As the first step, we verify the property holds for $m=0$,
+	\begin{align*}
+	\mK^{(0,q)} &= \begin{pmatrix}
+	K(\vz_{0 \ominus 0 + q 2^0})  
+	\end{pmatrix} = 
+	\begin{pmatrix}
+	K(\vz_{q})
+	\end{pmatrix}, \quad \text{by \eqref{eqn:digital_shift_prop}},
+	\end{align*} thus by definition $\mK^{(0,q)}$ is a block-Toeplitz.
+	\fi 
+	
+	\iftrue
+	As the first step, we verify the property holds for $m=1$,
+	\begin{align*}
+	\mK^{(1, q)} &= \begin{pmatrix}
+	K(\vz_{0 \ominus 0 + q 2^1}) & K(\vz_{1 \ominus 0 + q 2^1})  \\
+	K(\vz_{0 \ominus 1 + q 2^1}) & K(\vz_{1 \ominus 1 + q 2^1})  
+	\end{pmatrix} = 
+	\begin{pmatrix}
+	K(\vz_{2q}) & K(\vz_{1 + 2q}) \\ K(\vz_{1 + 2q}) & K(\vz_{2q})
+	\end{pmatrix}, \quad \text{by \eqref{eqn:digital_shift_prop}}
+	\end{align*} has diagonal elements repeated. Thus by definition, it is a $2\times 2$ block-Toeplitz.
+	\fi 
+	
+	\iffalse
+	Similarly, the property can be verified for $\mC^{(2)}$, 
+	\begin{align*}
+	\mC^{(2)} &= 
+	\begin{pmatrix}
+	K_{z_{(i \ominus j )}}
+	\end{pmatrix}_{i,j=0}^{2^2-1}
+	=
+	\begin{pmatrix}
+	K(\vz_{0 \ominus 0}) & K(\vz_{1 \ominus 0}) & K(\vz_{2 \ominus 0}) & K(\vz_{3 \ominus 0}) \\
+	K(\vz_{0 \ominus 1}) & K(\vz_{1 \ominus 1}) & K(\vz_{2 \ominus 1}) & K(\vz_{3 \ominus 1}) \\
+	K(\vz_{0 \ominus 2}) & K(\vz_{1 \ominus 2}) & K(\vz_{2 \ominus 2}) & K(\vz_{3 \ominus 2}) \\
+	K(\vz_{0 \ominus 3}) & K(\vz_{1 \ominus 3}) & K(\vz_{2 \ominus 3}) & K(\vz_{3 \ominus 3}) 
+	\end{pmatrix} \\
+	& = 
+	\begin{pmatrix}
+	\begin{pmatrix}
+	K(\vz_{0}) & K(\vz_{1}) \\
+	K(\vz_{1}) & K(\vz_{0})
+	\end{pmatrix} &
+	\begin{pmatrix}
+	K(\vz_{2}) & K(\vz_{3}) \\
+	K(\vz_{3}) & K(\vz_{2}) 
+	\end{pmatrix} \\
+	\begin{pmatrix}
+	K(\vz_{2}) & K(\vz_{3}) \\
+	K(\vz_{3}) & K(\vz_{2}) 
+	\end{pmatrix} &
+	\begin{pmatrix}
+	K(\vz_{0}) & K(\vz_{1}) \\
+	K(\vz_{1}) & K(\vz_{0})
+	\end{pmatrix} 
+	\end{pmatrix}, \quad \text{by \eqref{eqn:digital_shift_prop}, \eqref{eqn:digital_net_symmetric_prop}}
+	\\
+	& =
+	\begin{pmatrix}
+	\mC^{(1)} & \mC^{(1,1)} \\
+	\mC^{(1,1)} & \mC^{(1)}
+	\end{pmatrix},
+	\end{align*}
+	is a block-Toeplitz as it is obvious from the block structure depicted. 
+	\fi
+	% Here we used the notation $\mC^{(1,1)}$ to indicate the additional operation involved in the matrix.
+	% Where the matrix $\mC^{(1,1)}$ is obtained using the following shift operation.
+	
+	Now assume that $\mK^{(m,q)}$ is block-Toeplitz.
+	% Please note if $\mK^{(m,0)}$ is block-Toeplitz then $\mK^{(m,q)}$ is also a block-Toeplitz for all $q \in \naturals_0$. 
+	% This is due to the fact that $i \oplus 2^m \ominus j = i \ominus j \ominus 2^m = i \ominus j \oplus 2^m $ for $i,j=0,\cdots,2^{m-1}$ since $i \ominus j < 2^{m-1}$.
+	% Assuming $\mK^{(m, q)}$ is a block-Toeplitz, 
+	We need to prove $\mK^{(m+1, q)}$ is also a $2\times 2$ block-Toeplitz. Let $n=2^m$,
+	\begin{align*}
+	\mK^{(m+1)} &= 
+	\begin{pmatrix}
+	K(\vz_{0    \ominus 0}) & \hdots & K(\vz_{0    \ominus n-1}) & K(\vz_{0    \ominus n}) & \hdots & K(\vz_{0    \ominus 2n-1}) \\
+	\vdots             & \vdots &             \vdots          &           \vdots      & \vdots &             \vdots         \\
+	K(\vz_{n-1  \ominus 0}) & \hdots & K(\vz_{n-1  \ominus n-1}) & K(\vz_{n-1  \ominus n}) & \hdots & K(\vz_{n-1  \ominus 2n-1}) \\
+	K(\vz_{n    \ominus 0}) & \hdots & K(\vz_{n    \ominus n-1}) & K(\vz_{n    \ominus n}) & \hdots & K(\vz_{n    \ominus 2n-1}) \\
+	\vdots      & \vdots &             \vdots        &             \vdots      & \vdots &             \vdots         \\
+	K(\vz_{2n-1 \ominus 0}) & \hdots & K(\vz_{2n-1 \ominus n-1}) & K(\vz_{2n-1 \ominus n}) & \hdots & K(\vz_{2n-1 \ominus 2n-1}) 
+	\end{pmatrix} 
+	\\
+	& = 
+	\begin{pmatrix}
+	\begin{pmatrix}
+	K(\vz_{  0   }) & \hdots & K(\vz_{ n-1}) \\
+	\vdots          & \vdots &    \vdots     \\
+	K(\vz_{ n-1  }) & \hdots & K(\vz_{ 0 })
+	\end{pmatrix}
+	& 
+	\begin{pmatrix}
+	K(\vz_{ n})     & \hdots & K(\vz_{ 2n-1}) \\
+	\vdots          & \vdots &     \vdots     \\
+	K(\vz_{ 2n-1 }) & \hdots & K(\vz_{ n })   
+	\end{pmatrix}
+	\\
+	\begin{pmatrix}
+	K(\vz_{ n})     & \hdots & K(\vz_{ 2n-1}) \\
+	\vdots          & \vdots &     \vdots     \\
+	K(\vz_{ 2n-1 }) & \hdots & K(\vz_{ n })   
+	\end{pmatrix}
+	&
+	\begin{pmatrix}
+	K(\vz_{  0   }) & \hdots & K(\vz_{ n-1}) \\
+	\vdots          & \vdots &    \vdots     \\
+	K(\vz_{ n-1  }) & \hdots & K(\vz_{ 0 })
+	\end{pmatrix}
+	\end{pmatrix} 
+	\\
+	& =
+	\begin{pmatrix}
+	\mK^{(m)} & \mK^{(m,1)} \\ \mK^{(m,1)} & \mK^{(m)}
+	\end{pmatrix}
+	\end{align*}
+	is a $2\times 2$ block-Toeplitz, where we used the properties  \eqref{eqn:digital_shift_prop}, \eqref{eqn:digital_net_symmetric_prop} and facts $2n-1 \ominus n = n-1$, $2n-1 \ominus n-1 = n$, and $n \ominus n-1 = 2n-1$. 
+	Thus $\mK^{(m+1)}$ is a $2\times2$ block-Toeplitz. 
+	Similarly 
+	\begin{align*}
+	\mK^{(m+1,q)} 
+	& =
+	\begin{pmatrix}
+	\mK^{(m,q)} & \mK^{(m,q+1)} \\ \mK^{(m,q+1)} & \mK^{(m,q)}
+	\end{pmatrix}
+	\end{align*}
+	is a $2\times2$ block-Toeplitz. 
+	%\end{itemize}
+	Thus $\mC_{\vtheta}^{(m)}$ of size $2^m\times 2^m$, for $m \in \naturals$, is a $2\times2$ block-Toeplitz and every block and it's sub-blocks of size $2^p, \; p \in \naturals, \; p \le m$ are also $2\times2$ block-Toeplitz.
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+Some additional properties
+$\bigl( K(z_{i \ominus j})\bigr)_{i=2^{l+1}q, \; j=2^{l+1}s}^{2^{l+1}{(q+1)}, \; 2^{l+1}{(s+1)}} $
+\fi
+
+
+
+\iffalse
+Now we prove every arbitrary sub-block is also block-Toeplitz: 
+\begin{itemize}
+	\item For $l=1$
+	\begin{align*}
+	\bigl( K(z_{i \ominus j})\bigr)_{i=2q, \; j=2s}^{2q+1, 2s+1}, \quad q,s=0,1,\cdots,
+	\end{align*}
+	is a block-Toeplitz since
+	\begin{align*}
+	\begin{pmatrix}
+	K(z_{2q \ominus 2s}) & K(z_{2q \ominus (2s +1)}) \\
+	K(z_{(2q+1) \ominus 2s}) & K(z_{(2q+1) \ominus (2s +1)}) 
+	\end{pmatrix}
+	=
+	\begin{pmatrix}
+	K(z_{2q \ominus 2s}) & K(z_{1 + (2q \ominus 2s)}) \\
+	K(z_{1 + (2q \ominus 2s)}) & K(z_{ 2q \ominus 2s}) 
+	\end{pmatrix}
+	\end{align*}
+	where we used the facts $(2q+1) \ominus (2s+1) = 2q \ominus 2s$ and $(2q+1) \ominus 2s = 1 + 2q \ominus 2s$.
+	
+	\item \ldots
+	
+	\item Assuming for $2^{l}$ is a block-Toeplitz then need to prove for $2^{l+1}$ 
+	\begin{align*}
+	\bigl( K(z_{i \ominus j})\bigr)_{i=2^{l+1}q, \; j=2^{l+1}s}^{2^{l+1}(q+1)-1, \; 2^{l+1}(s+1)-1}, \quad q,s=0,1,\dots,
+	\end{align*}
+	is a block-Toeplitz.
+	
+	\begin{align*}
+	\mC &=
+	\begin{pmatrix}
+	\bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\ja }^{\ib, \; \jb} & \bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\jc }^{\ib, \; \jd} \\
+	\bigl( K(z_{i \ominus j})\bigr)_{i=\ic, \; j=\ja }^{\id, \; \jb} & \bigl( K(z_{i \ominus j})\bigr)_{i=\ic, \; j=\jc }^{\id, \; \jd}
+	\end{pmatrix} \\
+	& =
+	\begin{pmatrix}
+	\bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\ja }^{\ib, \; \jb} & \bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\jc }^{\ib, \; \jd} \\
+	\bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\jc }^{\ib, \; \jd} & \bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\ja }^{\ib, \; \jb}
+	\end{pmatrix}
+	\end{align*}
+	is a block-Toeplitz. Where we used the facts
+	\begin{align*}
+	% \ic \ominus \jc 
+	& 2^{l}(2q+1) \ominus 2^{l}(2s+1) = 2^{l}(2q) \ominus 2^{l}(2s) = 2^{l+1}(q) \ominus 2^{l+1}(s) \\
+	% \jd \ominus \ic
+	&2^{l+1}(s+1)-1 \, \ominus 2^{l}(2q + 1) % = 2^{l}(2s+1 + 1)-1 \ominus 2^{l}(2q + 1) 
+	= 2^{l}(2s+1)-1 \ominus 2^{l+1}q.
+	\end{align*}
+	
+	Thus $\mCtheta^{(m)}$ is a block-Toeplitz and every block its and sub-blocks are also block-Toeplitz.
+	
+	
+\end{itemize}
+\fi
+
+
+\begin{theorem}
+	\label{thrm:hadamard_eigenvector}
+	The Walsh-Hadamard matrix $\mH^{(m)}$ factorizes $\mC_{\vtheta}^{(m)}$, so that the columns of Walsh-Hadamard matrix are the eigenvectors of $\mC_{\vtheta}^{(m)}$, i.e.,
+	\begin{align*}
+	\mH^{(m)} \mC_{\vtheta}^{(m)}  = \mLambda^{(m)} \mH^{(m)}, \quad m \in \naturals. 
+	\end{align*}
+\end{theorem}
+
+\begin{proof}
+	
+	Again, we use the proof-by-induction technique to show that the Walsh-Hadamard matrix factorizes $\mK^{(m,q)}$.
+	\iffalse
+	We can easily see the Hadamard matrix $\mH^{(0)}$ diagonalizes $\mC^{(0)}$,
+	\begin{align*}
+	\mH^{(0)} \mC^{(0)} &= 
+	\begin{pmatrix}
+	1 
+	\end{pmatrix}
+	\begin{pmatrix}
+	K(\vz_{0}) 
+	\end{pmatrix}
+	\\
+	% & = \begin{pmatrix} K(\vz_{0})+K(\vz_{1}) & K(\vz_{0})+K(\vz_{1}) \\ K(\vz_{0})-K(\vz_{1}) & K(\vz_{1})-K(\vz_{0}) \end{pmatrix} \\ 
+	& = 
+	\begin{pmatrix}
+	K(\vz_{0})
+	\end{pmatrix}
+	\begin{pmatrix}
+	1 
+	\end{pmatrix}
+	\\ 
+	% & = \begin{pmatrix} K(\vz_{0})+K(\vz_{1}) & 0 \\ 0 & K(\vz_{0})-K(\vz_{1}) \end{pmatrix} \mH^{(1)} \\
+	&= \mLambda^{(0)} \mH^{(0)},
+	\end{align*}
+	where $\mLambda^{(0)}$ is a diagonal matrix, thus $\mH^{(0)}$ diagonalizes $\mC^{(0)}$.
+	\fi
+	We can easily see the Hadamard matrix $\mH^{(1)}$ diagonalizes $\mK^{(1,q)}$,
+	\begin{align*}
+	\mH^{(1)} \mK^{(1,q)} &= 
+	\begin{pmatrix}
+	1 &  1 \\ 1 & -1
+	\end{pmatrix}
+	\begin{pmatrix}
+	K(\vz_{0 + q2^1}) & K(\vz_{1 + q2^1}) \\ K(\vz_{1 + q2^1}) & K(\vz_{0 + q2^1})
+	\end{pmatrix}, \quad \text{by Theorem \ref{thrm:block-toeplitz}} 
+	\\
+	& = \begin{pmatrix} K(\vz_{2q})+K(\vz_{2q+1}) & K(\vz_{2q})+K(\vz_{2q+1}) \\ K(\vz_{2q})-K(\vz_{2q+1}) & K(\vz_{2q+1})-K(\vz_{2q}) \end{pmatrix} \\ 
+	& = \begin{pmatrix} K(\vz_{2q})+K(\vz_{2q+1}) & 0 \\ 0 & K(\vz_{2q})-K(\vz_{2q+1}) \end{pmatrix} 
+	\begin{pmatrix}
+	1 &  1 \\ 1 & -1
+	\end{pmatrix} \\
+	&= \mLambda^{(1,q)} \mH^{(1)},
+	\end{align*}
+	where $\mLambda^{(1,q)}$ is a diagonal matrix, thus $\mH^{(1)}$ factorizes $\mK^{(1,q)}$.
+	
+	Now assume $\mH^{(m)}$ factorizes $\mK^{(m,q)}$, so $\mH^{(m)} \mK^{(m,q)} = \mLambda^{(m,q)} \mH^{(m)}$ where $\mLambda^{(m,q)}$ is diagonal. We need to prove $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$,
+	\begin{align*}
+	\mH^{(m+1)} \mK^{(m+1,q)} &= 
+	\begin{pmatrix}
+	\mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
+	\end{pmatrix}
+	\begin{pmatrix}
+	\mK^{(m,q)} & \mK^{(m,q+1)} \\ \mK^{(m,q+1)} & \mK^{(m,q)}
+	\end{pmatrix}, \quad \text{by Theorem \ref{thrm:block-toeplitz}}
+	\\
+	& = \begin{pmatrix}
+	\mH^{(m)} (\mK^{(m,q)}   + \mK^{(m,q+1)}) & 
+	\mH^{(m)} (\mK^{(m,q)}   + \mK^{(m,q+1)}) \\ 
+	\mH^{(m)} (\mK^{(m,q)}   - \mK^{(m,q+1)}) & 
+	\mH^{(m)} (\mK^{(m,q+1)} - \mK^{(m,q)}) 
+	\end{pmatrix} \\ 
+	& = \begin{pmatrix}
+	(\mLambda^{(m,q)}  + \mLambda^{(m,q+1)})  \mH^{(m)} & 
+	(\mLambda^{(m,q)}   + \mLambda^{(m,q+1)}) \mH^{(m)} \\ 
+	(\mLambda^{(m,q)}   - \mLambda^{(m,q+1)}) \mH^{(m)} & 
+	(\mLambda^{(m,q+1)} - \mLambda^{(m,q)})   \mH^{(m)}
+	\end{pmatrix} \\ 
+	& = 
+	\begin{pmatrix}
+	\mLambda^{(m,q)} + \mLambda^{(m,q+1)} & 0 \\ 0 & \mLambda^{(m,q)} - \mLambda^{(m,q+1)}
+	\end{pmatrix}
+	\begin{pmatrix}
+	\mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
+	\end{pmatrix}
+	\\ 
+	% & = \begin{pmatrix} \mC^{(m)} + \mC^{(m,m)} & 0 \\ 0 & \mC^{(m)} - \mC^{(m,m)} \end{pmatrix} \mH^{(m+1)} \\
+	& = \mLambda^{(m+1,q)} \mH^{(m+1)} .
+	\end{align*}
+	Thus, $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$ to a diagonal matrix $\mLambda^{(m+1,q)}$. This implies $\mH^{(p)}$ factorizes $\mC_\vtheta^{(p)}$ for $p \in \naturals$. Please recall $\mC_\vtheta^{(p)} = \mK^{(p,0)}$.  Here we used the fact that both $\mH$ and $\mK$ are symmetric positive definite. 
+\end{proof}
+
+\iffalse
+Next, we show the eigenvectors of a block-Toeplitz matrix can be obtained by Kronecker product of its sub-block matrices. If $\mA, \mB$ share same eigenvalues $\mA \mV = \mLambda \mV, \mB \mV = \mV \mSigma$ then
+\begin{align*}
+\begin{pmatrix}
+\mA & \mB \\ \mB & \mA
+\end{pmatrix}
+\begin{pmatrix}
+\mV & \mV \\ \mV & -\mV
+\end{pmatrix}
+= 
+\begin{pmatrix}
+\mV & \mV \\ \mV & -\mV
+\end{pmatrix}
+\begin{pmatrix}
+\mLambda + \mSigma & 0 \\ 0 & \mLambda - \mSigma 
+\end{pmatrix}
+\end{align*}
+\fi
+
+
+\subsection{Fast Bayesian transform}
+We can easily show that the Walsh-Hadamard matrices satisfy the assumptions of fast Bayesian transform \eqref{fastcompAssump}. As shown in Section~\ref{sec:eigenvector_hadamard} the columns of $\mH^{({m})}$ are the eigenvectors. Since the Gram matrix $\mC$ is symmetric, the columns/rows of Walsh-Hadamard matrices are mutually orthogonal. Thus the Gram matrix can be written as 
+\begin{align}
+\label{eqn:hadamard_fwht}
+\mC^{(m)} = \frac{1}{n} \mH^{(m)} \mLambda^{(m)} \mH^{(m)}, \quad \text{where} \quad \mH^{({m})} = \underbrace{ \mH^{(1)} \bigotimes \cdots \bigotimes \mH^{(1)} }_{m \; \text{times}}.
+\end{align}
+% \JRNote{prove eigenvalues for Sobol case}
+Assumption \eqref{fastcompAssumpB} follows automatically by the fact that Walsh-Hadamard matrices can be constructed analytically. Assumption \eqref{fastcompAssumpA} can also be verified as the first row/column are one vectors. Finally, assumption \eqref{fastcompAssumpC} is satisfied due to the fact that fast Walsh transform can be computed in $\Order({n \log n})$ operations using fast Walsh-Hadamard transform.
+Thus the Walsh-Hadamard transform is a fast Bayesian transform, $\mV := \mH$, as per \eqref{fastcompAssump}.
+
+We have implemented a fast adaptive Bayesian cubature algorithm using the kernel \eqref{eqn:walsh_kernel} with $r=1$ and Sobol' points \cite{BraFox88} in MATLAB as part of the Guaranteed Adaptive Integration Library (GAIL) \cite{ChoEtal17b} as \allowbreak \code{cubBayesNet\_g}. The Sobol' points used in this algorithm are generated using MATLAB's builtin function \code{sobolset} and scrambled using MATLAB function \code{scramble} \cite{HonHic00a}. The fast Walsh-Hadamard transform \eqref{eqn:hadamard_fwht} is computed using MATLAB's builtin function \code{fwht} with \emph{hadamard} ordering. 
+
+\subsection{Iterative Computation of Walsh Transform}
+In every iteration of our algorithm, we double the number of function values. Using the technique described here, we have to only compute the Walsh transform for the newly added function values.
+Similar to the lattice points, Sobol' points are extensible by definition. This property is used in our algorithm to improve the integration accuracy till the required error tolerance is met. Sobol' nodes can be combined with Hadamard matrices as demonstrated here for iterative computation. 
+% Using the same notations as in \secref{sec:iter_fft}, l
+Let $\widetilde{\vy} = \mH^{(m+1)} {\vy}$ for some arbitrary $\vy \in \reals^{2n}$, $n = 2^m$. Define, 
+\begin{gather*}
+\vy = \begin{pmatrix}[1.1] y_1 \\ \vdots \\ y_{2n} \end{pmatrix}, \quad 
+\vy^{(1)} = \begin{pmatrix}[1.1] y_1 \\ \vdots \\ y_{n} \end{pmatrix}, \quad 
+\vy^{(2)}  = \begin{pmatrix}[1.1] y_{n+1} \\ \vdots \\ y_{2n} \end{pmatrix}, \\ 
+\widetilde{\vy}^{(1)} = \mH^{(m)} \vy^{(1)} = 
+\begin{pmatrix}[1.0] \widetilde{y}^{(1)}_1 \\ \widetilde{y}^{(1)}_2 \\ \vdots \\ \widetilde{y}^{(1)}_{n} \end{pmatrix}, \quad 
+\widetilde{\vy}^{(2)}  =  \mH^{(m)} \vy^{(2)} =
+\begin{pmatrix}[1.0] \widetilde{y}^{(2)}_{1} \\  \widetilde{y}^{(2)}_{2} \\ \vdots \\ \widetilde{y}^{(2)}_{n} \end{pmatrix}. 
+\end{gather*}
+Then,
+\begin{align*}
+\widetilde{\vy} &= \mH^{({m+1})} {\vy} \\
+& = \begin{pmatrix}
+\mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & - \mH^{(m)}
+\end{pmatrix} 
+\begin{pmatrix}
+\vy^{(1)} \\ \vy^{(2)}
+\end{pmatrix}, \qquad \text{by \eqref{eqn:hadamard_matrix}} \\
+&= 
+\begin{pmatrix}
+\mH^{(m)} \vy^{(1)} + \mH^{(m)} \vy^{(2)} \\ 
+\mH^{(m)} \vy^{(1)} - \mH^{(m)} \vy^{(2)}
+\end{pmatrix}\\
+&= 
+\begin{pmatrix}
+\widetilde{\vy}^{(1)} + \widetilde {\vy}^{(2)} \\ 
+\widetilde {\vy}^{(1)} - \widetilde {\vy}^{(2)}
+\end{pmatrix} =: \widetilde{\vy} \quad.
+\end{align*}
+As before with the lattice nodes, the computational cost to compute $\mV^{(m+1)H} \vy$ is 
+twice the cost of computing $\mV^{(m)H} \vy^{(1)}$ plus $2n$ additions, where $n=2^m$. An inductive argument shows that for any $m \in \naturals$, $\mV^{(m)H}\vy$ requires only $\Order(n \log n)$ operations. Usually the multiplications in $\mV^{(m)H} \vy^{(1)}$ are multiplications by $-1$ which are simply accomplished using sign change or negation, requiring no multiplications at all.
+
+
+\section{Higher Order Nets}
+
+Higher order digital nets are an extension of $(t,m,d)$-nets, introduced in \cite{Dic08a}. They can be used to numerically integrate smoother functions which are not necessarily periodic, but have square integrable mixed partial derivatives of order $\alpha$, at a rate of $\Order(n^{-\alpha})$ multiplied by a power of a $\log n$ factor using rules corresponding to the modified $(t,m, d)$-nets.
+We want to emphasize that quasi-Monte Carlo rules based on these point sets can achieve convergence rates faster than $\Order(n^{-1})$. 
+Higher order digital nets are constructed using matrix-vector multiplications over finite
+fields. 
+
+One could develop matching digitally shift invariant kernels to formulate the fast Bayesian cubature. Bayesian cubatures using higher order digital nets are a topic for future research.
+
+
+
+
+
+\end{document}
