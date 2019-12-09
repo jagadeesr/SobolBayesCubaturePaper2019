@@ -21,6 +21,7 @@
 \usepackage{xspace}
 \usepackage{graphicx}
 \usepackage{amssymb}
+\usepackage{mathrsfs}  
 
 %
 % insert here the call for the packages your document requires
@@ -178,6 +179,15 @@
 \newcommand{\MLE}{\textup{EB}}
 \newcommand{\full}{\textup{full}}
 \newcommand{\GCV}{\textup{GCV}}
+
+
+\newcommand{\wal}{\textup{wal}}
+\newcommand{\CI}{\textup{CI}}
+\newcommand{\NICE}{\textup{nice}}
+\newcommand{\PEAKY}{\textup{peaky}}
+\newcommand{\NOISE}{\textup{noise}}
+\newcommand{\TRUE}{\textup{smooth}}
+
 %\newcommand{\errtol}{\text{tol}}
 \newcommand{\errtol}{\varepsilon}
 \newcommand{\errn}{\text{err}_{n}}
@@ -282,7 +292,339 @@
 \label{intro}
 Your text comes here. Separate text sections with
 
+\JRNote{discuss prior work}
 
+\section{Bayesian Cubature}
+\label{sec:BC} 
+
+\JRNote{
+Briefly explain and cite our BayesLattice paper
+\begin{enumerate}
+	\item automatic Bayesian cubature
+	\item fast automatic Bayesian cubature
+\end{enumerate}
+}
+
+
+
+The Bayesian approach for numerical analysis was popularized by Diaconis \cite{Dia88a}. The earliest reference for such kind of approach dates back to Poincar\'e, where, the theory of interpolation was discussed.
+Diaconis motivates the reader by interpreting the most well known numerical methods, 1) trapezoidal rule and 2) splines, from the statistical point of view with whatever is known about the integrand as prior information. 
+For example, the trapezoidal rule can be interpreted as a Bayesian method with prior information being modeled as a Brownian motion in the sample space $\mathcal{C}[0,1)$, the space of continuous functions. %, with normal prior.
+
+This research is focused on the Bayesian approach for numerical integration that is known as Bayesian cubature as introduced by O'Hagan \cite{OHagen1991}.  % $\mathbb{P}_f$
+Bayesian cubature returns a probability distribution, that expresses belief about the true value of integral, $\mu(f)$.
+This posterior probability distribution is based on a prior that depends on $f$, which is computed via Bayes' rule using the \emph{data} contained in the function evaluations \cite{BriEtal18a}. 
+%The maximum likelihood estimate of $\mathbb{P}_f$ can be interpreted as a point estimate of the integral. 
+The distribution in general captures numerical uncertainty due to the fact that we have only used a finite number of function values to evaluate the integral.
+
+\subsection{Bayesian Posterior Error}
+\label{sec:BayesPostErr}
+
+We assume the integrand, $f$, is an instance of a stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a real-valued random function with constant mean $m$ and covariance function $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite function and, parameterized by $\vtheta$:
+\begin{multline} \label{FJH:eq:CondPosDef}
+\mC^T = \mC,  \quad \va^T \mC \va > 0, \quad \text{where }  \mC = \left(  C_\vtheta(\vx_i,\vx_j)  \right)_{i,j=1}^n,\\
+\text{for all } \va \ne 0, \;
+n\in \mathbb{N}, \; \text{distinct} \; \vx_1, \ldots, \vx_n \in [0,1]^d.
+\end{multline}
+The covariance function, $C$, and the Gram matrix, $\mC$, depend implicitly on $\vtheta$, but the notation may omit this for simplicity's sake.
+Procedures for estimating or integrating out the hyperparameters $m$, $s$, and $\vtheta$ are explained later in this section.
+
+For a Gaussian process, all vectors of linear functionals of $f$ have a multivariate Gaussian distribution. 
+%Defining  $\vf  := \left( f(\vx_i)\right)_{i=1}^n$, the integrand values sampled at $\left( \vx_i\right)_{i=1}^n$,  as the multivariate Gaussian vector of function values, it follows that 
+For any deterministic sampling scheme with distinct nodes, $\{\vx_i\}_{i=1}^n$, and defining  $\vf  := \left( f(\vx_i)\right)_{i=1}^n$ as the multivariate Gaussian vector of function values, it follows from the definition of a Gaussian process that 
+\begin{subequations} \label{eqn:fGaussDist}
+	\begin{align}
+	\vf  & \sim \calN(m \vone, s^2 \mC), \\
+	\mu & \sim \calN(m, s^2 c_0), 
+	\\
+	\text{where }
+	c_0 &:= \int_{[0,1]^{d} \times [0,1]^{d}} C_\vtheta(\vx,\vt) \, \dif{\vx} \, \dif{\vt}, \\
+	\cov(\vf, \mu) &= \left(  \int_{[0,1]^d} C(\vt,\vx_i) \, \D \vt \right)_{i=1}^n  =: \vc.
+	\end{align}
+\end{subequations}
+Here, $c_0$ and $\vc$ depend implicitly on $\vtheta$.  We assume the covariance function $C$ is simple enough that the integrals in these definitions can be computed analytically.
+We need the following lemma to derive the posterior error of our cubature. 
+
+\begin{lemma} \cite[(A.6), (A.11--13)]{RasWil06a} \label{thrm:condDist} If $\vY = (\vY_1, \vY_2)^T \sim \calN (\vm,\mC)$, where $\vY_1$ and $\vY_2$ are random vectors of arbitrary length, and 
+	\begin{gather*}
+	\vm = \begin{pmatrix} \vm_1 \\ \vm_2 \end{pmatrix} = \begin{pmatrix} \Ex(\vY_1) \\ \Ex(\vY_2) \end{pmatrix}, \\
+	\mC = \begin{pmatrix}
+	\mC_{11} & \mC_{21}^T \\ 	\mC_{21} & \mC_{22}
+	\end{pmatrix} =
+	\begin{pmatrix}
+	\var(\vY_{1}) & \cov(\vY_{1}, \vY_2) \\ 	\cov(\vY_2,\vY_{1}) & \var(\vY_{2})
+	\end{pmatrix} 
+	\end{gather*}
+	then 
+	\begin{align*}
+	\vY_1 \vert \vY_2 \; \sim \; \calN \bigl(\vm_1 + \mC_{21}^T \mC_{22}^{-1}(\vY_2 - \vm_2), \quad \mC_{11} - \mC_{21}^T \mC_{22}^{-1} \mC_{21} \bigr).
+	\end{align*}
+	Moreover, the inverse of the matrix $\mC$ may be partitioned as
+	\begin{gather*}
+	\mC^{-1} = \begin{pmatrix} \mA_{11} & \mA_{21}^T \\ \mA_{21} & \mA_{22} \end{pmatrix}, \\
+	\mA_{11} = (\mC_{11} - \mC_{12} \mC_{22}^{-1} \mC_{21})^{-1}, \qquad 
+	\mA_{21} = -  \mC_{22}^{-1} \mC_{21} \mA_{11}, \\ 
+	\mA_{22} = \mC_{22}^{-1} + \mC_{22}^{-1} \mC_{21} \mA_{11} \mC_{21}^T \mC_{22}^{-1}.
+	\end{gather*}
+\end{lemma}
+
+It follows from Lemma \ref{thrm:condDist} that the \emph{conditional} distribution of the integral given observed function values, $\vf = \vy$ is also Gaussian:
+\begin{align} \label{eqn:condInteg}
+\mu | (\vf = \vy) \sim \calN \bigl(m (1 - \vc^T \mC^{-1} \vone)  + \vc^T \mC^{-1} \vy, \;\;
+s^2(c_0  -\vc ^T \mC^{-1} \vc) \bigr).
+\end{align}
+The natural choice for  the cubature is the posterior mean of the integral, namely, 
+\begin{equation}
+\label{eqn:BayesCub}
+\widehat{\mu}  \vert ( \vf = \vy)
+= m(1 - \vone^T  \mC^{-1}\vc )
++ \vc^T \mC^{-1} \vy,
+\end{equation}
+which takes the form of \eqref{eqn:defn_hmu}.
+Under this definition, the cubature error has zero mean and a variance depending on the choice of nodes:
+\begin{equation*}
+%\label{eqn_error_cond_prob}
+(\mu-\hmu) | (\vf = \vy)
+\sim  \calN 
+\left(
+0, \quad
+s^2 (c_0 - \vc^T\mC^{-1}\vc) 
+\right).
+\end{equation*}
+A credible interval for the integral is given by 
+\begin{subequations} \label{eqn_prob_confidence_interval}
+	\begin{gather}
+	\mathbb{P}_f \left[
+	|\mu-\hmu| \leq \err_{\CI}
+	\right] = 99\%, \\
+	\err_{\CI} = 2.58 s \sqrt{c_{0} - \vc^T\mC^{-1}\vc}.
+	\end{gather}
+\end{subequations}
+Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible levels.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Hyperparameter estimation}
+\JRNote{
+This section explains hyperparameter estimation using gradient descent}
+
+
+The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\CI}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$
+
+Note that $\err_{\CI}$ has no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\CI}$.  This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  After inferring the hyperparameters, $\err_{\CI}$ \emph{does reflect the size} of the integrand values. The following next few sections describe three approaches to hyperparameter estimation.
+
+
+\section{Empirical Bayes}  \label{sec:MLE}
+
+The first and a very straight forward approach is to estimate the parameters via maximum likelihood estimation.  The log-likelihood function of the parameters given the function data $\vy$ is:
+\begin{align*}
+l(s,m,\vtheta | \vy)
+&= -\frac{1}{2} s^{-2} (\vy-m\vone)^T\mCInv(\vy-m\vone) 
+\\ & \qquad
+- \frac{1}{2} \log(\det\, \mC) - \frac{n}{2} \log(s^2) + \text{constants.}
+\end{align*}
+Maximizing the log-likelihood first with respect to $m$, then with respect to $s$, and finally with respect to $\vtheta$ yields
+\begin{align*}
+% \label{eqn_m_MLE}
+m_\MLE &= \frac{\vone^T \mCInv \vy }{ \vone^T \mCInv \vone}, \\
+\nonumber
+s^2_{\MLE}  
+&= \frac{1}{n} (\vy-m_{\MLE}\vone)^T\mCInv(\vy-m_{\MLE}\vone) 
+\\
+% \label{eqn_s2_MLE}
+&= 
+\frac{1}{n}
+\vy^T 
+\left[ 
+\mCInv - 
+\frac{ \mCInv \vone \vone^T \mCInv }{\vone^T\mCInv \vone}
+\right] \vy, \\
+% \label{eqn:thetaMLE} 
+\vtheta_\MLE
+&= \argmin_{\vtheta} \biggl \{
+\log\left(\vy^T 
+\left[ \mCInv - 
+\frac{ \mCInv \vone \vone^T \mCInv }{\vone^T\mCInv \vone}
+\right] \vy 
+\right)  +  \frac{1}{n} \log(\det(\mC))
+\biggr \}.
+\end{align*}
+The empirical Bayes estimate of $\vtheta$ balances minimizing the covariance scale factor, $s^2_{\MLE}$, against minimizing  $\det(\mC)$. 
+
+Under these estimates of the parameters, the cubature \eqref{eqn:BayesCub} and the credible interval \eqref{eqn_prob_confidence_interval} simplify to 
+\begin{align} % \label{eqn:cubMLE}
+\nonumber
+\hmu_\MLE  &:= 
+\left(
+\frac{ (1 - \vone^T  \mCInv\vc )  \vone }{ \vone^T \mCInv \vone}   +  \vc 
+\right)^T  \mCInv \vy, \\
+% \label{eqn:errMLE} 
+\nonumber
+\err_\MLE^2 & : = \frac{2.58^2}{n}
+\vy^T \left[ \mCInv - 
+\frac{ \mCInv \vone \vone^T \mCInv }{\vone^T\mCInv \vone}
+\right] \vy  
+(c_0 - \vc^T\mC^{-1}\vc ), \\
+\label{eqn_prob_CI_MLE}
+\mathbb{P}_f &\left[
+|\mu-\hmu_\MLE| \leq \err_\MLE \right]  = 99\%.
+\end{align}
+Here $c_0$, $\vc$, and $\mC$ are assumed implicitly to be based on $\vtheta = \vtheta_\MLE$.   
+% The empirical Bayes estimate of $\vtheta$ balances minimizing the covariance scale factor, $s^2_{\MLE}$, against minimizing  $\det(\mC)$. 
+
+
+
+
+\subsection{Gradient descent to find optimal shape parameter} \label{grad_descent_MLE}
+The equation specifying $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
+% Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
+Since the objective function is known we could compute the gradient.
+Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function for the same purpose by excluding the negative sign, which modifies the problem to become a minimization of
+\begin{align*}
+\mathcal{L}(\vtheta | \vy)
+&:= \frac{1}{n} \log(\det\, \mC) +  \log\left( (\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right) + \text{constants.}
+\end{align*}
+Taking derivative with respect to $\theta_\ell$, for $\ell=1,\cdots,d$
+\begin{align*}
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy)
+&=  \frac{1}{n} \frac{\partial}{\partial \theta_\ell} \log(\det\, \mC) + \frac{\partial}{\partial \theta_\ell} 
+\log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)
+\\
+&= \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \theta_\ell} \right)}
+- 
+\frac
+{\left((\vy-m_\MLE\vone)^T\mCInv\right)^T 
+	\left( \frac{\partial \mC}{\partial \theta_\ell} \right)
+	((\vy-m_\MLE\vone)^T\mCInv)}
+{(\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone)}
+\end{align*}
+where we used some of the results from \cite{Dong2017a}. 
+This can be used with gradient descent as follows,
+\begin{align}
+\label{eqn:deep_descent}
+\theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu_\ell \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
+\end{align}
+where $\nu_\ell$ is the step size for the gradient descent. 
+
+
+
+
+
+
+
+
+
+
+
+\section{Cone of Functions and the Credible interval} % Functions, F must be captial -- Fred
+\label{sec:cone_of_functions}
+
+%\JRNote{Done: Revise $f_{\NICE}$ using kernel approximation}
+
+In this research we assume that the integrand belongs to a cone of well-behaved functions, $\mathscr{C}$, to make the computations bounded in terms of function data. The concept of cone in general for cubature error analysis can be stated using the error bound definition. 
+Suppose that 
+\begin{align}
+\label{eqn:cone-homogenity}
+\abs{\mu(f) - \hmu_n(f)} \le \err_{\CI} (f(\vx_1), \cdots, f(\vx_n))
+\end{align}
+for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\CI}$ \eqref{eqn:err_MLEGCV} \eqref{FJH:eq:errFull} are positively homogeneous functions, meaning, 
+\begin{align*}
+\err_{\CI} (a y_1, \cdots, a y_n) = \abs{a} \err_{\CI} ( y_1, \cdots,  y_n).
+\end{align*}
+One can verify the homogeneity of \eqref{eqn:err_MLEGCV} and \eqref{FJH:eq:errFull} easily.
+Thus if $f$ satisfies \eqref{eqn:cone-homogenity}, then
+\begin{align*}
+\abs{\mu(af) - \hmu_n(af)} &= \abs{a} \abs{\mu(f) - \hmu_n(f)} \\
+& \le \abs{a} \err_{\CI} (f(\vx_1), \cdots, f(\vx_n) ) \\
+& = \err_{\CI} (a f(\vx_1), \cdots, a f(\vx_n))
+\end{align*}
+for all real $a$. Thus the set of all $f$ satisfying \eqref{eqn:cone-homogenity} is a \emph{cone}, $\mathscr{C}$. Cones of functions satisfy the property that if $f \in \mathscr{C}$ then $af \in \mathscr{C}$.
+
+
+
+
+
+\iffalse
+Given the data driven error bound $\err_{\CI} = \err_{\CI}(f(\vx_1),\dots,f(\vx_n))$,
+\begin{align*}
+\abs{\mu(f) - \hmu_n(f)} \le \err_{\CI} (f(\vx_1), \dots, f(\vx_n)), \quad \forall f \in \mathscr{C}
+\end{align*}  
+where the cone of functions is defined as $\mathscr{C} = \{f : f \in \mathscr{C} \Rightarrow a f \in \mathscr{C} \}$. More specifically, if a function $f$ belongs to $\mathscr{C}$, then any function obtained by a constant multiplication, $af$, also belongs to the cone. 
+This property is very useful since,
+\begin{align*}
+\abs{\mu(a f) - \hmu_n(a f)} & = \abs{a} \abs{\mu(f) - \hmu_n(f)} \\
+& \le \abs{a} \err_{\CI} (f(\vx_1), \dots, f(\vx_n)) \\
+& = \err_{\CI} (a f(\vx_1), \dots, a f(\vx_n)).
+\end{align*}
+This is due to the fact that the error bound $\err_{\CI}$ is homogeneous, i.e., 
+\begin{align*}
+\err_{\CI}(a f(\vx_1),\dots, a f(\vx_n)) = \abs{a} \err_{\CI}(f(\vx_1),\dots, f(\vx_n)).
+\end{align*}
+If the integrand is multiplied by a constant, say $a=45$, then the integral error is also multiplied by the same constant $a=45$, but the factor $\err_{\CI}$ which depends on the characteristic of $f$ does not change.
+\fi
+
+
+In the context of Bayesian cubature, one can explain the cone concept beginning with the definition of credible interval \eqref{eqn_prob_confidence_interval}. 
+Let $f \sim \mathcal{GP}$, be an instance of a Gaussian stochastic process:
+\begin{align*}
+\mathbb{P}_f \left[
+|\mu(f)-\hmu_n(f)| \leq \err_{\CI}(f) \right] \ge 99\%.
+\end{align*}
+This can be interpreted as $|\mu(f)-\hmu_n(f)| \leq \err_{\CI}(f)$ with 99\% confidence. If $f$ is in the 99\% middle of the sample space with $f(\vx_i) = y_i$ then $af$ is also in the middle 99\% of the sample space with $a f(\vx_i) = a y_i$.
+
+We demonstrate the credible interval using the following example. For this purpose, choose a smooth and periodic integrand $f_{\TRUE}(\vx) = \exp(\sum_{\ell=1}^{d} \cos(2\pi x_\ell))$ and another integrand $f_{\PEAKY}(\vx) = f_{\TRUE} + a_{\PEAKY} f_{\NOISE}$ where $a_{\PEAKY} \in \reals$. 
+% Here $a_{\PEAKY} \in \reals, a_{\NICE} \in \reals$, and 
+Here $f_{\NOISE}(\vx) = (1 - \exp(2\pi \sqrt{-1} \vx^T \vzeta))$, $\vzeta \in \reals^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes for some $\{ \vx_i\}_{i=1}^n$. %chosen to sample the integrand. 
+The $\vzeta$ in the dual space of lattice nodes implies that $f_{\NOISE}(\vx_i)=0$ at the sampling nodes $\{ \vx_i\}_{i=1}^n$.
+The $f_{\NICE}$ is obtained by kernel interpolation of the $n$ samples of $f_\TRUE$ at $\{ \vx_i\}_{i=1}^n$. We chose the Mat\'ern kernel \eqref{eqn:matern_kernel} for the interpolation.
+Please note that $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$.
+
+
+\begin{figure}[ht]
+	\centering
+	%\begin{subfigure}[h]{0.48\linewidth}
+	\includegraphics[width=0.8\linewidth]{figures/cone_bayes_f_real}
+	%\end{subfigure}
+	\caption{Example integrands 1) $f_{\NICE}$, a smooth function, 2) $f_{\PEAKY}$, a peaky function. The function values $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$. This plot can be conditionally reproduced using \code{DemoCone.m}}
+	\label{fig:cone_bayes_functions}
+\end{figure}
+\begin{figure}[ht]
+	\centering
+	%\begin{subfigure}[h]{0.48\linewidth}
+	\includegraphics[width=0.8\linewidth]{figures/cone_bayes_mu_pdf}
+	%\end{subfigure}
+	\caption{Probability distributions showing the relative integral position of a smooth and a peaky function. $f_{\NICE}$ lies within the center 99\% of the confidence interval, and $f_{\PEAKY}$ lies on the outside of 99\% of  the confidence interval. This plot can be conditionally reproduced using \code{DemoCone.m}}
+	\label{fig:cone_bayes_posterior}
+\end{figure}
+% Done: \JRNote{Use standard deviation $\sigma$ in x-axis.  $f_{\NICE}$ using kernel approximation} 
+
+In \figref{fig:cone_bayes_functions}, the sampled function values
+% , $\{f_{\TRUE}(\vx_i)\}_{i=1}^n$, from a smooth integrand $f_{\TRUE}$ 
+are shown as dots. One can imagine these samples % $\{f(\vx_i)\}_{i=1}^n$ 
+were obtained from $f_{\NICE}$, a moderately smoother function or from $f_{\PEAKY}$, a highly oscillating function. In this example, we used $a_{\PEAKY} = 2$.
+
+When using $n=16$ rank-1 lattice points, and $r=1$ shift-invariant kernel, we get the posterior distribution of $\mu$ as shown in \figref{fig:cone_bayes_posterior}. The true integral value is shown as $\mu_{\TRUE}$ which is at the center of the plot. The integral of the peaky function $f_{\PEAKY}$ lies outside of the 99\% of the credible interval given by \eqref{eqn_prob_CI_MLE}, whereas the $\mu_{\NICE}$ falls within.
+
+Our Bayesian cubature algorithms compute the approximate integral using only the samples of the integrand. 
+Estimated integral value of our algorithm closely matches the integral of a smooth function that falls within the middle of the confidence interval. If the true integrand were to resemble the smooth approximate function then the estimated integral will be accurate.  
+
+ 
 
 \section{Sobol' Nets and Walsh Kernels}
 \label{sec:sobol_walsh}
