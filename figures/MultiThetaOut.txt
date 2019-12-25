@@ -1,0 +1,7 @@
+& \multicolumn{2}{c}{\text{Fresnel Sine Integral in} \; d=3 } \\ 
+ \hline 
+ \text{Method} & \code{OneTheta} & \code{MultiTheta} \\ 
+ \text{Absolute Error} & \num{0.00023} & \num{0.06300}   \\ 
+ n & \num{    4100} & \num{     260} \\ 
+ \text{Time (seconds)} & \num{ 0.0270} & \num{ 0.0230} \\ 
+ \hline

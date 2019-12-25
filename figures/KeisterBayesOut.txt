@@ -1,0 +1,17 @@
+& \multicolumn{4}{c}{d =   3,\ \varepsilon =  0.005} \\ 
+ \hline 
+ \text{Method} & \text{MC} & \text{Lattice} & \text{Sobol} & \text{BayesLat} & \text{BayesSobol}  \\ 
+ \text{Absolute Error} & \num{0.001100} & \num{0.000510} & \num{0.000520}  & \num{0.000430}  & \num{0.000560}  \\ 
+ \text{Tolerance Met} & \num{  100} \% & \num{  100} \% & \num{  100} \% & \num{  100} \% & \num{  100} \%  \\
+ n & \num{ 2500000} & \num{    4100} & \num{    3900} & \num{    1000} & \num{    1900} \\
+ \text{Time (seconds)} & \num{ 0.1800} & \num{ 0.0069} & \num{ 0.0054} & \num{ 0.0029} & \num{ 0.0700} \\ 
+ \\ 
+& \multicolumn{4}{c}{d =   8,\ \varepsilon =  0.050} \\ 
+ \hline 
+ \text{Method} & \text{MC} & \text{Lattice} & \text{Sobol} & \text{BayesLat} & \text{BayesSobol}  \\ 
+ \text{Absolute Error} & \num{0.012000} & \num{0.015000} & \num{0.007300}  & \num{0.001800}  & \num{0.008300}  \\ 
+ \text{Tolerance Met} & \num{  100} \% & \num{   99} \% & \num{  100} \% & \num{  100} \% & \num{  100} \%  \\
+ n & \num{ 7400000} & \num{   15000} & \num{   16000} & \num{   66000} & \num{    8200} \\
+ \text{Time (seconds)} & \num{ 1.2000} & \num{ 0.0220} & \num{ 0.0160} & \num{ 0.2100} & \num{ 0.3500} \\ 
+ \\ 
+ \hline 

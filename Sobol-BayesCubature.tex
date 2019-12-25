@@ -22,6 +22,8 @@
 \usepackage{graphicx}
 \usepackage{amssymb}
 \usepackage{mathrsfs}  
+\usepackage{hhline}
+\usepackage{siunitx}
 
 %
 % insert here the call for the packages your document requires
@@ -1355,5 +1357,454 @@ One could develop matching digitally shift invariant kernels to formulate the fa
 
 
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+\section{Kernel Hyperparameters Search}
+\label{sec:kernel_param_search}
+
+\JRNote{Explain the transformation used to make the search range positive, $> 0$ , etc.}
+
+The various hyperparameters introduced and used by our algorithms need to be optimally chosen. % We have not discussed how that will be done. 
+The parameter search can be done in two major ways. 
+Bounded minima search, if the search interval is known, else unbounded search.  Most of the scenarios, the search interval is unknown. So the natural choice is to use unbounded search over the unbound domain such as \code{fminsearch} provided by MATLAB.
+% line in -- that is semi-bounded.
+However hyperparameters need to live in a domain that is bounded or semi-bounded. 
+There are some simple domain transformations available to achieve this.
+
+\subsection{Positive kernel shape parameter}
+The following parameter map is used to ensure that the shape parameter values are positive real numbers. For $\eta > 0$ as introduced in Section \ref{sec:deriv_of_kernel}, let
+% We need to have $\eta > 0$ and $ 0 < b < 1$ while searching for the optimum value, so we use the following transformations
+\begin{align*}
+\eta{(t_1)} = & \quad e^{t_1}, & \eta : (-\infty, \infty) \to (0, \infty).
+\end{align*}
+Instead of searching for $\eta \in (0, \infty)$, we may search for the optimal $t_1 = \log(\eta)$ over the whole real line $\reals$. 
+% After the successful completion the minima 
+The optimal value $t_{1, \textup{opt}}$ can be transformed back to the $(0, \infty)$ interval using 
+% the inverse of the transform $\log(t_0 )$ where $t_0$ is the minima.
+\begin{align*}
+\eta_{\textup{opt}} = e^{t_{1,\textup{opt}}}.
+\end{align*}
+
+
+
+\subsection{Kernel order $1 < r < \infty$}
+The following map is used to ensure that the kernel order values are positive real number and greater than one, i.e., in the $(1, \infty)$ interval as required in \secref{sec:trunc_series_kernel},
+\begin{align*}
+r(t_2) = & \quad {1 + e^{t_2}}, & r:  (-\infty, \infty) \to (1,\infty).
+\end{align*}
+So one may search for the optimal $t_2 = -\log(r-1)$ in the whole real line $\reals$.
+The optimal value $t_{2, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ using 
+\begin{align*}
+r_{\textup{opt}} = 1+ e^{t_{2, \textup{opt}}}.
+\end{align*}
+
+
+
+
+
+\subsection{Kernel order $0 < q < 1$}
+The following multivariate map is used to ensure that the kernel order values are positive real and less than one, i.e., in the $(0,1)$ interval to use with exponentially decaying kernel, as introduced in \secref{sec:exp_decay_kernel},
+\begin{align*}
+q(t_3) = & \quad \frac{1}{1 + e^{t_3}}, & q: (-\infty, \infty) \to (0, 1).
+\end{align*}
+So one may search for the optimal $t_3 = \log(q^{-1}-1)$ in the whole real line $\reals$.
+The optimal value $t_{3, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ by using
+\begin{align*}
+q_{\textup{opt}} = \frac{1}{1 + e^{t_{3, \textup{opt}}}}.
+\end{align*}
+
+
+
+
+\subsection{Combined searching of kernel order $r$ and shape parameter $\veta$}
+Instead of searching $\veta$ and $r$ separately one would prefer to search them together so that the most optimal values can be obtained, where $\veta = (\eta_1, \cdots, \eta_d)$ such that $\eta_l \ne \eta_k$,  for $l \ne k$.
+We can combine the parameter maps used above to ensure that the kernel order values in $(1, \infty)$ and shape parameter $\veta$ in $(0,\infty)^d$ as required in \secref{sec:trunc_series_kernel},
+\begin{align*}
+\vtheta(\vt) = 
+\begin{pmatrix}[1]
+r(t_{1}) \\ \eta(t_2) \\ \vdots \\ \eta(t_{d+1}) 
+\end{pmatrix} =
+\begin{pmatrix}[1]
+1 + e^{t_1} \\ e^{t_2} \\ \vdots \\ e^{t_{d+1}}
+\end{pmatrix}, 
+\quad
+\vtheta: \reals^{d+1} \to (1,\infty) \times (0,\infty)^d .
+\end{align*}
+So instead of searching for $\vtheta_{\textup{opt}}$ in $(1,\infty) \times (0,\infty)^d$, one may search for the optimal 
+$$
+\vt = \vt^{-1} (\vtheta) = 
+\begin{pmatrix}[1]
+\log(r-1) \\ \log(\eta_1) \\ \vdots \\ \log(\eta_d)
+\end{pmatrix}
+$$ in the whole real line $\reals^{d+1}$.
+The optimal value $\vt_{\textup{opt}}$ can be transformed back to the desired interval $(1,\infty) \times (0,\infty)^d$ using 
+\begin{align*}
+\vtheta_{\textup{opt}} = 
+\begin{pmatrix}[1]
+1 + e^{t_{1, \textup{opt}}} \\
+e^{t_{2, \textup{opt}}} \\
+\vdots \\
+e^{t_{d+1, \textup{opt}}} \\
+\end{pmatrix}.
+\end{align*}
+Similarly one can map the kernel order $q \in (0,1)$ \secref{sec:exp_decay_kernel}, and $\veta$ in to a multivariate hyperparameter search.
+
+
+
+
+
+
+\section{Numerical Experiments}
+
+\label{sec:NumExp}
+
+\JRNote{use uniformly randomly chosen $\varepsilon$ instead 4 fixed}
+
+Fast Bayesian cubature algorithms developed in this research are demonstrated using three commonly used integration examples.
+These integrals were evaluated using both the algorithms \code{cubBayesLattice\_g} and \code{cubBayesNet\_g}. The first example shows evaluating a multivariate Gaussian probability given the interval. The second example shows integrating the Keister's function, and the final example shows computing an Asian arithmetic option pricing.  
+
+% \Section{Test Results and Observations for \code{cubBayesLattice\_g}}
+\subsection{Testing Methodology}
+\label{sec:numerical_experiments_cubBayesLattice}
+
+% Three integrals were evaluated using our GAIL algorithms:  a multivariate Gaussian probability, the Keister's example, and an option pricing example. 
+Four hundred different error tolerances, $\varepsilon$, were randomly chosen from a fixed interval  for each example. 
+The intervals for error tolerance were chosen depending on the difficulty of the problem.
+The nodes used in \allowbreak \code{cubBayesLattice\_g} were the randomly shifted lattice points supplied by GAIL, whereas the nodes used in \code{cubBayesNet\_g} were the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. 
+
+For each integral example, and each stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run with each randomly chosen error tolerance as mentioned above.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative.
+%Unlike the examples in previous \secref{sec:numerical_experiments_cubBayesLattice}, periodization variable transform is not required.
+
+
+Periodization variable transforms are used in the examples with \\ \allowbreak \code{cubBayesLattice\_g}, which assumes the integrands to be periodic in $[0,1]^d$. But the \allowbreak \code{cubBayesNet\_g} does not need this additional requirement, so the integrands are used directly.
+
+% \Section{Test Results and Observations for \code{cubBayesNet\_g}}
+% \label{sec:numerical_experiments_cubBayesNet}
+
+%Similar to the previous examples, we used four different error tolerances, $\varepsilon$,  set for each example, with the tolerances chosen depending on the difficulty of the problem.  
+%For each integral,  each tolerance, and each of our stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run  $100$ times.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  
+% We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative. 
+
+\subsection{Multivariate Gaussian Probability}
+
+This example is introduced in Section~\ref{MVN_example}, where we use the Mat\'ern covariance kernel.  We reuse $f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} and apply a periodization transform to obtain $f_{\textup{GenzP}}$ when required.
+
+Here we use $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} without any periodization, and chose $d=3$ and $r=1$. The simulation results for this example integrand are summarized in Figures \ref{fig:Sobol-mvn-guaranteed-MLE}, \ref{fig:Sobol-mvn-guaranteed-FB}, and \ref{fig:Sobol-mvn-guaranteed-GCV}.  In all cases, {\code{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes about 2 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
+{\code{cubBayesNet\_g} uses fast Walsh transform which is slower in MATLAB due to the way it was implemented. This is reason it takes more longer the {\code{cubBayesLattice\_g}. 
+But comparing the number of samples, $n$, used for integration provides more insight which directly relates to alogrithm's computational cost. The {\code{cubBayesLattice\_g} used $n=16384$ samples whereas {\code{cubBayesNet\_g} used $n=32768$ samples even with $r=1$ order kernel.
+
+Amongst the three stopping criteria, GCV achieved the results faster than others but it is less conservative. 
+One can also observe from the figures that the credible intervals are narrower than in \figref{fig:mvn-guaranteed-MLE}.
+This shows that {\code{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand.
+
+\begin{figure}
+\centering
+%d=3 problem transformed into d=2
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Sep-1"}
+\caption[Sobol: MVN guaranteed: MLE]{Multivariate normal probability example with empirical Bayes stopping criterion.}
+\label{fig:Sobol-mvn-guaranteed-MLE}
+\end{figure}
+\begin{figure}
+\centering
+%d=3 problem transformed into d=2
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_full__d2_r1_2019-Sep-1"}
+\caption[Sobol: MVN guaranteed: Full Bayes]{Multivariate normal probability example with the full-Bayes stopping criterion.}
+\label{fig:Sobol-mvn-guaranteed-FB}
+\end{figure}
+\begin{figure}
+\centering
+%d=3 problem transformed into d=2
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_GCV__d2_r1_2019-Sep-1"}
+\caption[Sobol: MVN guaranteed: GCV]{Multivariate normal probability example with the GCV stopping criterion.}
+\label{fig:Sobol-mvn-guaranteed-GCV}
+\end{figure}
+
+
+
+
+
+
+\subsection{Keister's Example}
+
+This multidimensional integral function comes from \cite{Kei96} and is inspired by a physics application:
+\begin{align}
+\label{eqn:keister_integral}
+\mu & =  \int_{\reals^d} \cos(\norm{ \vt}) \exp(-\norm{ \vt }^2) \, \dvt \\
+\nonumber
+%&  = 
+%\int_{\reals^d} \cos(a\norm{ \vt}) \exp(-a^2\norm{ \vt }^2)  a^d \, \dvt \\
+& = \int_{[0,1]^d} f_{\textup{Keister}}(\vx) \, \dvx,\\
+\intertext{where }
+\nonumber
+f_\textup{Keister}(\vx) &= \pi^{d/2} \cos\left(\norm{ \Phi^{-1}(\vx)/2}\right)  ,
+\end{align}
+and $\Phi$ is the standard normal distribution.
+%\begin{figure}
+%	\captionsetup[subfigure]{labelformat=empty}
+%	\begin{subfigure}[h]{0.48\linewidth}
+%		\includegraphics[width=1.1\linewidth]{Keister_wholeR_1D}
+%	\end{subfigure}
+%	\begin{subfigure}[h]{0.48\linewidth}
+%		\includegraphics[width=1.1\linewidth]{Keister_cube_1D}
+%	\end{subfigure}
+%	\caption{Keister function in d=2 and its transformed version in $[0,1]^2$ with various values of $a$.}
+%	\label{fig:keister}
+%\end{figure}
+The true value of $\mu$ can be calculated iteratively in terms of a quadrature as follows:  
+\begin{equation*}
+\mu = \frac{2 \pi^{d/2} I_c(d)}{\Gamma(d/2)}, \quad d=1,2, \ldots
+\end{equation*}
+where $\Gamma$ denotes the gamma function, and
+\begin{align*}
+I_c(1) &= \frac{\sqrt{\pi}}{2 \exp(1/4)}, 
+\\
+I_s(1) &= \int_{x=0}^\infty \exp(-\vx^T\vx)\sin(\vx) \, \dvx 
+\\
+& =  0.4244363835020225,
+\\
+I_c(2) &= \frac{1-I_s(1)}{2}, \qquad
+I_s(2) = \frac{I_c(1)}{2}
+\\
+I_c(j) &= \frac{(j-2)I_c(j-2)-I_s(j-1)}{2},
+\qquad j =3,4,\ldots
+\\
+I_s(j) &= \frac{(j-2)I_s(j-2)-I_c(j-1)}{2},
+\qquad j =3,4,\ldots.
+% ref: https://www.mathworks.com/help/matlab/ref/gamma.html
+\end{align*}
+
+
+Figures \ref{fig:Sobol-keister-guaranteed-MLE}, \ref{fig:Sobol-keister-guaranteed-FB} and \ref{fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case. We used  dimension $d=4$, and $r=1$.  No periodization transform was used as the integrand need not be periodic. 
+In this example, we use $r=1$ order kernel whereas in \secref{sec:cubBayesLattice_keister_example}, $r=2$ kernel was used. This necessitates \code{cubBayesNet\_g} to use more samples for integration.
+As observed from the figures, the GCV stopping criterion achieved the results faster than the others but it is less conservative which is also the case with the multivariate Gaussian example.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_MLE__d4_r1_2019-Sep-1"}
+\caption[Sobol: Keister guaranteed: MLE]{Keister example using the empirical Bayes stopping criterion.}
+\label{fig:Sobol-keister-guaranteed-MLE}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_full__d4_r1_2019-Sep-1"}
+\caption[Sobol: Keister guaranteed: Full Bayes]{Keister example using the full-Bayes stopping criterion.}
+\label{fig:Sobol-keister-guaranteed-FB}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_GCV__d4_r1_2019-Sep-1"}
+\caption[Sobol: Keister guaranteed: GCV]{Keister example using the GCV stopping criterion.}
+\label{fig:Sobol-keister-guaranteed-GCV}
+\end{figure}
+
+
+
+
+
+
+
+\subsection{Option Pricing}
+
+The price of financial derivatives can often be modeled by high dimensional integrals. If the underlying asset is described in terms of a discretized geometric Brownian motion, then the fair price of the option is:
+\begin{equation*}
+\mu = \int_{\reals^d} \text{payoff}(\vz) \frac{\exp(\frac 12 \vz^T\mSigma^{-1}\vz)}{\sqrt{(2\pi)^d \det(\mSigma)}} \, \dvz = \int_{[0,1]^d} f(\vx) \, \dvx,
+\end{equation*} 
+where {payoff($\cdot$)} defines the discounted payoff of the option,
+\begin{align*}
+\mSigma &= (T/d) \bigl(\min(j,k) \bigr)_{j,k=1}^d = \mL \mL^T,\\
+f(\vx) &= \text{payoff} \left(\mL 
+\begin{pmatrix}
+\Phi^{-1}(x_1) \\ \vdots \\ \Phi^{-1}(x_d)
+\end{pmatrix} \right).
+\end{align*}
+The Asian arithmetic mean call option has a payoff of the form
+\begin{align*}
+\text{payoff}(\vz) &= \max\left( \frac 1d  \sum_{j=1}^d S_j(\vz) - K, 0 \right) \me^{-r T}, \\
+S_j(\vz) &= S_0 \exp\bigl((r-\sigma^2/2)jT/d + \sigma \sqrt{T/d} z_j \bigr).
+\end{align*}
+Here, $T$ denotes the time to maturity of the option, $d$ the number of time steps, $S_0$ the initial price of the stock, $r$ the interest rate, $\sigma$ the volatility, and $K$ the strike price.  
+
+%\Subsection{Option Pricing}
+The Figures \ref{fig:Sobol-optprice-guaranteed-MLE}, \ref{fig:Sobol-optprice-guaranteed-FB} and 
+\ref{fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the same values for,
+$
+%T = 1/4, \ \ d = 13$ \ \ S_0 = 100, \ \ r =  0.05, \ \ \sigma = 0.5, \ \ K = 100.
+T, \ \ d, \ \ S_0$, $\ \ r, \ \ \sigma, \ \ K
+$, as in \secref{sec:cubBayesLattice_option_pricing_example}.
+As mentioned before, this integrand has a kink caused by the $\max$ function, so, \code{cubBayesNet\_g} could be more efficient than \code{cubBayesLattice\_g}, as no periodization transform is required. This can be observed from the number of samples used for intgration to meet the same error threshold. For the error tolerance, $\varepsilon=10^{-3}$,  \code{cubBayesLattice\_g} used $n=2^{20}$ samples, whereas \code{cubBayesNet\_g} used $n=2^{17}$ samples.
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Sep-1"}
+\caption[Sobol: Option pricing guaranteed: MLE]{Option pricing using the empirical Bayes stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.}
+\label{fig:Sobol-optprice-guaranteed-MLE}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Sep-1"}
+\caption[Sobol: Option pricing guaranteed: Full Bayes]{Option pricing using the full-Bayes stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.}
+\label{fig:Sobol-optprice-guaranteed-FB}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Sep-1"}
+\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.}
+\label{fig:Sobol-optprice-guaranteed-GCV}
+\end{figure}
+
+
+
+
+\subsection{Discussion}
+\JRNote{Move this to end of chapter}
+
+As shown in Figures \ref{fig:mvn-guaranteed-MLE} to \ref{fig:Sobol-optprice-guaranteed-GCV}, both the algorithms computed the integral within user specified threshold most of the time except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand. 
+Also notice that the \code{cubBayesLattice\_g} algorithm finished within 10 seconds for Keister and multivariate Gaussian. Option pricing took closer to 70 seconds due to the complexity of the integrand.
+
+Another noticeable aspect from the plots of \code{cubBayesLattice\_g} is how much the error bounds differ from the true error. For option pricing example, the error bound is not as conservative as it is for the multivariate Gaussian and Keister examples. A possible reason is that the latter integrands are significantly smoother than the covariance kernel.  This is a matter for further investigation.
+
+% As shown in Figures \ref{fig:Sobol-mvn-guaranteed-MLE} to \ref{fig:Sobol-optprice-guaranteed-GCV}, the \code{cubBayesNet\_g} algorithm computes the integral within user specified threshold most of the times except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand as mentioned in the previous example. 
+
+
+
+
+Most noticeable aspect from the plots of \code{cubBayesNet\_g} is how closer the error bounds are to the true error. 
+This shows that the \code{cubBayesNet\_g}'s estimation of expected error in the stopping criterion is very accurate. 
+Similar to \code{cubBayesLattice\_g}, it missed meeting the given error threshold for the option pricing example, as marked by the hollow stars, for $\varepsilon=10^{-4}$. The algorithm reached max allowed number of samples, $n=2^{20}$ due to the complexity of the integrand.
+
+
+
+
+
+\subsection{Comparison with \code{cubMC\_g}, \code{cubLattice\_g} and \code{cubSobol\_g}}
+
+GAIL library provides variety of numerical integration algorithms based on different theoretical foundations, We would like to compare how our algorithms perform relatively to these. We consider three GAIL algorithms 1) \code{cubMC\_g}, a simple Monte-Carlo method for multi-dimensional integration, 2) \code{cubLattice\_g}, a quasi-Monte-Carlo method using Lattice points, and 3) \code{cubSobol\_g}, a quasi-Monte-Carlo method using Sobol points.
+
+\paragraph{Keister integral}
+The Table~\ref{tab2} summarizes the performance of the methods MC, Lattice, Sobol,
+BayesLat, and BayesSob---which refer to the GAIL cubatures, \texttt{cubMC\_g},
+\code{cubLattice\_g}, \code{cubSobol\_g},  \code{cubBayesLattice\_g},  \code{cubBayesNet\_g},
+respectively for estimating Keister integral defined in \eqref{eqn:keister_integral}.
+We conducted two simulations with $d=3$ and $8$. In the case of $d=3$, all five methods succeeded completely, meaning, the absolute error is less than given tolerance, i.e., $|\mu - \hat{\mu}| \le
+\varepsilon$, where $\hat{\mu}$ is a cubature's approximated value. The
+fastest method was \code{cubBayesLattice\_g}.
+In the case of $d=8$,   \code{cubSobol\_g} achieved 100\% success rate
+and was the fastest. But \code{cubBayesLattice\_g}  was competitive and
+had the smallest average absolute error. \code{cubBayesNet\_g} used lowest number of samples but was slower than \code{cubSobol\_g}.
+
+\JRNote{avoid Exp notation for 2 decimals}
+\begin{table}[ht] % MATLAB Driver: KeisterCubatureExampleBayes.m
+% \arrayrulecolor[HTML]{DB5800}  % Red color stripe
+\centering
+\caption{Comparison of average performance of cubatures for estimating the Keister integral \eqref{eqn:keister_integral} for $1000$ independent runs. 
+These results can be conditionally reproduced with the
+script, \allowdisplaybreaks \code{KeisterCubatureExampleBayes.m}, in GAIL. 
+\label{tab2}}	   
+%\vspace{-2ex}
+\begin{tabular}{c}
+$
+\arraycolsep=1.4pt\def\arraystretch{0.9}
+\begin{array}{l@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
+\hhline{======}
+\input{figures/KeisterBayesOut.txt} 
+\end{array}
+$
+\end{tabular}
+\end{table}
+
+
+
+
+
+\paragraph{Multivariate Gaussian}
+The Table~\ref{tab3} summarizes the performance of the methods MC, Lattice, Sobol,
+BayesLat, and BayesSob for estimating the multi-dimensional Gaussian probability $\bf{X}\sim N(\bf{\mu},\Sigma)$. This experiment demonstrates our algorithm's ability to handle  high-dimensional integral.
+
+We conducted two simulations with different $\Sigma$ and estimation intervals $(\bf{a}, \bf{b})$ but fixed $\mu=0$ and required error threshold, $\varepsilon=10^{-3}$. In the first case, all five methods succeeded completely. 
+The fastest method was \code{cubBayesLattice\_g} but \code{cubBayesNet\_g} used the lowest number of samples.
+In the second case also, all five methods succeeded,  but \code{cubLattice\_g} was the fastest. 
+The \code{cubBayesNet\_g}  was competitive and had the smallest average absolute error using lowest number of samples. The \code{cubBayesLattice\_g} achieved the next lowest average error but was slower than \code{cubSobol\_g}.
+%\label{eqn:GaussDef}fGenzdef
+
+\begin{table}[ht] % MATLAB Driver: MVNCubatureExampleBayes.m
+% \arrayrulecolor[HTML]{DB5800} % Red color 
+\centering
+\caption{Comparison of average performance of cubatures for estimating the $d=20$ Multivariate Normal \eqref{eqn:fGenzdef} for $1000$ independent runs with $\varepsilon=10^{-3}$. These results can be conditionally reproduced with the script, \code{MVNCubatureExampleBayes.m}, in GAIL. 
+\label{tab3}}	   
+%\vspace{-2ex}
+$
+\arraycolsep=1.4pt\def\arraystretch{0.9}
+\begin{array}{l@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
+\hhline{======}
+\input{figures/MVNBayesOut.txt} 
+\end{array}
+$
+\end{table}
+
+
+\clearpage
+
+
+
+
+
+
+
+
+
+\paragraph{Shape Parameter Fine-tuning}
+
+\JRNote{ Numerical examples for the case of shape parameter per dimension }
+
+Allowing the kernel shape parameter to vary for each dimension could improve the accuracy of numerical integration when the integrand under consideration has only very low effective dimension  as in the Option Pricing example we demonstrated. We demonstrate this advantage by integrating a function that is not symmetric across dimensions,
+\begin{align}
+\label{eqn:fresnels}
+f(\vx) = \sum_{j=1}^d \upsilon_j \sin(2 \pi x_j^2)
+\end{align} 
+which has known integral
+\begin{align*}
+\int_{[0,1)^d} f(\vx)  = \frac{1}{2} \; \code{fresnels}(d) \sum_{j=1}^{d} \upsilon_j
+\end{align*}
+where \code{fresnels} is the Fresnel Sine integral,
+\begin{align*}
+\code{fresnels}(z) = \int_{0}^{z} \sin \left( \frac{\pi t^2}{2} \right) \dt.
+\end{align*}
+
+
+\begin{table}[ht] % MATLAB Driver: MVNCubatureExampleBayes.m
+% \arrayrulecolor[HTML]{DB5800}  % Red color stripe
+\centering
+\caption{Comparison of average performance of Bayesian Cubature with common shape parameter vs dimension specific shape parameter
+for estimating the $d=3$ Fresnel Sine integral. These results can be conditionally reproduced with the script, \code{demoMultiTheta.m}, in GAIL. 
+\label{tabMultiTheta}}	   
+%\vspace{-2ex}
+$
+\arraycolsep=1.4pt\def\arraystretch{0.9}
+\begin{array}{l@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
+\hhline{======}
+\input{figures/MultiThetaOut.txt} 
+\end{array}	
+$
+\end{table}
+
+The results are summarized from the two different approaches in Table \ref{tabMultiTheta}. The first method, called \code{OneTheta}, uses common shape parameter across all the dimensions, whereas the second method, called \code{MultiTheta}, allows the shape parameters to vary across the dimensions. In the \code{MultiTheta} method, the shape parameter search is multivariate, so the magnitude of shape parameter depends on the integrand's magnitude in each dimension. We have chosen an integrand particularly to demonstrate this aspect \eqref{eqn:fresnels} where we used $d=3$ and the constants $\bm{\upsilon}= (10^{-4}, 1, 10^4)$. The choice of magnitude variations in constants $\bm{\upsilon}$ allows to make the integrand varies significantly across dimensions.
+
+We ran this test for 1000 times. In comparison, both the methods successfully computed the integral all the time but \code{MultiTheta} was slightly faster. The \code{MultiTheta} method used less number of samples but the integration error was bigger than the \code{OneTheta}. For the same number of samples, the \code{OneTheta} method will be much faster since the shape parameter search is faster. The \code{MultiTheta} method is useful in scenarios where we want to use smaller size, $n$, and the integrand varies significantly across dimensions.
+
+
+
+
+
+
+\bibliographystyle{abbrvnat}
+\bibliography{FJHown23,FJH23}
 
 \end{document}

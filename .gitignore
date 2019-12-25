@@ -4,3 +4,7 @@
 *.aux
 
 *.log
+
+*.blg
+
+*.bbl
