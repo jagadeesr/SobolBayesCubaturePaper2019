@@ -1313,13 +1313,13 @@ Similar to the lattice points, Sobol' points are extensible by definition. This 
 % Using the same notations as in \secref{sec:iter_fft}, l
 Let $\widetilde{\vy} = \mH^{(m+1)} {\vy}$ for some arbitrary $\vy \in \reals^{2n}$, $n = 2^m$. Define, 
 \begin{gather*}
-\vy = \begin{pmatrix}[1.1] y_1 \\ \vdots \\ y_{2n} \end{pmatrix}, \quad 
-\vy^{(1)} = \begin{pmatrix}[1.1] y_1 \\ \vdots \\ y_{n} \end{pmatrix}, \quad 
-\vy^{(2)}  = \begin{pmatrix}[1.1] y_{n+1} \\ \vdots \\ y_{2n} \end{pmatrix}, \\ 
+\vy = \begin{pmatrix} y_1 \\ \vdots \\ y_{2n} \end{pmatrix}, \quad 
+\vy^{(1)} = \begin{pmatrix} y_1 \\ \vdots \\ y_{n} \end{pmatrix}, \quad 
+\vy^{(2)}  = \begin{pmatrix} y_{n+1} \\ \vdots \\ y_{2n} \end{pmatrix}, \\ 
 \widetilde{\vy}^{(1)} = \mH^{(m)} \vy^{(1)} = 
-\begin{pmatrix}[1.0] \widetilde{y}^{(1)}_1 \\ \widetilde{y}^{(1)}_2 \\ \vdots \\ \widetilde{y}^{(1)}_{n} \end{pmatrix}, \quad 
+\begin{pmatrix} \widetilde{y}^{(1)}_1 \\ \widetilde{y}^{(1)}_2 \\ \vdots \\ \widetilde{y}^{(1)}_{n} \end{pmatrix}, \quad 
 \widetilde{\vy}^{(2)}  =  \mH^{(m)} \vy^{(2)} =
-\begin{pmatrix}[1.0] \widetilde{y}^{(2)}_{1} \\  \widetilde{y}^{(2)}_{2} \\ \vdots \\ \widetilde{y}^{(2)}_{n} \end{pmatrix}. 
+\begin{pmatrix} \widetilde{y}^{(2)}_{1} \\  \widetilde{y}^{(2)}_{2} \\ \vdots \\ \widetilde{y}^{(2)}_{n} \end{pmatrix}. 
 \end{gather*}
 Then,
 \begin{align*}
@@ -1428,10 +1428,10 @@ Instead of searching $\veta$ and $r$ separately one would prefer to search them 
 We can combine the parameter maps used above to ensure that the kernel order values in $(1, \infty)$ and shape parameter $\veta$ in $(0,\infty)^d$ as required in \secref{sec:trunc_series_kernel},
 \begin{align*}
 \vtheta(\vt) = 
-\begin{pmatrix}[1]
+\begin{pmatrix}
 r(t_{1}) \\ \eta(t_2) \\ \vdots \\ \eta(t_{d+1}) 
 \end{pmatrix} =
-\begin{pmatrix}[1]
+\begin{pmatrix}
 1 + e^{t_1} \\ e^{t_2} \\ \vdots \\ e^{t_{d+1}}
 \end{pmatrix}, 
 \quad
@@ -1440,14 +1440,14 @@ r(t_{1}) \\ \eta(t_2) \\ \vdots \\ \eta(t_{d+1})
 So instead of searching for $\vtheta_{\textup{opt}}$ in $(1,\infty) \times (0,\infty)^d$, one may search for the optimal 
 $$
 \vt = \vt^{-1} (\vtheta) = 
-\begin{pmatrix}[1]
+\begin{pmatrix}
 \log(r-1) \\ \log(\eta_1) \\ \vdots \\ \log(\eta_d)
 \end{pmatrix}
 $$ in the whole real line $\reals^{d+1}$.
 The optimal value $\vt_{\textup{opt}}$ can be transformed back to the desired interval $(1,\infty) \times (0,\infty)^d$ using 
 \begin{align*}
 \vtheta_{\textup{opt}} = 
-\begin{pmatrix}[1]
+\begin{pmatrix}
 1 + e^{t_{1, \textup{opt}}} \\
 e^{t_{2, \textup{opt}}} \\
 \vdots \\
@@ -1468,22 +1468,22 @@ Similarly one can map the kernel order $q \in (0,1)$ \secref{sec:exp_decay_kerne
 \JRNote{use uniformly randomly chosen $\varepsilon$ instead 4 fixed}
 
 Fast Bayesian cubature algorithms developed in this research are demonstrated using three commonly used integration examples.
-These integrals were evaluated using both the algorithms \code{cubBayesLattice\_g} and \code{cubBayesNet\_g}. The first example shows evaluating a multivariate Gaussian probability given the interval. The second example shows integrating the Keister's function, and the final example shows computing an Asian arithmetic option pricing.  
+These integrals are evaluated using our algorithm \code{cubBayesNet\_g} and compared with \code{cubBayesLattice\_g} which was developed in \cite{JagHic19a}. The \code{cubBayesLattice\_g} is a fast automatic Bayesian cubature algorithm which uses rank-1 lattice nodes. The first example shows evaluating a multivariate Gaussian probability given the interval. The second example shows integrating the Keister's function, and the final example shows computing an Asian arithmetic option pricing.  
 
-% \Section{Test Results and Observations for \code{cubBayesLattice\_g}}
+
 \subsection{Testing Methodology}
 \label{sec:numerical_experiments_cubBayesLattice}
 
 % Three integrals were evaluated using our GAIL algorithms:  a multivariate Gaussian probability, the Keister's example, and an option pricing example. 
 Four hundred different error tolerances, $\varepsilon$, were randomly chosen from a fixed interval  for each example. 
 The intervals for error tolerance were chosen depending on the difficulty of the problem.
-The nodes used in \allowbreak \code{cubBayesLattice\_g} were the randomly shifted lattice points supplied by GAIL, whereas the nodes used in \code{cubBayesNet\_g} were the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. 
+The nodes used in \code{cubBayesNet\_g} were the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. 
 
 For each integral example, and each stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---our algorithm is run with each randomly chosen error tolerance as mentioned above.  For each test, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate a stopping criterion that is too conservative.
 %Unlike the examples in previous \secref{sec:numerical_experiments_cubBayesLattice}, periodization variable transform is not required.
 
 
-Periodization variable transforms are used in the examples with \\ \allowbreak \code{cubBayesLattice\_g}, which assumes the integrands to be periodic in $[0,1]^d$. But the \allowbreak \code{cubBayesNet\_g} does not need this additional requirement, so the integrands are used directly.
+Periodization variable transforms are not used in the examples with \\ \allowbreak \code{cubBayesNet\_g}. Since the \allowbreak \code{cubBayesNet\_g} does not need this requirement, the integrands are used directly.
 
 % \Section{Test Results and Observations for \code{cubBayesNet\_g}}
 % \label{sec:numerical_experiments_cubBayesNet}
@@ -1725,7 +1725,7 @@ $
 
 
 \paragraph{Multivariate Gaussian}
-The Table~\ref{tab3} summarizes the performance of the methods MC, Lattice, Sobol,
+Table~\ref{tab3} summarizes the performance of the methods MC, Lattice, Sobol,
 BayesLat, and BayesSob for estimating the multi-dimensional Gaussian probability $\bf{X}\sim N(\bf{\mu},\Sigma)$. This experiment demonstrates our algorithm's ability to handle  high-dimensional integral.
 
 We conducted two simulations with different $\Sigma$ and estimation intervals $(\bf{a}, \bf{b})$ but fixed $\mu=0$ and required error threshold, $\varepsilon=10^{-3}$. In the first case, all five methods succeeded completely. 
@@ -1801,7 +1801,9 @@ We ran this test for 1000 times. In comparison, both the methods successfully co
 
 
 
+\section{Conclusion and future work}
 
+\paragraph{TBD}
 
 
 \bibliographystyle{abbrvnat}
