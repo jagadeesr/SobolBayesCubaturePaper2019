@@ -290,11 +290,131 @@
 \end{abstract}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \section{Introduction}
 \label{intro}
-Your text comes here. Separate text sections with
+
 
 \JRNote{discuss prior work}
+
+
+Cubature is the problem of inferring a numerical value for a definite integral, 
+$ \mu := \int_{\reals^d} g(\vx) \, \dif \vx$, where $\mu$ has no closed form analytic expression. Typically, $g$ is accessible through a black-box function routine. 
+Cubature means numerical multivariate integration and is a key component of many problems in scientific computing, finance \cite{Gla03}, statistical modeling, imaging \cite{Keller2013}, uncertainty quantification, machine learning \cite{Goodfellow-et-al-2016}, etc.
+%\JRNote{add references}
+
+The integral may often be expressed as
+\begin{equation}
+\label{eqn:defn_mu}
+\mu:= \mu(f) := \Ex[f(\boldsymbol{X})] = \int_{[0,1]^d} f(\vx)\, \dvx, 
+\end{equation}
+where $f:[0,1]^d \to \reals$ is the integrand, and $\boldsymbol{X} \sim \mathcal{U}[0,1]^d$.  The process of transforming the original integral into the form of \eqref{eqn:defn_mu} is addressed in \cite{BecHae92b, Sid08a, Sid93, Lau96a, CriEtal07}.  The cubature may be an affine function of integrand values:
+\begin{equation}
+\label{eqn:defn_hmu}  % remove this
+\hmu: = \hmu(f) := w_0 + \sum_{i=1}^{n} f(\vx_i) w_i, \quad \mathcal{P} :=\{\vx_i\}_{i=1}^n \subset [0,1]^d
+\end{equation}
+where the weights, $w_0$, and  $\vw = (w_i)_{i=1}^n \in \reals^n$, and the nodes, $\mathcal{P}$, are chosen to make the error, $\abs{\mu - \hmu}$, small. The integration domain $[0,1]^d$ is convenient for the low discrepancy node sets that we use.  The nodes are assumed to be deterministic.
+%The integral of function $f$ is the same over $[0, 1]^d$ or $(0, 1)^d$ or $[0, 1)^d$. So we use $[0, 1]^d$ or $[0, 1)^d$ depending on the application. Most often $[0, 1)^d$ is preferred especially for extensible node-sets because  it partitions easily into congruent subhypercubes.
+This research focuses on multivariate numerical integrals where the computational cost is a bottleneck. %of evaluating the integrand 
+
+
+
+
+
+
+We construct a reliable stopping criterion that determines the number of integrand values required, $n$, to ensure that the error is no greater than a user-defined error tolerance denoted by $\varepsilon$, i.e., 
+\begin{equation}
+\label{eqn:err_crit} 
+\abs{\mu - \hmu} \leq \errtol .
+\end{equation}
+Rather than relying on strong assumptions about the integrand, such as an upper bound on its variance or total variation, we construct a stopping criterion that is based on a credible interval arising from a Bayesian approach to the problem.  We build upon the work of Briol et al.~\cite{BriEtal18a}, Diaconis~\cite{Dia88a}, O'Hagan~\cite{OHa91a}, Ritter~\cite{Rit00a}, Rasmussen and Ghahramani~\cite{RasGha03a}, and others.  Our algorithm is an example of \emph{probabilistic numerics}.
+To study numerical algorithms from a statistical point of view, where uncertainty is formally due to the presence of an unknown numerical error, is the goal of probabilistic numerics.
+
+
+
+
+Our primary contribution in this research is to demonstrate how the choice of a family of covariance kernels that match the low discrepancy sampling nodes facilitates fast computation of the cubature and the data-driven stopping criterion.  Our Bayesian cubature requires a computational cost of
+\begin{equation} \label{eqn:OuralgoCost}
+\Order\bigl(n \$(f) + N_{\opt}[n\$(C) + 
+n \log(n)] \bigr),
+\end{equation} 
+where $\$(f)$ is the cost of one integrand value, $\$(C)$ is the cost of a single covariance kernel value,  $\Order(n \log(n))$ is the cost of a fast Bayesian transform, and $N_{\opt}$ is an upper bound on the number of optimization steps required to choose the hyperparameters. If function evaluation is expensive, e.g., the output of a computationally intensive simulation, or if $\$(f) = \Order(d)$ for large $d$, then $\$(f)$ might be similar in magnitude to $N_{\opt} \log(n)$ in practice.  Typically, $\$(C) = \Order(d)$.  Note that the $\Order(n \log(n))$ contribution is $d$ independent.
+
+
+In contrast to our fast algorithm, the typical computational cost for Bayesian cubature is
+\begin{equation} \label{eqn:TheiralgoCost}
+\Order\bigl(n \$(f) + N_{\opt}[n^2\$(C) + n^3] \bigr),
+\end{equation} 
+which is explained in \cite{JagHic19a}. Note that apart from evaluating the integrand, the computational cost in \eqref{eqn:TheiralgoCost} is much larger than that in \eqref{eqn:OuralgoCost}.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+
+
+% \Section{Low Discrepancy Points}
+
+Low discrepancy points are characterized by how uniformly the points are distributed, which is measured by the \emph{discrepancy}. % score, especially when the points are projected onto low-dimensions. 
+The goal is to have maximum uniform space filling. The discrepancy is defined as below.
+Let $\mathcal{M}$ be the set of all intervals of the form $\prod_{\ell=1}^{d} [a_\ell, b_\ell) = \{ \vx \in \mathbb{R}^d : a_\ell \le x_\ell \le b_\ell, 0 \le a_\ell \le b_\ell \le 1 \}$. Then, the discrepancy of a point set $\mathcal{P}$ is,
+\begin{align*}
+D(\mathcal{P}) := \sup_{M \in \mathcal{M}} 
+\abs{ \frac{\abs{M \cap \mathcal{P}}}{\abs{\mathcal{P}}} - \lambda_L(M) },
+\end{align*}
+where $\abs{\mathcal{P}}$ is the cardinality of the set $\mathcal{P}$, and $\lambda_L$ is the Lebesgue measure.
+The \emph{low discrepancy points} satisfy $D(\mathcal{P}) = \Order((\log n)^d/n)$.
+In this work we experiment with two most popular low discrepancy point sets, 1) lattice points, and 2) Sobol' points.
+
+% \Section{Prior Work}
+
+Hickernell~\cite{Hic17a} compares different approaches to cubature error analysis depending on whether the rule is deterministic or random and whether the integrand is assumed to be deterministic or random.  Error analysis that assumes a deterministic integrand lying in a Banach space leads to an error bound that is typically impractical for deciding how large $n$ must be to satisfy \eqref{eqn:err_crit}.  The deterministic error bound includes a (semi-)norm of the integrand, which is often more complex to compute than the original integral.
+
+Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Fourier coefficients of the integrand.  The algorithms proposed here also rely on discrete Fourier coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in the MATLAB implementation of our algorithms.
+
+Section~\ref{sec:BC} explains the Bayesian approach to calculate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We end Chapter~\ref{sec:BC}  by demonstrating why Bayesian cubature is typically computationally expensive.
+Chapter~\ref{sec:fast_BC}  introduces the concept of covariance kernels that match the nodes and expedite the computations required by our automatic Bayesian cubature. 
+Chapter~\ref{sec:shift_invariant_kernel} implements this concept for shift invariant kernels and rank-1 lattice nodes. It also develops approaches to build shift-invariant kernels of continuous valued kernel order rather than fixing the kernel order to integer values.
+Chapter~\ref{sec:sobol_walsh} demonstrates another implementation of matching nodes and kernel using Sobol' points and Walsh kernels. It also shows that the fast Walsh Hadamard as the fast Bayesian transform for this case.
+Chapter~\ref{sec:NumImpl} describes how to avoid cancellation error for kernels of product form. 
+It also covers  some of the additional techniques used in the implementation of our Bayesian Cubature algorithms. 
+Numerical examples are provided in Chapter~\ref{sec:NumExp} to demonstrate the performance and advantages of our new algorithms.  We conclude with a brief discussion and potential future work in Chapter~\ref{sec:conclusion-future-work}.
+
+
+We use the terms integrand or function interchangeably to denote the function $f$ being considered for the numerical integration. Also, we use the terms, nodes, points, node-sets, designs, and data-sites interchangeably to denote the points $\mathcal{P}$ used in the cubature.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \section{Bayesian Cubature}
 \label{sec:BC} 
