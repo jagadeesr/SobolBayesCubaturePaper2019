@@ -145,7 +145,7 @@
 \newcommand{\mK}{\mathsf{K}}
 \newcommand{\rmC}{\mathring{\mathsf{C}}}
 \newcommand{\mCtheta}{{\mathsf{C}_{\vtheta}}}
-%\newcommand{\mCthetaInv}{{\mathsf{C}^{-1}_{\vtheta}}}
+\newcommand{\mCthetaInv}{{\mathsf{C}^{-1}_{\vtheta}}}
 %\newcommand{\mCthetaMLE}{{\mathsf{C}_{\vthetaMLE}}}
 %\newcommand{\mCthetaInvMLE}{{\mathsf{C}^{-1}_{\vthetaMLE}}}
 \newcommand{\mCInv}{\mathsf{C}^{-1}}
@@ -542,78 +542,129 @@ Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible lev
 
 
 
-\section{Hyperparameter estimation}
+\section{Hyperparameter search}
 \JRNote{
 This section explains hyperparameter estimation using gradient descent}
 
 
 The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\CI}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$
 
-Note that $\err_{\CI}$ has no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\CI}$.  This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  After inferring the hyperparameters, $\err_{\CI}$ \emph{does reflect the size} of the integrand values. The following next few sections describe three approaches to hyperparameter estimation.
-
-
-\section{Empirical Bayes}  \label{sec:MLE}
-
-The first and a very straight forward approach is to estimate the parameters via maximum likelihood estimation.  The log-likelihood function of the parameters given the function data $\vy$ is:
-\begin{align*}
-l(s,m,\vtheta | \vy)
-&= -\frac{1}{2} s^{-2} (\vy-m\vone)^T\mCInv(\vy-m\vone) 
-\\ & \qquad
-- \frac{1}{2} \log(\det\, \mC) - \frac{n}{2} \log(s^2) + \text{constants.}
-\end{align*}
-Maximizing the log-likelihood first with respect to $m$, then with respect to $s$, and finally with respect to $\vtheta$ yields
-\begin{align*}
-% \label{eqn_m_MLE}
-m_\MLE &= \frac{\vone^T \mCInv \vy }{ \vone^T \mCInv \vone}, \\
-\nonumber
-s^2_{\MLE}  
-&= \frac{1}{n} (\vy-m_{\MLE}\vone)^T\mCInv(\vy-m_{\MLE}\vone) 
-\\
-% \label{eqn_s2_MLE}
-&= 
-\frac{1}{n}
-\vy^T 
-\left[ 
-\mCInv - 
-\frac{ \mCInv \vone \vone^T \mCInv }{\vone^T\mCInv \vone}
-\right] \vy, \\
-% \label{eqn:thetaMLE} 
-\vtheta_\MLE
-&= \argmin_{\vtheta} \biggl \{
-\log\left(\vy^T 
-\left[ \mCInv - 
-\frac{ \mCInv \vone \vone^T \mCInv }{\vone^T\mCInv \vone}
-\right] \vy 
-\right)  +  \frac{1}{n} \log(\det(\mC))
-\biggr \}.
-\end{align*}
-The empirical Bayes estimate of $\vtheta$ balances minimizing the covariance scale factor, $s^2_{\MLE}$, against minimizing  $\det(\mC)$. 
-
-Under these estimates of the parameters, the cubature \eqref{eqn:BayesCub} and the credible interval \eqref{eqn_prob_confidence_interval} simplify to 
-\begin{align} % \label{eqn:cubMLE}
-\nonumber
-\hmu_\MLE  &:= 
-\left(
-\frac{ (1 - \vone^T  \mCInv\vc )  \vone }{ \vone^T \mCInv \vone}   +  \vc 
-\right)^T  \mCInv \vy, \\
-% \label{eqn:errMLE} 
-\nonumber
-\err_\MLE^2 & : = \frac{2.58^2}{n}
-\vy^T \left[ \mCInv - 
-\frac{ \mCInv \vone \vone^T \mCInv }{\vone^T\mCInv \vone}
-\right] \vy  
-(c_0 - \vc^T\mC^{-1}\vc ), \\
-\label{eqn_prob_CI_MLE}
-\mathbb{P}_f &\left[
-|\mu-\hmu_\MLE| \leq \err_\MLE \right]  = 99\%.
-\end{align}
-Here $c_0$, $\vc$, and $\mC$ are assumed implicitly to be based on $\vtheta = \vtheta_\MLE$.   
-% The empirical Bayes estimate of $\vtheta$ balances minimizing the covariance scale factor, $s^2_{\MLE}$, against minimizing  $\det(\mC)$. 
+Note that $\err_{\CI}$ shows no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\CI}$. This dependence will become explicit once the hyperparameters, $m, s$, and $\vtheta$,  are inferred from integrand data.
+% This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  
+After inferring the hyperparameters, $\err_{\CI}$ \emph{does reflect the size} of the integrand values. 
+%The following next few sections describe three approaches to hyperparameter estimation. 
+Three approaches for hyperparameter estimation were described in \cite{JagHic19a} but no explicit parameter search was discussed. Here we provide one such technique using steepest descent. 
 
 
 
 
-\subsection{Gradient descent to find optimal shape parameter} \label{grad_descent_MLE}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The methods developed for hyperparameter estimation from the previous sections are summarized as a theorem below:
+\begin{theorem} \label{thm:param} There are at least three approaches to estimating or integrating out the hyperparameters defining the Gaussian process from which the integrand is drawn: empirical Bayes, full Bayes, and generalized cross-validation.  %\linebreak[4]
+	Under these three approaches, we have the following:
+	\begin{align}
+	\label{eqn_m_MLE}
+	m_\MLE &= \frac{\vone^T \mCthetaInv \vy }{ \vone^T \mCthetaInv \vone}, \qquad
+	m_{\textup{GCV}} = \frac{\vone^T \mC_\vtheta^{-2} \vy}{\vone^T \mC_\vtheta^{-2} \vone}, \\
+	\label{eqn_s2_MLE}
+	s^2_{\MLE} 
+	&= 
+	\frac{1}{n}
+	\vy^T 
+	\left[ \mCthetaInv - 
+	\frac{ \mCthetaInv \vone \vone^T \mCthetaInv }{\vone^T\mCthetaInv \vone}
+	\right] \vy, \\
+	\nonumber
+	\hsigma_{\full}^2 
+	& = \frac{1}{n-1}
+	\vy^T\left[ \mCthetaInv 
+	- \frac{ \mCthetaInv \vone\vone^T \mCthetaInv}{\vone^T \mCthetaInv \vone}  \right]\vy
+	\\ 
+	\label{eqn:sigma2_full}
+	& \times  \left[\frac{(1 - \vc^T \mCthetaInv \vone)^2}{\vone^T \mCthetaInv \vone} + (c_{0}  -\vc ^T \mCthetaInv \vc) \right], \\
+	\nonumber
+	s^2_{\textup{GCV}} & = \vy^T \left[\mC_\vtheta^{-2} - \frac{\mC_\vtheta^{-2} \vone \vone^T \mC_\vtheta^{-2}}{\vone^T \mC_\vtheta^{-2} \vone}  \right] \vy  \left[ \trace(\mCthetaInv) \right]^{-1}, \\
+	\label{eqn:thetaMLE}
+	\vtheta_\MLE
+	&= \argmin_{\vtheta} \biggl \{
+	\log\left(\vy^T 
+	\left[ \mCthetaInv - 
+	\frac{ \mCthetaInv \vone \vone^T \mCthetaInv }{\vone^T\mCthetaInv \vone}
+	\right] \vy 
+	\right)  
+	+  \frac{1}{n} \log(\det(\mC_\vtheta))
+	\biggr \}, \\
+	\label{vthetaGCV}
+	\vtheta_{\GCV} &= \argmin_\vtheta \biggl\{\log \left(  \vy^T \left[\mC^{-2}_\vtheta - \frac{\mC^{-2}_\vtheta \vone \vone^T \mC^{-2}_\vtheta}{\vone^T \mC^{-2}_\vtheta \vone}  \right] \vy \right)  
+	- \log \left ( \trace(\mC^{-2}_\vtheta) \right ) \biggr\}, \\
+	\label{eqn:cubMLE}
+	\hmu_\MLE  &= \hmu_\full =
+	\left(
+	\frac{ (1 - \vone^T  \mCthetaInv\vc )  \vone }{ \vone^T \mCthetaInv \vone}   +  \vc 
+	\right)^T  \mCthetaInv \vy, \\
+	\label{eqn:muCV}
+	\hmu_{\GCV}
+	& = \left(\frac{(1 - \vone^T  \mCthetaInv\vc) \mCthetaInv \vone}{\vone^T \mC_\vtheta^{-2} \vone} + \vc \right)^T \mCthetaInv \vy.
+	\intertext{The credible intervals widths, $\err_{\CI}$, are given by}
+	\label{eqn:err_MLEGCV}
+	\err_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{c_{0} - \vc^T\mCthetaInv\vc }, \qquad \mathsf{x} \in \{\MLE, \GCV\},  \\ 
+	\err_{\textup{full}} 
+	& = t_{n-1,0.995} \hsigma_{\textup{full}} > \err_\MLE. \label{FJH:eq:errFull}
+	\end{align}
+	The resulting credible intervals are then
+	\begin{align}
+	\label{eqn_prob_CI}
+	\mathbb{P}_f \left[
+	|\mu-\hmu_{\mathsf{x}}| \leq \err_{\mathsf{x}} \right]  = 99\%, \qquad \mathsf{x} \in \{\MLE, \full, \GCV\}.
+	\end{align}
+	Here $t_{n-1,0.995}$ denotes the $99.5$ percentile of a standard Student's $t$-distribution with $n-1$ degrees of freedom.  In the formulas above, $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
+\end{theorem}
+
+In the theorem above, note that if the original covariance kernel, $C$, is replaced by $b C$ for some positive constant $b$, the cubature, $\hmu$, the estimates of $\vtheta$, and the credible interval half-widths, $\err_{\mathsf{x}}$ for $\mathsf{x} \in \{\MLE, \full, \GCV\}$, all remain unchanged.  The estimates of $s^2$ are multiplied by $b^{-1}$, as would be expected. 
+
+% Looking back over the results of Sections \ref{sec:MLE}--\ref{sec:GCV}, it is noted that if the original covariance function, $C$, is replaced by $b C$ for some positive constant $b$, the cubature, $\hmu$, the estimates of $\vtheta$, and the credible interval widths, $\err_{\MLE}, \err_{\full}, \err_{\GCV}$, all remain unchanged.  The estimates of $s^2$ are multiplied by $b^{-1}$, as would be expected.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Gradient descent to find optimal shape parameter}
+\label{grad_descent_MLE}
 The equation specifying $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
 % Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
 Since the objective function is known we could compute the gradient.
@@ -652,6 +703,22 @@ where $\nu_\ell$ is the step size for the gradient descent.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \section{Cone of Functions and the Credible interval} % Functions, F must be captial -- Fred
@@ -746,6 +813,633 @@ When using $n=16$ rank-1 lattice points, and $r=1$ shift-invariant kernel, we ge
 Our Bayesian cubature algorithms compute the approximate integral using only the samples of the integrand. 
 Estimated integral value of our algorithm closely matches the integral of a smooth function that falls within the middle of the confidence interval. If the true integrand were to resemble the smooth approximate function then the estimated integral will be accurate.  
 
+
+
+
+
+
+\section{The Automatic Bayesian Cubature Algorithm} 
+
+
+The previous section presents three credible intervals, \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule.  Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.
+
+Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size.  The steps are detailed in Algorithm~\ref{algorithm1}.
+
+We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability.  The example in the next section and the examples in Chapter~\ref{sec:NumExp} support that expectation. We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
+
+\algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen\ }
+\algnewcommand{\IElse}{\unskip\ \algorithmicelse\ }
+\algnewcommand{\EndIIf}{\unskip\ \algorithmicend\ \algorithmicif}
+
+
+\begin{algorithm}
+	\caption{Automatic Bayesian Cubature}\label{algorithm1}
+	\begin{algorithmic}[1]
+		\Require a generator for the sequence
+		$\vx_1, \vx_2, \ldots$; 
+		a black-box function, $f$; 
+		an absolute error tolerance,
+		$\varepsilon>0$; the positive initial sample size, $n_0$;
+		the maximum sample size $n_{\textup{max}}$
+		
+		\State $n \gets n_0, \; n' \gets 0, \; \err \gets \infty$
+		
+		\While{$\err > \varepsilon$ and $n \le n_{\textup{max}}$}
+		
+		\State\label{LoopStart}Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$
+		\State Compute $\vtheta$ by \eqref{eqn:thetaMLE} or \eqref{vthetaGCV}
+		\State Compute $\err$  according to \eqref{eqn:err_MLEGCV}, \eqref{FJH:eq:errFull}, or \eqref{GCVerr}
+		
+		\State	$n' \gets n, \; n \gets 2n'$
+		
+		\EndWhile
+		
+		\State Sample size to compute $\hmu$, $n \gets n'$
+		\State Compute $\hmu$, the approximate integral,   according to \eqref{eqn:cubMLE} or \eqref{eqn:muCV}
+		\State \Return $\hmu, \; n$  and $\err$
+	\end{algorithmic}
+\end{algorithm}
+
+As described above, the computational cost of Algorithm~\ref{algorithm1} is the sum of the following:
+\begin{itemize}
+	\item $\Order\bigl(n\$(f) \bigr)$ for the integrand data, where $\$(f)$ is the computational cost of a single $f(\vx)$; $\$(f)$ may be large if it is the result of an expensive simulation; $\$(f)$ is typically proportional to $d$;
+	
+	\item $\Order\bigl(N_{\opt} n^2 \$(C_\vtheta) \bigr)$ for the evaluation of the Gram matrix $\mC_{\vtheta}$, $N_\opt$ is the number of optimization steps required, and  $\$(C_\vtheta)$ is the computational cost of a single $C_\vtheta(\vt,\vx)$; $\$(C_\vtheta)$ is typically proportional to $d$; and
+	
+	\item $\Order\bigl(N_{\opt} n^3 \bigr)$ for the matrix inversions and determinant calculations; this cost is independent of $d$.
+	
+\end{itemize}
+
+As we see in the example in the next section, the cost increases quickly as the $n$ required to meet the error tolerance increases.  This motivates the fast Bayesian cubature algorithm presented in Section~\ref{sec:fast_BC}.
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Fast Bayesian Transform Kernel}
+\label{sec:fast_BC}
+
+We introduce some further notation
+\begin{align}
+\nonumber
+\mC = \mCtheta &= \Big(C_\vtheta(\vx_i,\vx_j)\Big)_{i,j=1}^n  = (\vC_1,...,\vC_n) 
+\\
+\label{eqn:ftk_factor}
+&= \frac 1n \mV \mLambda \mV^H , 
+\quad \quad \mV^H = n \mV^{-1}, \\
+\nonumber
+\mV &= (\vv_1,...,\vv_n)^T = (\vV_1,...,\vV_n) \\
+\nonumber
+\mC^p  &= \frac 1n \mV \mLambda^{p} \mV^H, \qquad \forall p \in \integers,
+\end{align}
+where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\cdots,\vC_n$ are columns of $\mC$,  $\vV_1,\cdots,\vV_n$ are columns of $\mV$, and $\vv_1,\cdots,\vv_n$ are rows of $\mV$. 
+The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
+In this and later sections, we drop the $\vtheta$ dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  
+For any $n \times 1$ vector $\vb$, define the notation  $\widetilde{\vb} := \mV^H \vb$.
+
+
+We make three assumptions that allow the fast computation:
+\begin{subequations} \label{fastcompAssump}
+	\begin{gather}
+	\label{fastcompAssumpA}
+	\mV \text{ may be identified analytically}, \\
+	\label{fastcompAssumpB}
+	\vv_1 = \vV_1 = \vone, \\
+	\label{fastcompAssumpC}
+	\text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb.
+	\end{gather}
+\end{subequations}
+We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  
+
+
+The covariance kernel used in practice also may satisfy an additional assumption:
+\begin{equation} \label{addAssump}
+\int_{[0,1]^d} C(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
+\end{equation}
+which implies that $c_{0 \vtheta} = 1$ and $\vc_{\vtheta} = \vone$.  Under \eqref{addAssump}, the expressions above may be further simplified:
+
+
+
+The assumptions and results in this chapter lead to the following theorem.
+
+\begin{theorem} \label{thm:fastparam}
+	Under assumptions \eqref{fastcompAssump}, the parameters and credible interval half-widths in Theorem~\ref{thm:param} may be expressed in terms of the fast Bayesian transforms of the integrand data, the first column of the Gram matrix, $c_0$, and $\vc$ as follows:
+	\begin{align}
+	\nonumber
+	m_\MLE &=  m_{\full} = m_{\GCV} =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
+	\\
+	\nonumber
+	s^2_\MLE 
+	& =
+	\frac{1}{n^2} 
+	\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}, \\
+	\nonumber
+	\widehat{\sigma}^2_{\textup{full}}
+	& =
+	\frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
+	% \\
+	% \nonumber
+	% & \qquad \times
+	\left[\frac{\lambda_1}{n}{\left(1 - \frac{\widetilde{c}_1}{\lambda_1}\right)^2} + \left(c_0  - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i}\right) \right], \\
+	\nonumber 
+	s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1},
+	\end{align}
+	\begin{subequations}
+		\label{fastTheta}
+		\begin{align}
+		\label{eqn_MLE_loss_func_optimized_2}
+		\vtheta_\MLE
+		&= 
+		\argmin_{\vtheta}
+		\left[
+		\log\left(
+		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}}
+		\right) 
+		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{i})
+		\right],\\
+		\label{thetaGCV} 
+		\vtheta_{\GCV} 
+		&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}^2} 
+		\right)  
+		-2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{i}} \right)
+		\right], 
+		\end{align}
+	\end{subequations}
+	\begin{align}
+	\nonumber
+	\hmu_\MLE  &= \hmu_{\full} = \hmu_{\GCV} =
+	\frac{\widetilde{y}_1}{n} +
+	\frac 1n \sum_{i=2}^n \frac{ \widetilde{c}_i^* \widetilde{y}_i}{\lambda_i}, \\
+	\nonumber
+	\err_\MLE  &
+	=
+	\frac{2.58}{n}\sqrt{
+		\sum_{i=2}^{n} \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
+		\,
+		\left( c_0 - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i} \right) 
+	}, \\
+	\nonumber
+	\err_{\full} & = t_{n-1,0.995} \hsigma_{\textup{full}}, \\
+	\nonumber
+	\err_{\textup{GCV}} & =
+	\frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1} 
+	\left( c_0 - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i} \right) 
+	\right\}^{1/2}.
+	\end{align}
+	Under the further assumption \eqref{addAssump}, it follows that 
+	\begin{equation}
+	\label{muhatGCV-FB-MLE-Simple}
+	\hmu_\MLE  = \hmu_{\full} = \hmu_{\GCV} =
+	\frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
+	\end{equation}
+	and so $\hmu$ is simply the sample mean.  Also, under assumption \eqref{addAssump}, the credible interval half-widths simplify to
+	\begin{subequations}
+		\label{errSimple}
+		\begin{align}
+		\label{eq:errMLEAllAsump}
+		\err_\MLE  &
+		=
+		\frac{2.58}{n}\sqrt{
+			\sum_{i=2}^{n} \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
+			\,
+			\left( 1 -  \frac{n}{\lambda_1} \right) 
+		}, \\
+		\label{FJH:eq:errFullSimple}
+		\err_{\textup{full}}
+		&=
+		t_{n-1,0.995}
+		\sqrt{\frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  \left(\frac{\lambda_1}{n}  - 1  \right)}, \\
+		\label{errGCVSimple}
+		\err_{\textup{GCV}} & =
+		\frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1} 
+		\left( 1 -  \frac{n}{\lambda_1} \right)  
+		\right\}^{1/2}. 
+		\end{align}
+	\end{subequations}
+	In the formulas for the credible interval half-widths and $\vlambda$ depends on $\vtheta$, and  $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
+\end{theorem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Empirical Bayes: Gradient of the objective function using fast Bayesian transform} \label{deriv_obj_func_MLE} 
+We refer back to Section~\ref{grad_descent_MLE}, where we discuss about using gradient descent for hyperparameter search but the computational cost is of $\Order(N_{\opt} n^3)$. Here we develop a techniques to speed up the computation.
+If $\mV$ does not depend on $\vtheta$ then one can fast compute the derivative of Gram matrix $\mC$. Starting from the definition \eqref{eqn:ftk_factor} and taking derivative w.r.t. $\theta_\ell$, 
+\begin{align}
+\nonumber
+\displaystyle \frac{\partial \mC}{\partial \theta_\ell} 
+& = \frac 1n \mV \frac{\partial {\mLambda}}{\partial \theta_\ell} \mV^H
+= \frac 1n \mV \bar{\mLambda}_{(\ell)} \mV^H,
+\\
+\nonumber
+& \text{where} \quad \bar{\mLambda}_{(\ell)} = \diag(\bar{\vlambda}_{(\ell)}), \quad \text{and}
+\\
+\label{eqn:deriv_eigenval_gram_matrix}
+&  \quad \bar{\vlambda}_{(\ell)} = \frac{\partial \vlambda}{\partial \theta_\ell} = \left( \frac{\partial \lambda_i}{\partial \theta_\ell} \right)_{i=1}^n 
+= \left( \frac{\partial }{\partial \theta_\ell} \mV^H {\vC_1} \right)
+= \mV^H \left( \frac{\partial }{\partial \theta_\ell} {C_\vtheta(\vx_1,\vx_i)} \right)_{i=1}^n,
+\end{align}
+where we used the fast Bayesian transform property $\vlambda 
+= \mV^H \vC_1$. % \eqref{eqn:fast_transform_to_eigvalues}.
+We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to denote the derivative of the eigenvalue ${\vlambda}_{(\ell)}$,  where $\bar{\vC}_{1(\ell)}$ denotes the first row of the gram matrix after taking the derivative in the $\ell$th variable, i.e.
+\begin{align*}
+\bar{\vC}_{1{(\ell)}} = \left(\frac{\partial }{\partial{\theta}_\ell} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
+\end{align*}
+The goal is to compute the derivative of the objective function faster. First, let's rewrite the objective function from \eqref{eqn_MLE_loss_func_optimized_2} in two parts,
+\begin{align*}
+\mathcal{L}_{\MLE}(\vtheta | \vy) &= 
+\underbrace{\frac{1}{n}  \log(\det\, \mC)}_{\mathcal{L}_{\abs{\mC}}} + \underbrace{\log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)}_{\mathcal{L}_{\vy}},
+\\ &=: \mathcal{L}_{\abs{\mC}} + \mathcal{L}_{\vy}.
+\end{align*}
+Now, take the derivative:
+\begin{align*}
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy)
+&=  \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\abs{\mC}} + \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\vy} \;.
+\end{align*}
+Now we tackle the individual terms,
+\begin{align*}
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\abs{\mC}} &= \frac{\partial}{\partial \theta_\ell}  \frac{1}{n} \log(\det\, \mC) 
+\\ & = \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_\ell} \right)}
+= \frac{1}{n}
+\trace{\left( \mV {\mLambda}^{-1} \mV^H
+	\frac 1n \mV \overline{\mLambda}_{(\ell)} \mV^H
+	\right)}
+\\
+& = \frac{1}{n}
+\trace{\left(
+	\mV {\mLambda}^{-1}  \overline{\mLambda}_{(\ell)} \mV^H
+	\right)}, \quad \text{where we used } \; \mV^H \mV = n,
+\\
+& =\frac{1}{n}
+\trace{\left(
+	\mV \;
+	\diag\left( \frac{\overline{\lambda}_{i(\ell)}}{\lambda_i} \right)_{i=1}^n \mV^H
+	\right)}
+= \frac{1}{n} \sum_{i=1}^{n} \frac{\overline{\lambda}_{i(\ell)}}{\lambda_i},
+\end{align*}
+where we used the fact from \cite{Hig08},
+\begin{align*}
+\log(\det\, \mC)  = \trace{ (\log( \mC)) }.
+\end{align*}
+Part of the $\mathcal{L}_{\vy}$ was already simplified using the fast Bayesian transform,
+\begin{align*}
+{(\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone)} = \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}.
+\end{align*}
+Using the above result,
+\begin{align*}
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\vy} 
+&= \frac{\partial}{\partial \vtheta_\ell} \log\left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)
+\\ 
+&= \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}\right)^{-1}
+\;
+\frac{\partial}{\partial \vtheta_\ell} \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)
+\\ &= \left(
+\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}
+\left( -\frac{\partial \lambda_i}{\partial \vtheta_\ell} \right)
+\\ &= -\left(
+\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} 
+\left( \sum_{i=2}^n \abs{\widetilde{y}_i}^2 \frac{ \bar{ \lambda}_{i(\ell)} }{\lambda_i^2}
+\right).
+\end{align*}
+Finally, using the above results,
+\begin{align}
+\label{eqn:deriv_obj_func_MLE}
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy)
+&=  \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
+- \left({ \sum_{i=2}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
+\left( {\sum_{i=2}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1},
+\end{align}
+where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of $\mC$ in the $\ell$th variable. Please recollect the gradient descent proposed in \eqref{eqn:deep_descent} can be computed faster in $\Order(n \log n)$ using the result \eqref{eqn:deriv_obj_func_MLE}. A technique to compute this faster is discussed in Section \ref{sec:product_kernel}. 
+
+
+
+
+
+
+\iffalse
+If $m=0$ assumption can be made,
+\begin{align*}
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy) 
+&=  \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
+- \left({ \sum_{i=1}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
+\left( {\sum_{i=1}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1}.
+\end{align*}
+\fi 
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+\subsection{Generalized Cross-Validation: Gradient of the objective function using fast Bayesian transform}
+% \subsection{Gradient of the objective function}
+
+Using the results obtained from the Section \ref{deriv_obj_func_MLE} with empirical Bayes, one can reduce the computational cost of the derivative of the objective function in \eqref{thetaGCV},
+\begin{align*}
+\mathcal{L}_\GCV(\vtheta | \vy)
+&= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
+\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right).
+\end{align*}
+Using the similar techniques from \secref{deriv_obj_func_MLE}, the derivative of the objective function w.r.t $\theta_\ell$:
+\begin{align*}
+& \frac{\partial}{\partial \theta_\ell}  \mathcal{L}_\GCV(\vtheta | \vy)
+\\
+&= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+\frac{\partial}{\partial \theta_\ell} \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)
+-2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+\frac{\partial}{\partial \theta_\ell} \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
+\\
+&= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^3} (-2) \frac{\partial\lambda_i}{\partial \theta_\ell}  \right)
+\\ & \hspace{4cm} 
+-2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+\left( \sum_{i=1}^n \frac{1}{\lambda_i^2} (-1)\frac{\partial \lambda_i}{\partial \theta_\ell}  \right)
+\\
+&= -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right)
++ 2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+\left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(\ell)} }{\lambda_i^2}  \right).
+\end{align*}
+Thus,
+\begin{multline}
+\frac{\partial}{\partial \theta_\ell}  \mathcal{L}_\GCV(\vtheta | \vy)
+\label{eqn:deriv_obj_func_full}
+= -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right) \\
++ 2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+\left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(\ell)} }{\lambda_i^2}  \right),
+\end{multline}
+where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the Gram matrix, $\mC$, in the $\ell$th variable. We discuss a technique to compute $\bar{\lambda}_{i(\ell)}$ in the next section below.
+
+
+
+
+
+
+
+
+
+
+\subsection{Product Kernels}
+\label{sec:product_kernel}
+
+In this research, we use product kernels in the demonstrations and numerical implementations. They got nice properties which are helpful to obtain analytical results easily. Product kernels in $d$ dimensions are of the form,
+\begin{align}
+\label{eqn:prod_kernel}
+C_\vtheta(\vt, \vx) = 
+\prod_{\ell=1}^d \biggl[ 1 - \eta_\ell \; \mathfrak{C}(x_\ell,t_\ell) \biggr]
+\end{align}
+% $ C_{\vtheta}(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$
+where $\eta_\ell$ is called shape parameter in the $\ell$th variable for $\ell=1,\cdots,d$, and $\mathfrak{C}$ is chosen such that to ensure $C_{\vtheta}$ is symmetric and positive definite. Our goal is to compute $\bar{\lambda}_{i(\ell)}$ for which the kernel derivative is necessary. The derivative of the product kernels can be obtained easily. Please note that $\vtheta$ denotes all the hyper parameters of the kernel $C$ where $\eta$ is one of them and called the shape parameter.
+
+\subsubsection{Derivative of the product kernel when $\eta_1=\cdots=\eta_d=\eta$}
+\label{sec:deriv_of_kernel}
+It was suggested to use gradient descent to find optimal shape parameter in \secref{grad_descent_MLE}. In this section, we compute the gradient for product kernels. When the $\eta_1=\cdots=\eta_d=\eta$, the derivative of a product kernel  w.r.t. $\eta$ can be obtained as below,
+\begin{align*}
+\frac{\partial}{\partial \eta} C_\vtheta(\vt, \vx) 
+& =
+\frac{\partial}{\partial \eta} 
+\prod_{j=1}^d \biggl[
+1 - \eta \mathfrak{C}(x_j,t_j) \biggr] % \quad  \mathfrak{C}(x,t) := (-1)^{r} B_{2r}( |{x-t}| \bmod 1 ) 
+\\
+& = 
+\sum_{\ell=1}^d  
+\prod_{j=1, j \neq \ell}^d \biggl[
+1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
+\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
+\\
+& =
+\prod_{j=1}^d \biggl[
+1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
+\sum_{\ell=1}^d 
+\frac{
+	\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
+}{
+	1 - \eta \mathfrak{C}(x_\ell,t_\ell) 
+}
+\\
+& =
+C_\vtheta(\vt, \vx) 
+\frac{1}{\eta}
+\sum_{\ell=1}^d 
+\frac{
+	\biggl(1 - \eta \mathfrak{C}({x_\ell,t_\ell})  - 1 \biggr)
+}{
+	1 - \eta \mathfrak{C}(x_\ell,t_\ell) 
+}
+\\
+& =
+C_\vtheta(\vt, \vx) 
+\frac{1}{\eta}
+\sum_{\ell=1}^d 
+\biggl(
+1 - 
+\frac{1
+}{
+	1 - \eta \mathfrak{C}(x_\ell,t_\ell) 
+}
+\biggr)
+\\
+& =
+({d}/{\eta} )
+\underbrace{
+	\left(
+	\prod_{j=1}^d \biggl[
+	1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
+	\right) }_
+{ C_\vtheta(\vt, \vx) }
+\biggl(
+1 - 
+\frac{1}{d} \sum_{\ell=1}^d
+\frac{1}
+{ 1 - \eta \mathfrak{C}(x_\ell,t_\ell) }
+\biggr)
+.
+\end{align*}
+Thus,
+\begin{align*}
+\frac{\partial}{\partial \eta} C_\vtheta(\vt, \vx) = ({d}/{\eta} ) C_\vtheta(\vt, \vx) 
+\biggl(
+1 - 
+\frac{1}{d} \sum_{\ell=1}^d
+\frac{1}
+{ 1 - \eta \mathfrak{C}(x_\ell,t_\ell) }
+\biggr).
+\end{align*}
+
+
+
+\subsubsection{When $\eta_\ell$ is different for each $\ell = 1,\cdots,d$}
+In this case, we will have a vector of length $d$ shape parameters. Derivative of the kernel, $C_\vtheta(\vt, \vx)$ \eqref{eqn:prod_kernel}, with respect to $\eta_\ell$ is,
+\begin{align*}
+\frac{\partial}{\partial \eta_\ell} C_\vtheta(\vt, \vx) 
+& =
+\frac{\partial}{\partial \eta_\ell} 
+\prod_{j=1}^d \biggl[
+1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr], \quad \text{where} \quad \ell = 1, \cdots, d
+\\
+& = 
+\prod_{j=1, j \neq \ell}^d \biggl[
+1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr]
+\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
+\\
+& =
+\prod_{j=1}^d \biggl[
+1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr]
+\frac{
+	\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
+}{
+	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) 
+}
+\\
+& =
+C_\vtheta(\vt, \vx) 
+\frac{1}{\eta_\ell}
+\frac{
+	\biggl(1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell)  - 1 \biggr)
+}{
+	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) 
+}
+\\
+& =
+C_\vtheta(\vt, \vx) 
+\frac{1}{\eta_\ell}
+\biggl(
+1 - 
+\frac{1
+}{
+	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) 
+}
+\biggr)
+\\
+& =
+\frac{1}{\eta_\ell} 
+\underbrace{
+	\left(
+	\prod_{j=1}^d \biggl[
+	1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
+	\right) }_
+{ C_\vtheta(\vt, \vx) }
+\biggl(
+1 - 
+\frac{1}
+{ 1 - \eta_\ell \mathfrak{C}(x_\ell, t_\ell) }
+\biggr) 
+.
+\end{align*}
+Thus, 
+\begin{align*}
+\frac{\partial}{\partial \eta_\ell} C_\vtheta(\vt, \vx) = \frac{1}{\eta_\ell} 
+{ C_\vtheta(\vt, \vx) }
+\biggl(
+1 - 
+\frac{1}
+{ 1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) }
+\biggr).
+\end{align*}
+Please note that the above derivatives do not depend on $\mathfrak{C}(x,t)$ and most importantly these computations are applicable to any product kernel of the form \eqref{eqn:prod_kernel}.
+%$ C_\vtheta(\vt, \vx) = \prod_{j=1}^d [ 1 - \eta_j \mathfrak{C}(x_j,t_j) ]$.
+The $\bar{\lambda}_{i(\ell)}$ can be computed now using \eqref{eqn:deriv_eigenval_gram_matrix} with the computed kernel derivative, $\frac{\partial}{\partial \eta_\ell} C_\vtheta$.
+
+
+
+
+
+\subsection{Shape parameter search using steepest descent}
+Using the obtained derivative of the eigenvalues, $\bar{\lambda}_{i(\ell)}$, one can easily compute the gradient of the objective function \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full}. This can be further used to implement the steepest descent search as introduced in \secref{grad_descent_MLE} 
+%\eqref{Dong2017a}
+\begin{align*}
+\eta^{(j+1)}_\ell = \eta^{(j)}_\ell - \nu \frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots,  \quad \ell = 1, \cdots, d
+\end{align*}
+where $\nu$ is the step size for the gradient descent, $j$ is the iteration index, and $\frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy)$ is either \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full} depending on the choice of the hyperparameter search method. The parameter $\eta_\ell$ is usually searched in the whole $\reals$ by using the simple domain transformation as explained in Section~\ref{sec:kernel_param_search}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
  
 
 \section{Sobol' Nets and Walsh Kernels}
@@ -764,7 +1458,7 @@ The results of this chapter can be summarized as a theorem,
 
 
 \begin{theorem}
-	Any symmetric, positive definite, digital shift-invariant covariance kernel of the form \eqref{eqn:walsh_kernel} scaled to satisfy \eqref{addAssump}, when matched with digital net data-sites, satisfies assumptions \eqref{fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} (FWHT) can be used to expedite the estimates of $\vtheta$ in \eqref{thetaSimple} and the credible interval widths \eqref{fastStoppingCriterions} in $\Order(n \log n)$ operations. The cubature, $\hmu$, is just the sample mean.
+	Any symmetric, positive definite, digital shift-invariant covariance kernel of the form \eqref{eqn:walsh_kernel} scaled to satisfy \eqref{addAssump}, when matched with digital net data-sites, satisfies assumptions \eqref{fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} (FWHT) can be used to expedite the estimates of $\vtheta$ in \eqref{fastTheta} and the credible interval widths \eqref{errSimple} in $\Order(n \log n)$ operations. The cubature, $\hmu$, is just the sample mean.
 \end{theorem}
 We introduce the necessary concepts and prove this theorem in the remaining of this chapter.
 
@@ -897,10 +1591,10 @@ Sobol' nets \cite{Sob76} are a special case of $(t,m, d)$-nets when base $b=2$.
 An example of $64$ Sobol' nets in $d=2$ is given in \figref{fig:sobol-fig}.  The even coverage of the unit cube is ensured by a well chosen generating matrix.  The choice of generating vector is typically done offline by computer search.  See \cite{KuoNuyens2016} and \cite{NuySoft} for more on generating matrices. We use randomly scrambled and digitally shifted Sobol' sequences in this research \cite{HonHic00a}. 
 
 \begin{figure}[htp]
-	\label{fig:sobol-fig}
 	\centering
 	\includegraphics[width=0.8\linewidth]{figures/SSobolPoints}
 	\caption{Example of a scrambled Sobol' node set  in $d=2$.  This plot can be reproduced using \code{PlotPoints.m}. \label{sobolfig} }
+	\label{fig:sobol-fig}
 \end{figure}
 
 
@@ -909,7 +1603,7 @@ An example of $64$ Sobol' nets in $d=2$ is given in \figref{fig:sobol-fig}.  The
 Walsh kernels are product kernels based on the Walsh functions. We introduce the necessary concepts in this section.
 
 \subsection{Walsh functions}
-Like the Fourier transform used with lattice points (Section~\ref{sec:shift_invar_kern}), the Walsh-Hadamard transform, which we will simply call Walsh transform, is used for the digital nets. The Walsh transform is defined using Walsh functions. Recall $\naturals_0 := \lbrace 0,1,2,\cdots \rbrace$.
+Like the Fourier transform used with lattice points (\cite{JagHic19a}), the Walsh-Hadamard transform, which we will simply call Walsh transform, is used for the digital nets. The Walsh transform is defined using Walsh functions. Recall $\naturals_0 := \lbrace 0,1,2,\cdots \rbrace$.
 The one-dimensional Walsh functions in base $b$ are defined as
 \begin{align}
 \label{eqn:walsh_func}
