@@ -825,7 +825,7 @@ The previous section presents three credible intervals, \eqref{eqn_prob_CI_MLE},
 
 Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size.  The steps are detailed in Algorithm~\ref{algorithm1}.
 
-We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability.  The example in the next section and the examples in Chapter~\ref{sec:NumExp} support that expectation. We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
+We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability.  The example in the next section and the examples in Section~\ref{sec:NumExp} support that expectation. We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
 
 \algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen\ }
 \algnewcommand{\IElse}{\unskip\ \algorithmicelse\ }
@@ -2269,6 +2269,287 @@ e^{t_{d+1, \textup{opt}}} \\
 \end{pmatrix}.
 \end{align*}
 Similarly one can map the kernel order $q \in (0,1)$ \secref{sec:exp_decay_kernel}, and $\veta$ in to a multivariate hyperparameter search.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Diagnostics for the Gaussian Process Assumption}
+
+The starting point for our Bayesian cubature is the assumption that the integrand arises from a Gaussian process. This means that the function data, $\vf$, shall satisfy a multivariate Gaussian distribution, as in \eqref{eqn:fGaussDist}. We propose a transform, $\vZ = \frac 1n \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone)$, to the given function data $\vf$ to verify the assumption.  We can verify that the transformed data, $\vZ$, has zero mean and is also uncorrelated because
+\begin{align*}
+\Ex\left[\vZ \right] &= 
+\frac 1n \mV \mLambda^{-\frac 12} \mV^H(\Ex\left[\vf\right] - m \vone) 
+\\
+& = 0
+\end{align*}
+\begin{align*}
+\cov (\vZ) 
+&= \frac {1}{n^2} \Ex\left[  
+\mV \mLambda^{-\frac 12} \mV^H (\vf - m \vone)
+(\vf - m \vone)^T \mV \mLambda^{-\frac 12} \mV^H
+\right]
+\\
+&=
+\frac {1}{n^2} \mV \mLambda^{-\frac 12} \mV^H 
+\Ex \biggl[ (\vf - m \vone)
+(\vf - m \vone)^T \biggr] \mV \mLambda^{-\frac 12} \mV^H
+\\ % Note : \mV^h \mV = n
+&=
+\frac{1}{n^2} \mV \mLambda^{-\frac 12} \mV^H 
+\frac 1n \mV \mLambda \mV^H \mV \mLambda^{-\frac 12} \mV^H
+\\
+&=
+\frac{1}{n^3} \mV \mLambda^{-\frac 12} (n) \mLambda (n) \mLambda^{-\frac 12} \mV^H
+= \mathsf{I}
+\end{align*}
+Thus, the elements of $\vZ$ are IID standard Gaussian random variables.  
+In practice, using the estimated $m_\MLE$ further simplifies, 
+\begin{align*}
+\vZ &= \frac 1n \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone) \\
+&= \frac 1n \mV \mLambda^{-\frac 12} (\mV^H \vf - \frac{\tilde{f}_1}{n} \mV^H \vone) 
+\\
+&= \frac 1n \mV \mLambda^{-\frac 12} \left(\mV^H \vf - \tilde{f}_1 \begin{pmatrix}1, 0, \hdots, 0 \end{pmatrix}^T \right) 
+\end{align*}
+
+
+To verify this hypothesis, we build a toy function using the known Bernoulli polynomial series,
+\begin{align}
+\label{toy_func}
+f_{\theta, r}(x) = \hat{f}_0 + \sqrt{\theta} \sum_{k > 0}
+\frac{f_{c,k} \cos(2\pi k x) + f_{s,k} \sin(2\pi k x)}{k^r}
+\end{align}
+where $f_0 \sim \text{IID} \calN(c, b^2) $, $f_{c,k}, f_{s,k} \sim \text{IID} \calN(0, a^2)$ and $a, b, c$ are constants. The series in \eqref{toy_func} is truncated to an arbitrarily chosen length $N$. It has zero mean and covariance
+\begin{align*}
+\cov(f) &= \Ex[f_{\theta, r}(x) f_{\theta, r}(t)] \\
+&= \cov(f_0) + \theta \sum_{k=1}^N 
+\left(	
+\Ex(f_{c,k}^2) \frac{\cos(2\pi k x) \cos(2\pi k t)}{k^{2r}} +
+\Ex(f_{s,k}^2) \frac{\sin(2\pi k x) \sin(2\pi k t)}{k^{2r}} \right) \\
+&= b^2 + a^2 \theta \sum_{k=1}^N 	
+\frac{\cos(2\pi k (x - t)) }{k^{2r}} 
+\end{align*}
+
+
+
+Figures \ref{fig:keister-normplot} and \ref{fig:mvn-normplot} are normal probability plots of the $Z_i$ using empirical Bayes estimates of $m$ and $\vtheta$. \textbf{more goes here}.
+
+
+
+
+\iftrue
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.9\linewidth]{"figures/Keister Normplot d_2 bernoulli_2 Period_C1sin n_32768"}
+	\caption{Normal plot : Keister function with arbMean assumption}
+	\label{fig:keister-normplot}
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.9\linewidth]{"figures/MVN Normplot d_2 bernoulli_2 Period_C1sin n_32768"}
+	\caption{Normal plot : MVN with arbMean assumption}
+	\label{fig:mvn-normplot}
+\end{figure}
+\fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Posterior} We compute posterior distribution to verify the Gaussian assumption.
+
+\subsubsection{Non-informative prior}
+Assume the prior is of the form $ \rho_{m,s^2} (\xi, \lambda) = \frac{1}{\lambda} $ 
+
+\begin{align*}
+\rho_{f(\vx)}(\vy) &=\int_{0}^\infty \int_{-\infty}^\infty \rho_{f} (\vy | m=\xi, s^2=\lambda) 
+\rho_{m,s^2} (\xi, \lambda) \dif{\xi} \dif{\lambda} 
+\\
+&= \int_{0}^\infty \int_{-\infty}^\infty \frac{1}{(\sqrt{2 \pi})^n \sqrt{\det(\lambda \mC)}} 
+\exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right) \frac{1}{\lambda} \dif{\xi} \dif{\lambda}
+\\
+& \propto \frac{1}{(\sqrt{2 \pi})^n} \int_{0}^\infty \frac{1}{\lambda ^{\frac n2} \lambda}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} 
+\underbrace{(\vone^T \mCInv \vone)}_{D}
+\left[
+\xi^2 -2 \xi \underbrace{\frac{\vone^T \mCInv \vy }{\vone^T \mCInv \vone}}_{A} + \underbrace{\frac{\vy^T \mCInv \vy }{\vone^T \mCInv \vone}}_{B} 
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2 - A^2 + B
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2
+\right]
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac{(n+1)}{2}}}
+\frac{1}{\sqrt{2\pi\lambda/D}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi-A
+\right]^2
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac{(n+1)}{2}}}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto (D[B-A^2])^{-\frac{(n-1)}{2}}
+\\
+& \propto \left(\vy^T\mCInv\vy - \frac{(\vone^T\mCInv\vy)^2}{\vone^T\mCInv\vone} \right)^{-\frac{(n-1)}{2}}
+\\
+&=  \left(\vy^T \left[\mCInv - \frac{(\mCInv\vone \vone^T \mCInv)}{\vone^T\mCInv\vone} \right]\vy \right)^{-\frac{(n-1)}{2}}
+\\
+&=  \biggl((\vy-m_\MLE)^T \mCInv (\vy-m_\MLE) \biggr)^{-\frac{(n-1)}{2}}, 
+\quad \text{where} \quad
+m_\MLE=\frac{(\vone^T \mCInv \vy)}{\vone^T\mCInv\vone}
+\end{align*}
+
+\subsubsection{TODO: How to interpret as Student's $t$-distribution?}
+
+
+
+
+\subsubsection{Generic prior}
+Assume the prior is of the form $ \rho_{m,s^2} (\xi, \lambda) = g(\lambda) $ 
+
+\begin{align*}
+\rho_{f(\vx)}(\vy) &=\int_{0}^\infty \int_{-\infty}^\infty \rho_{f} (\vy | m=\xi, s^2=\lambda) 
+\rho_{m,s^2} (\xi, \lambda) \dif{\xi} \dif{\lambda} 
+\\
+&= \int_{0}^\infty \int_{-\infty}^\infty \frac{1}{(\sqrt{2 \pi})^n \sqrt{\det(\lambda \mC)}} 
+\exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right) g(\lambda) \dif{\xi} \dif{\lambda}
+\\
+& \propto \frac{1}{(\sqrt{2 \pi})^n} \int_{0}^\infty \frac{g(\lambda)}{\lambda ^{\frac n2} } 
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2 }}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} 
+\underbrace{(\vone^T \mCInv \vone)}_{D}
+\left[
+\xi^2 -2 \xi \underbrace{\frac{\vone^T \mCInv \vy }{\vone^T \mCInv \vone}}_{A} + \underbrace{\frac{\vy^T \mCInv \vy }{\vone^T \mCInv \vone}}_{B} 
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2 - A^2 + B
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2
+\right]
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
+\frac{1}{\sqrt{2\pi\lambda/D}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi-A
+\right]^2
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\end{align*}
+This can be interpreted as Laplace transform of $g(\lambda)$.
+Let $\eta = \frac{1}{2} D [B - A^2] $ and $\lambda = \frac{1}{w}, \dif{\lambda} = -w^{-2} \dif{w}$ 
+\begin{align*}
+\rho_{f(\vx)}(\vy) 
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda} 
+\\
+&= \int_{0}^\infty \frac{g(1/w)  }{w^{-\frac{(n-1)}{2}}}
+\exp \left(  - w \eta \right)
+(-w^{-2})\dif{w}
+\\
+&= \int_\infty^0 -g(1/w) w^{\frac{(n-1)}{2} - 2}
+\exp \left(  - w \eta \right)
+\dif{w}
+\\
+&= \int_{0}^\infty g(1/w) w^{\frac{(n-5)}{2}}
+\exp \left(  - w \eta \right)
+\dif{w}
+\\
+& = \mathcal{LT}\{ g(1/\eta) \}^{(\frac{n-5}{2})'}
+\end{align*}
+where $\mathcal{LT}(.)$ denotes the Laplace transform and $(\frac{n-5}2)'$ indicates the $(\frac{n-5}2)$th derivative taken after the transform.
+Here we used frequency domain derivative property of the Laplace transform. 
+$\rho_{f(\vx)}(\vy)$  is proportional to $(\frac{n-5}2)$th derivative of the Laplace transform of $g(1/\eta)$.
+
+\begin{align*}
+D [B - A^2] &= \left(\vy^T\mCInv\vy - \frac{(\vone^T\mCInv\vy)^2}{\vone^T\mCInv\vone} \right)
+\\
+&= \biggl((\vy-m_\MLE)^T \mCInv (\vy-m_\MLE) \biggr), 
+\quad \text{where} \quad
+m_\MLE=\frac{(\vone^T \mCInv \vy)}{\vone^T\mCInv\vone}
+\end{align*}
+\subsubsection{TODO: How to integrate further?}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
