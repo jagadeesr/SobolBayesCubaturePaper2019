@@ -277,11 +277,19 @@
 \maketitle
 
 \begin{abstract}
-	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern, but one can automatically determine the
-	sample size, $n$, given a reasonable, fixed sampling pattern. We take this approach here using a Bayesian perspective.  We postulate that the integrand is an instance of a Gaussian stochastic process parameterized by a constant mean and a covariance kernel defined by a scale parameter times a parameterized function specifying how the integrand values at two different points in the domain are related.
-	These hyperparameters are inferred or integrated out using integrand values via one of three techniques:  empirical Bayes, full Bayes, or generalized cross-validation. The sample size, $n$, is increased until the half-width of the credible interval for the Bayesian posterior mean is no greater than the error tolerance. 
+	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern, but one can automatically determine the sample size, $n$, given a reasonable, fixed sampling pattern. 
+	We take this approach here using a Bayesian perspective. 
+	In \cite{JagHic19a}, faster Bayesian cubature was introduced and demonstrated using rank-1 lattice points. However it requires the integrands to be periodic, here we propose an extension to overcome that limitation using digital nets and digitally shift invariant kernels.
+	As the Gaussian assumption is fundamental to our work, We also validate the  assumption using a simple diagnostics. 
+	Another constraint imposed in \cite{JagHic19a} was the necessity to have kernel order integer valued, here we provide an alternative to have the kernel order continuous valued.
+	We also demonstrate the hyperparameters can be searched using gradient descent instead of heuristic search.
 	
-	The process outlined above typically requires a computational cost of $O(N_{\text{opt}}n^3)$, where $N_{\text{opt}}$ is the number of optimization steps required to identify the hyperparameters. Our innovation is to pair low discrepancy nodes with matching covariance kernels to lower the  computational cost to $O(N_{\text{opt}} n \log n)$.   This approach is demonstrated explicitly with rank-1 lattice sequences and shift-invariant kernels.  Our algorithm is  implemented in the Guaranteed Automatic Integration Library (GAIL).
+	% We postulate that the integrand is an instance of a Gaussian stochastic process parameterized by a constant mean and a covariance kernel defined by a scale parameter times a parameterized function specifying how the integrand values at two different points in the domain are related.
+	% These hyperparameters are inferred or integrated out using integrand values via one of three techniques:  empirical Bayes, full Bayes, or generalized cross-validation. The sample size, $n$, is increased until the half-width of the credible interval for the Bayesian posterior mean is no greater than the error tolerance. 
+	
+	% The process outlined above typically requires a computational cost of $O(N_{\text{opt}}n^3)$, where $N_{\text{opt}}$ is the number of optimization steps required to identify the hyperparameters. Our innovation is to pair low discrepancy nodes with matching covariance kernels to lower the  computational cost to $O(N_{\text{opt}} n \log n)$.   This approach is demonstrated explicitly with rank-1 lattice sequences and shift-invariant kernels.  
+	
+	Our algorithm is  implemented in the Guaranteed Automatic Integration Library (GAIL).
 	
 	
 	\keywords{Bayesian cubature \and Fast automatic cubature \and GAIL \and Probabilistic numeric methods }
@@ -465,6 +473,8 @@ For any deterministic sampling scheme with distinct nodes, $\{\vx_i\}_{i=1}^n$, 
 	\end{align}
 \end{subequations}
 Here, $c_0$ and $\vc$ depend implicitly on $\vtheta$.  We assume the covariance function $C$ is simple enough that the integrals in these definitions can be computed analytically.
+
+\iffalse
 We need the following lemma to derive the posterior error of our cubature. 
 
 \begin{lemma} \cite[(A.6), (A.11--13)]{RasWil06a} \label{thrm:condDist} If $\vY = (\vY_1, \vY_2)^T \sim \calN (\vm,\mC)$, where $\vY_1$ and $\vY_2$ are random vectors of arbitrary length, and 
@@ -489,8 +499,11 @@ We need the following lemma to derive the posterior error of our cubature.
 	\mA_{22} = \mC_{22}^{-1} + \mC_{22}^{-1} \mC_{21} \mA_{11} \mC_{21}^T \mC_{22}^{-1}.
 	\end{gather*}
 \end{lemma}
+\fi
 
-It follows from Lemma \ref{thrm:condDist} that the \emph{conditional} distribution of the integral given observed function values, $\vf = \vy$ is also Gaussian:
+It follows from Lemma 1 
+% \ref{thrm:condDist} 
+in \cite{JagHic19a}, that the \emph{conditional} distribution of the integral given observed function values, $\vf = \vy$ is also Gaussian:
 \begin{align} \label{eqn:condInteg}
 \mu | (\vf = \vy) \sim \calN \bigl(m (1 - \vc^T \mC^{-1} \vone)  + \vc^T \mC^{-1} \vy, \;\;
 s^2(c_0  -\vc ^T \mC^{-1} \vc) \bigr).
@@ -553,7 +566,8 @@ Note that $\err_{\CI}$ shows no explicit dependence on the integrand values, eve
 % This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  
 After inferring the hyperparameters, $\err_{\CI}$ \emph{does reflect the size} of the integrand values. 
 %The following next few sections describe three approaches to hyperparameter estimation. 
-Three approaches for hyperparameter estimation were described in \cite{JagHic19a} but no explicit parameter search was discussed. Here we provide one such technique using steepest descent. 
+Three approaches for hyperparameter estimation were described in \cite{JagHic19a}. 
+% Theorem \label{thm:param} summarizes those approaches for quick reference.  
 
 
 
@@ -573,7 +587,7 @@ Three approaches for hyperparameter estimation were described in \cite{JagHic19a
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The methods developed for hyperparameter estimation from the previous sections are summarized as a theorem below:
+The methods developed for hyperparameter estimation from \cite{JagHic19a} are summarized in the theorem below:
 \begin{theorem} \label{thm:param} There are at least three approaches to estimating or integrating out the hyperparameters defining the Gaussian process from which the integrand is drawn: empirical Bayes, full Bayes, and generalized cross-validation.  %\linebreak[4]
 	Under these three approaches, we have the following:
 	\begin{align}
@@ -639,7 +653,7 @@ In the theorem above, note that if the original covariance kernel, $C$, is repla
 % Looking back over the results of Sections \ref{sec:MLE}--\ref{sec:GCV}, it is noted that if the original covariance function, $C$, is replaced by $b C$ for some positive constant $b$, the cubature, $\hmu$, the estimates of $\vtheta$, and the credible interval widths, $\err_{\MLE}, \err_{\full}, \err_{\GCV}$, all remain unchanged.  The estimates of $s^2$ are multiplied by $b^{-1}$, as would be expected.
 
 
-
+But \cite{JagHic19a} did not provide any explicit parameter search techniques. We provide one such technique using steepest descent in the following. 
 
 
 
@@ -1109,17 +1123,17 @@ Now, take the derivative:
 Now we tackle the individual terms,
 \begin{align*}
 \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\abs{\mC}} &= \frac{\partial}{\partial \theta_\ell}  \frac{1}{n} \log(\det\, \mC) 
-\\ & = \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_\ell} \right)}
-= \frac{1}{n}
-\trace{\left( \mV {\mLambda}^{-1} \mV^H
-	\frac 1n \mV \overline{\mLambda}_{(\ell)} \mV^H
-	\right)}
-\\
-& = \frac{1}{n}
-\trace{\left(
-	\mV {\mLambda}^{-1}  \overline{\mLambda}_{(\ell)} \mV^H
-	\right)}, \quad \text{where we used } \; \mV^H \mV = n,
-\\
+% \\ & = \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_\ell} \right)}
+% = \frac{1}{n}
+% \trace{\left( \mV {\mLambda}^{-1} \mV^H
+% 	\frac 1n \mV \overline{\mLambda}_{(\ell)} \mV^H
+% 	\right)}
+% \\
+% & = \frac{1}{n}
+% \trace{\left(
+% 	\mV {\mLambda}^{-1}  \overline{\mLambda}_{(\ell)} \mV^H
+% 	\right)}, \quad \text{where we used } \; \mV^H \mV = n,
+% \\
 & =\frac{1}{n}
 \trace{\left(
 	\mV \;
@@ -1139,14 +1153,15 @@ Using the above result,
 \begin{align*}
 \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\vy} 
 &= \frac{\partial}{\partial \vtheta_\ell} \log\left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)
-\\ 
-&= \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}\right)^{-1}
-\;
-\frac{\partial}{\partial \vtheta_\ell} \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)
-\\ &= \left(
-\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}
-\left( -\frac{\partial \lambda_i}{\partial \vtheta_\ell} \right)
-\\ &= -\left(
+% \\ 
+% &= \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}\right)^{-1}
+% \;
+% \frac{\partial}{\partial \vtheta_\ell} \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)
+% \\ &= \left(
+% \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}
+% \left( -\frac{\partial \lambda_i}{\partial \vtheta_\ell} \right)
+% \\ 
+&= -\left(
 \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} 
 \left( \sum_{i=2}^n \abs{\widetilde{y}_i}^2 \frac{ \bar{ \lambda}_{i(\ell)} }{\lambda_i^2}
 \right).
@@ -1209,12 +1224,12 @@ Using the similar techniques from \secref{deriv_obj_func_MLE}, the derivative of
 -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
 \frac{\partial}{\partial \theta_\ell} \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
 \\
-&= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^3} (-2) \frac{\partial\lambda_i}{\partial \theta_\ell}  \right)
-\\ & \hspace{4cm} 
--2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-\left( \sum_{i=1}^n \frac{1}{\lambda_i^2} (-1)\frac{\partial \lambda_i}{\partial \theta_\ell}  \right)
-\\
+% &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+% \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^3} (-2) \frac{\partial\lambda_i}{\partial \theta_\ell}  \right)
+% \\ & \hspace{4cm} 
+% -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+% \left( \sum_{i=1}^n \frac{1}{\lambda_i^2} (-1)\frac{\partial \lambda_i}{\partial  \theta_\ell}  \right)
+% \\
 &= -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right)
 + 2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
