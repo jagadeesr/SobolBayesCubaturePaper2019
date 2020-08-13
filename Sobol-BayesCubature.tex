@@ -574,7 +574,7 @@ As shown in the numerical experiments, the cost increases quickly as the $n$ req
 
 
 
-\section{Fast Bayesian Transform Kernel}
+\subsection{Fast Bayesian Transform Kernel}
 \label{sec:fast_BC}
 
 As introduced in \cite{JagHic19a}, fast Bayesian transform kernel is defined with the following assumptions:
@@ -628,7 +628,7 @@ which implies that $c_{0} = 1$ \eqref{eqn:fGaussDist_c0} and $\vc_{} = \vone$ 	\
 
 
 
-\section{Hyperparameter search}
+\subsection{Hyperparameter search}
 \JRNote{
 	This section explains hyperparameter estimation using gradient descent}
 
@@ -666,9 +666,11 @@ the computation cost can be significantly reduced.
 		s^2_\MLE 
 		& =
 		\frac{1}{n^2} 
-		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}, \text{\JRNote{can we remove this?}} \\
+		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i},  \\
+		\nonumber 
+		s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}, \\
 		\nonumber
-		\widehat{\sigma}^2_{\textup{full}} &= \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  \left(\frac{\lambda_1}{n}  - 1  \right), \\
+		\widehat{\sigma}^2_{\textup{full}} &= \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  \left(\frac{\lambda_1}{n}  - 1  \right), 
 		% \widehat{\sigma}^2_{\textup{full}}
 		% & =
 		% \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
@@ -676,14 +678,12 @@ the computation cost can be significantly reduced.
 		% \nonumber
 		% & \qquad \times
 		% \left[\frac{\lambda_1}{n}{\left(1 - \frac{\widetilde{c}_1}{\lambda_1}\right)^2} + \left(c_0  - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i}\right) \right], \\
-		\nonumber 
-		s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1},
 		\end{align}
 	\end{subequations}
 	\begin{subequations}
 		\label{fastTheta}
 		\begin{align}
-		\label{eqn_MLE_loss_func_optimized_2}
+		\label{fastThetaMLE}
 		\vtheta_\MLE
 		&= 
 		\argmin_{\vtheta}
@@ -693,7 +693,7 @@ the computation cost can be significantly reduced.
 		\right) 
 		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{i})
 		\right],\\
-		\label{thetaGCV} 
+		\label{fastThetaGCV} 
 		\vtheta_{\GCV} 
 		&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}^2} 
 		\right)  
@@ -731,9 +731,10 @@ the computation cost can be significantly reduced.
 	\frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
 	\end{equation}
 	and so $\hmu$ is simply the sample mean.  
-	Also the credible interval half-widths are
+	Also the credible interval half-widths, $\err_{\CI}$, are given by
 	\begin{subequations}
 		\label{errSimple}
+		\iffalse
 		\begin{align}
 		\label{eq:errMLEAllAsump}
 		\err_\MLE  &
@@ -753,6 +754,13 @@ the computation cost can be significantly reduced.
 		\frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1} 
 		\left( 1 -  \frac{n}{\lambda_1} \right)  
 		\right\}^{1/2}. 
+		\end{align}
+		\fi
+		\begin{align}
+		\label{eqn:err_MLEGCV}
+		\err_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{1 - \frac{n}{\lambda_1} }, \qquad \mathsf{x} \in \{\MLE, \GCV\},  \\ 
+		\err_{\textup{full}} 
+		& = t_{n-1,0.995} \hsigma_{\textup{full}} > \err_\MLE. \label{FJH:eq:errFull}
 		\end{align}
 	\end{subequations}
 	
@@ -913,9 +921,9 @@ But \cite{JagHic19a} did not provide any explicit parameter search techniques. W
 
 
 
-\subsection{Gradient descent to find optimal shape parameter}
+\subsubsection{Gradient descent to find optimal shape parameter}
 \label{grad_descent_MLE}
-The equation specifying $\vtheta_\MLE$ as defined in \eqref{eqn_MLE_loss_func_optimized_2} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
+The equation specifying $\vtheta_\MLE$ as defined in \eqref{fastThetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
 % Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
 Since the objective function is known we could compute the gradient.
 Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function for the same purpose by excluding the negative sign, which modifies the problem to become a minimization of
@@ -937,9 +945,9 @@ Taking derivative with respect to $\theta_\ell$, for $\ell=1,\cdots,d$
 \left( {\sum_{i=2}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1}, \\
 & \text{where} \bar{\lambda}_{i(\ell)} = \frac{\partial}{\partial \theta_\ell} {\lambda}_{i(\ell)}
 \end{align}
-where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of $\mC$ in the $\ell$th variable.
-where we used some of the results from \cite{Dong2017a}. 
-This can be used with gradient descent as follows,
+where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of $\mC$ in the $\ell$th variable. 
+Here we used some of the results from \cite{Dong2017a}. A technique to compute $\bar{\lambda}_{i(\ell)}$ faster is discussed in Section \ref{sec:product_kernel}.
+This result can be used with gradient descent as follows,
 \begin{align}
 \label{eqn:deep_descent}
 \theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu_\ell \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
@@ -947,6 +955,38 @@ This can be used with gradient descent as follows,
 where $\nu_\ell$ is the step size for the gradient descent. 
 
 
+Similarly the derivative of the objective function in \eqref{fastThetaGCV} can be obtained:
+\begin{align*}
+\mathcal{L}_\GCV(\vtheta | \vy)
+&= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
+\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right), 
+\end{align*}
+taking the derivative w.r.t $\theta_\ell$,
+\begin{align}
+\nonumber
+& \frac{\partial}{\partial \theta_\ell}  \mathcal{L}_\GCV(\vtheta | \vy)
+\\
+% &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+% \frac{\partial}{\partial \theta_\ell} \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)
+% -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+% \frac{\partial}{\partial \theta_\ell} \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
+% \\
+% &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+% \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^3} (-2) \frac{\partial\lambda_i}{\partial \theta_\ell}  \right)
+% \\ & \hspace{4cm} 
+% -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+% \left( \sum_{i=1}^n \frac{1}{\lambda_i^2} (-1)\frac{\partial \lambda_i}{\partial  \theta_\ell}  \right)
+% \\
+\label{eqn:deriv_obj_func_full}
+&= -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right)
++ 2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+\left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(\ell)} }{\lambda_i^2}  \right).
+\end{align}
+where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the Gram matrix, $\mC$, in the $\ell$th variable. 
+
+
+
 
 
 
@@ -972,18 +1012,18 @@ where $\nu_\ell$ is the step size for the gradient descent.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{Cone of Functions and the Credible interval} % Functions, F must be captial -- Fred
+\subsection{Cone of Functions and the Credible interval} % Functions, F must be captial -- Fred
 \label{sec:cone_of_functions}
 
 %\JRNote{Done: Revise $f_{\NICE}$ using kernel approximation}
 
-In this research we assume that the integrand belongs to a cone of well-behaved functions, $\mathscr{C}$, to make the computations bounded in terms of function data. The concept of cone in general for cubature error analysis can be stated using the error bound definition. 
+In this research, we assume that the integrand belongs to a cone of well-behaved functions, $\mathscr{C}$, to make the computations bounded in terms of function data. The concept of cone in general for cubature error analysis can be stated using the error bound definition. 
 Suppose that 
 \begin{align}
 \label{eqn:cone-homogenity}
 \abs{\mu(f) - \hmu_n(f)} \le \err_{\CI} (f(\vx_1), \cdots, f(\vx_n))
 \end{align}
-for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\CI}$ \eqref{errGCVSimple} \eqref{FJH:eq:errFullSimple} are positively homogeneous functions, meaning, 
+for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\CI}$ \eqref{eqn:err_MLEGCV} \eqref{FJH:eq:errFull} are positively homogeneous functions, meaning, 
 \begin{align*}
 \err_{\CI} (a y_1, \cdots, a y_n) = \abs{a} \err_{\CI} ( y_1, \cdots,  y_n).
 \end{align*}
@@ -1108,7 +1148,7 @@ Estimated integral value of our algorithm closely matches the integral of a smoo
 
 
 
-
+\iffalse
 
 \subsection{Empirical Bayes: Gradient of the objective function using fast Bayesian transform} \label{deriv_obj_func_MLE} 
 We refer back to Section~\ref{grad_descent_MLE}, where we discuss about using gradient descent for hyperparameter search but the computational cost is of $\Order(N_{\opt} n^3)$. Here we develop a techniques to speed up the computation.
@@ -1133,7 +1173,7 @@ We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to de
 \begin{align*}
 \bar{\vC}_{1{(\ell)}} = \left(\frac{\partial }{\partial{\theta}_\ell} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
 \end{align*}
-The goal is to compute the derivative of the objective function faster. First, let's rewrite the objective function from \eqref{eqn_MLE_loss_func_optimized_2} in two parts,
+The goal is to compute the derivative of the objective function faster. First, let's rewrite the objective function from \eqref{fastThetaMLE} in two parts,
 \begin{align*}
 \mathcal{L}_{\MLE}(\vtheta | \vy) &= 
 \underbrace{\frac{1}{n}  \log(\det\, \mC)}_{\mathcal{L}_{\abs{\mC}}} + \underbrace{\log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)}_{\mathcal{L}_{\vy}},
@@ -1233,7 +1273,7 @@ If $m=0$ assumption can be made,
 \subsection{Generalized Cross-Validation: Gradient of the objective function using fast Bayesian transform}
 % \subsection{Gradient of the objective function}
 
-Using the results obtained from the Section \ref{deriv_obj_func_MLE} with empirical Bayes, one can reduce the computational cost of the derivative of the objective function in \eqref{thetaGCV},
+Using the results obtained from the Section \ref{deriv_obj_func_MLE} with empirical Bayes, one can reduce the computational cost of the derivative of the objective function in \eqref{fastThetaGCV},
 \begin{align*}
 \mathcal{L}_\GCV(\vtheta | \vy)
 &= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
@@ -1270,6 +1310,7 @@ Thus,
 \end{multline}
 where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the Gram matrix, $\mC$, in the $\ell$th variable. We discuss a technique to compute $\bar{\lambda}_{i(\ell)}$ in the next section below.
 
+\fi
 
 
 
@@ -1277,11 +1318,11 @@ where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the
 
 
 
+\subsection{The Fast Automatic Bayesian Cubature Algorithm} 
 
-\section{The Fast Automatic Bayesian Cubature Algorithm} 
 
-
-The previous section presents three credible intervals, \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule.  Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.
+The previous section presents three credible intervals, \eqref{eqn_prob_CI}, % \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, 
+for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule.  Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.
 
 Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size.  The steps are detailed in Algorithm~\ref{algorithm1}.
 
@@ -1307,15 +1348,15 @@ We recognize that multiple applications of our credible intervals in one run of 
 		\While{$\err > \varepsilon$ and $n \le n_{\textup{max}}$}
 		
 		\State\label{LoopStart}Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$
-		\State Compute $\vtheta$ by \eqref{eqn:thetaMLE} or \eqref{vthetaGCV}
-		\State Compute $\err$  according to \eqref{eqn:err_MLEGCV}, \eqref{FJH:eq:errFull}, or \eqref{GCVerr}
+		\State Compute $\vtheta$ by \eqref{fastThetaMLE} or \eqref{fastThetaGCV}
+		\State Compute $\err$  according to \eqref{eqn:err_MLEGCV} or \eqref{FJH:eq:errFull}
 		
 		\State	$n' \gets n, \; n \gets 2n'$
 		
 		\EndWhile
 		
 		\State Sample size to compute $\hmu$, $n \gets n'$
-		\State Compute $\hmu$, the approximate integral,   according to \eqref{eqn:cubMLE} or \eqref{eqn:muCV}
+		\State Compute $\hmu$, the approximate integral, according to \eqref{muhatGCV-FB-MLE-Simple}
 		\State \Return $\hmu, \; n$  and $\err$
 	\end{algorithmic}
 \end{algorithm}
@@ -1369,14 +1410,12 @@ It was suggested to use gradient descent to find optimal shape parameter in \sec
 \frac{\partial}{\partial \eta} 
 \prod_{j=1}^d \biggl[
 1 - \eta \mathfrak{C}(x_j,t_j) \biggr] % \quad  \mathfrak{C}(x,t) := (-1)^{r} B_{2r}( |{x-t}| \bmod 1 ) 
-\\
-& = 
-\sum_{\ell=1}^d  
-\prod_{j=1, j \neq \ell}^d \biggl[
-1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
-\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
-\\
-& =
+% \\
+% & = \sum_{\ell=1}^d  \prod_{j=1, j \neq \ell}^d \biggl[
+% 1 - \eta \mathfrak{C}(x_j,t_j) \biggr] \biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
+% \\
+% & 
+=
 \prod_{j=1}^d \biggl[
 1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
 \sum_{\ell=1}^d 
@@ -1396,18 +1435,8 @@ C_\vtheta(\vt, \vx)
 	1 - \eta \mathfrak{C}(x_\ell,t_\ell) 
 }
 \\
-& =
-C_\vtheta(\vt, \vx) 
-\frac{1}{\eta}
-\sum_{\ell=1}^d 
-\biggl(
-1 - 
-\frac{1
-}{
-	1 - \eta \mathfrak{C}(x_\ell,t_\ell) 
-}
-\biggr)
-\\
+% & = C_\vtheta(\vt, \vx) \frac{1}{\eta}\sum_{\ell=1}^d 
+% \biggl( 1 - \frac{1}{	1 - \eta \mathfrak{C}(x_\ell,t_\ell) } \biggr) \\
 & =
 ({d}/{\eta} )
 \underbrace{
@@ -1450,15 +1479,8 @@ In this case, we will have a vector of length $d$ shape parameters. Derivative o
 \prod_{j=1, j \neq \ell}^d \biggl[
 1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr]
 \biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
-\\
-& =
-\prod_{j=1}^d \biggl[
-1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr]
-\frac{
-	\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
-}{
-	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) 
-}
+% \\ & = \prod_{j=1}^d \biggl[ 1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr]
+% \frac{ \biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr) }{ 	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) }
 \\
 & =
 C_\vtheta(\vt, \vx) 
@@ -1468,17 +1490,8 @@ C_\vtheta(\vt, \vx)
 }{
 	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) 
 }
-\\
-& =
-C_\vtheta(\vt, \vx) 
-\frac{1}{\eta_\ell}
-\biggl(
-1 - 
-\frac{1
-}{
-	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) 
-}
-\biggr)
+% \\ & = C_\vtheta(\vt, \vx) \frac{1}{\eta_\ell}
+% \biggl( 1 - \frac{1}{	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) }\biggr)
 \\
 & =
 \frac{1}{\eta_\ell} 
@@ -1513,14 +1526,36 @@ The $\bar{\lambda}_{i(\ell)}$ can be computed now using \eqref{eqn:deriv_eigenva
 
 
 
-\subsection{Shape parameter search using steepest descent}
+\subsubsection{Shape parameter search using steepest descent}
 Using the obtained derivative of the eigenvalues, $\bar{\lambda}_{i(\ell)}$, one can easily compute the gradient of the objective function \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full}. This can be further used to implement the steepest descent search as introduced in \secref{grad_descent_MLE} 
 %\eqref{Dong2017a}
 \begin{align*}
 \eta^{(j+1)}_\ell = \eta^{(j)}_\ell - \nu \frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots,  \quad \ell = 1, \cdots, d
 \end{align*}
-where $\nu$ is the step size for the gradient descent, $j$ is the iteration index, and $\frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy)$ is either \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full} depending on the choice of the hyperparameter search method. The parameter $\eta_\ell$ is usually searched in the whole $\reals$ by using the simple domain transformation as explained in Section~\ref{sec:kernel_param_search}.
+where $\nu$ is the step size for the gradient descent, $j$ is the iteration index, and $\frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy)$ is either \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full} depending on the choice of the hyperparameter search method. The parameter $\eta_\ell$ is usually searched in the whole $\reals$ by using the simple domain transformation as explained below. % in Section~\ref{sec:kernel_param_search}.
 
+
+If $\mV$ does not depend on $\vtheta$ then one can fast compute the derivative of Gram matrix $\mC$. Starting from the definition \eqref{eqn:ftk_factor} and taking derivative w.r.t. $\theta_\ell$, 
+\begin{align}
+\nonumber
+\displaystyle \frac{\partial \mC}{\partial \theta_\ell} 
+& = \frac 1n \mV \frac{\partial {\mLambda}}{\partial \theta_\ell} \mV^H
+= \frac 1n \mV \bar{\mLambda}_{(\ell)} \mV^H,
+\\
+\nonumber
+& \text{where} \quad \bar{\mLambda}_{(\ell)} = \diag(\bar{\vlambda}_{(\ell)}), \quad \text{and}
+\\
+\label{eqn:deriv_eigenval_gram_matrix}
+&  \quad \bar{\vlambda}_{(\ell)} = \frac{\partial \vlambda}{\partial \theta_\ell} = \left( \frac{\partial \lambda_i}{\partial \theta_\ell} \right)_{i=1}^n 
+= \left( \frac{\partial }{\partial \theta_\ell} \mV^H {\vC_1} \right)
+= \mV^H \left( \frac{\partial }{\partial \theta_\ell} {C_\vtheta(\vx_1,\vx_i)} \right)_{i=1}^n,
+\end{align}
+where we used the fast Bayesian transform property $\vlambda 
+= \mV^H \vC_1$. % \eqref{eqn:fast_transform_to_eigvalues}.
+We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to denote the derivative of the eigenvalue ${\vlambda}_{(\ell)}$,  where $\bar{\vC}_{1(\ell)}$ denotes the first row of the gram matrix after taking the derivative in the $\ell$th variable, i.e.
+\begin{align*}
+\bar{\vC}_{1{(\ell)}} = \left(\frac{\partial }{\partial{\theta}_\ell} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
+\end{align*}
 
 
 
@@ -1570,7 +1605,7 @@ The results of this chapter can be summarized as a theorem,
 \end{theorem}
 We introduce the necessary concepts and prove this theorem in the remaining of this chapter.
 
-\section{Sobol' Nets}
+\subsection{Sobol' Nets}
 
 % Notations
 % \ell - dimesnion
@@ -1706,7 +1741,7 @@ An example of $64$ Sobol' nets in $d=2$ is given in \figref{fig:sobol-fig}.  The
 \end{figure}
 
 
-\section{Walsh Kernels}
+\subsection{Walsh Kernels}
 
 Walsh kernels are product kernels based on the Walsh functions. We introduce the necessary concepts in this section.
 
@@ -1782,11 +1817,11 @@ Explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \ci
 
 The \figref{fig:walshkernel-dim1} shows the Walsh kernel \eqref{eqn:walsh_kernel} of order $r=1$ in the interval $[0,1)$. Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. Smaller $\eta_\ell$ implies lesser variation in the amplitude of the kernel. Also, the Walsh kernels are digitally shift invariant but not periodic.
 
-\section{Eigenvectors}
+\subsection{Eigenvectors}
 
 We show the eigenvectors $\mV$ in \eqref{eqn:ftk_factor} of the Gram matrix formed by the covariance kernel \eqref{eqn:walsh_kernel} and Sobol' nets are the columns of the Walsh-Hadamard matrix. First we introduce the necessary concepts.
 
-\subsection{Walsh transform}
+\subsubsection{Walsh transform}
 % \JRNote{add subsection for walsh transform, define and explain.}
 The Walsh-Hadamard transform (WHT) is a generalized class of discrete Fourier transform (DFT) and is much simpler to compute than the DFT. The WHT matrices are comprised of only $\pm 1$ values, so the computation usually involves only ordinary additions and subtractions. Hence, the WHT is also sometimes called the integer transform. In comparison, the DFT that was used with lattice nodes,  uses complex exponential functions and the computation involves complex, non-integer multiplications. 
 
@@ -2267,7 +2302,7 @@ As before with the lattice nodes, the computational cost to compute $\mV^{(m+1)H
 twice the cost of computing $\mV^{(m)H} \vy^{(1)}$ plus $2n$ additions, where $n=2^m$. An inductive argument shows that for any $m \in \naturals$, $\mV^{(m)H}\vy$ requires only $\Order(n \log n)$ operations. Usually the multiplications in $\mV^{(m)H} \vy^{(1)}$ are multiplications by $-1$ which are simply accomplished using sign change or negation, requiring no multiplications at all.
 
 
-\section{Higher Order Nets}
+\subsection{Higher Order Nets}
 
 Higher order digital nets are an extension of $(t,m,d)$-nets, introduced in \cite{Dic08a}. They can be used to numerically integrate smoother functions which are not necessarily periodic, but have square integrable mixed partial derivatives of order $\alpha$, at a rate of $\Order(n^{-\alpha})$ multiplied by a power of a $\log n$ factor using rules corresponding to the modified $(t,m, d)$-nets.
 We want to emphasize that quasi-Monte Carlo rules based on these point sets can achieve convergence rates faster than $\Order(n^{-1})$. 
