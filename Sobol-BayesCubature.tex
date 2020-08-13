@@ -437,7 +437,9 @@ Briefly explain and cite our BayesLattice paper
 
 
 
-The Bayesian approach for numerical analysis was popularized by Diaconis \cite{Dia88a}. The earliest reference for such kind of approach dates back to Poincar\'e, where, the theory of interpolation was discussed.
+The Bayesian approach for numerical analysis was popularized by 
+%Diaconis 
+\cite{Dia88a}. The earliest reference for such kind of approach dates back to Poincar\'e, where, the theory of interpolation was discussed.
 Diaconis motivates the reader by interpreting the most well known numerical methods, 1) trapezoidal rule and 2) splines, from the statistical point of view with whatever is known about the integrand as prior information. 
 For example, the trapezoidal rule can be interpreted as a Bayesian method with prior information being modeled as a Brownian motion in the sample space $\mathcal{C}[0,1)$, the space of continuous functions. %, with normal prior.
 
@@ -465,10 +467,11 @@ For any deterministic sampling scheme with distinct nodes, $\{\vx_i\}_{i=1}^n$, 
 \begin{subequations} \label{eqn:fGaussDist}
 	\begin{align}
 	\vf  & \sim \calN(m \vone, s^2 \mC), \\
-	\mu & \sim \calN(m, s^2 c_0), 
-	\\
+	\mu & \sim \calN(m, s^2 c_0), \\
+	\label{eqn:fGaussDist_c0}
 	\text{where }
 	c_0 &:= \int_{[0,1]^{d} \times [0,1]^{d}} C_\vtheta(\vx,\vt) \, \dif{\vx} \, \dif{\vt}, \\
+	\label{eqn:fGaussDist_vc}
 	\cov(\vf, \mu) &= \left(  \int_{[0,1]^d} C(\vt,\vx_i) \, \D \vt \right)_{i=1}^n  =: \vc.
 	\end{align}
 \end{subequations}
@@ -539,7 +542,17 @@ Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible lev
 
 
 
+Any Bayesian cubature algorithm based on \eqref{eqn_prob_confidence_interval} has  computational cost that is sum of the following:
+\begin{itemize}
+	\item $\Order\bigl(n\$(f) \bigr)$ for the integrand data, where $\$(f)$ is the computational cost of a single $f(\vx)$; $\$(f)$ may be large if it is the result of an expensive simulation; $\$(f)$ is typically proportional to $d$;
+	
+	\item $\Order\bigl(N_{\opt} n^2 \$(C_\vtheta) \bigr)$ for the evaluation of the Gram matrix $\mC$, $N_\opt$ is the number of optimization steps required, and  $\$(C)$ is the computational cost of a single $C(\vt,\vx)$; $\$(C)$ is typically proportional to $d$; and
+	
+	\item $\Order\bigl(N_{\opt} n^3 \bigr)$ for the matrix inversions and determinant calculations; this cost is independent of $d$.
+	
+\end{itemize}
 
+As shown in the numerical experiments, the cost increases quickly as the $n$ required to meet the error tolerance increases.  This motivates the fast Bayesian cubature algorithm presented in Section~\ref{sec:fast_BC}.
 
 
 
@@ -564,7 +577,7 @@ Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible lev
 \section{Fast Bayesian Transform Kernel}
 \label{sec:fast_BC}
 
-As introduced in \cite{JagHic19a}}, fast Bayesian transform kernel is defined with the following assumptions. With similar notation
+As introduced in \cite{JagHic19a}, fast Bayesian transform kernel is defined with the following assumptions:
 \begin{align}
 \nonumber
 \mC = \mCtheta &= \Big(C_\vtheta(\vx_i,\vx_j)\Big)_{i,j=1}^n  = (\vC_1,...,\vC_n) 
@@ -601,34 +614,72 @@ The covariance kernel used in practice also may satisfy an additional assumption
 \begin{equation} \label{addAssump}
 \int_{[0,1]^d} C(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
 \end{equation}
-which implies that $c_{0 \vtheta} = 1$ and $\vc_{\vtheta} = \vone$.  Under \eqref{addAssump}, the expressions above may be further simplified:
+which implies that $c_{0} = 1$ \eqref{eqn:fGaussDist_c0} and $\vc_{} = \vone$ 	\eqref{eqn:fGaussDist_vc}.  
+% Under \eqref{addAssump}, the expressions above may be further simplified: \JRNote{fix this}
 
 
 
-The assumptions and results in this chapter lead to the following theorem.
 
-\begin{theorem} \label{thm:fastparam}
-	Under assumptions \eqref{fastcompAssump}, the parameters and credible interval half-widths in Theorem~\ref{thm:param} may be expressed in terms of the fast Bayesian transforms of the integrand data, the first column of the Gram matrix, $c_0$, and $\vc$ as follows:
-	\begin{align}
-	\nonumber
-	m_\MLE &=  m_{\full} = m_{\GCV} =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
-	\\
-	\nonumber
-	s^2_\MLE 
-	& =
-	\frac{1}{n^2} 
-	\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}, \\
-	\nonumber
-	\widehat{\sigma}^2_{\textup{full}}
-	& =
-	\frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
-	% \\
-	% \nonumber
-	% & \qquad \times
-	\left[\frac{\lambda_1}{n}{\left(1 - \frac{\widetilde{c}_1}{\lambda_1}\right)^2} + \left(c_0  - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i}\right) \right], \\
-	\nonumber 
-	s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1},
-	\end{align}
+
+
+
+
+
+
+
+
+\section{Hyperparameter search}
+\JRNote{
+	This section explains hyperparameter estimation using gradient descent}
+
+
+The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\CI}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$
+
+However, $\err_{\CI}$ shows no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\CI}$. This dependence will become explicit once the hyperparameters, $m, s$, and $\vtheta$,  are inferred from integrand data.
+% This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  
+After inferring the hyperparameters, $\err_{\CI}$ \emph{does reflect the size} of the integrand values. 
+%The following next few sections describe three approaches to hyperparameter estimation. 
+% Three approaches for hyperparameter estimation were described in \cite{JagHic19a}. 
+% Theorem \label{thm:param} summarizes those approaches for quick reference.  
+
+
+
+
+ 
+% and results in this section lead to the following theorem.
+
+There were three methods developed for hyperparameter estimation in \cite{JagHic19a} as summarized below. With the assumptions for a fast Bayesian transform kernel,
+% \eqref{fastcompAssump} and \eqref{addAssump} hold then 
+the computation cost can be significantly reduced.
+
+\begin{theorem} \label{thm:param} There are at least three approaches to estimating or integrating out the hyperparameters defining a Gaussian process from which the integrand is drawn: empirical Bayes, full Bayes, and generalized cross-validation.  
+%\begin{theorem} \label{thm:fastparam}
+	Under assumptions \eqref{fastcompAssump} and \eqref{addAssump}, the parameters and credible interval half-widths 
+	% in Theorem~\ref{thm:param} 
+	may be expressed in terms of the fast Bayesian transforms of the integrand data, the first column of the Gram matrix, $c_0$, and $\vc$ as follows:
+	\begin{subequations}
+		\begin{align}
+		\nonumber
+		m_\MLE &=  m_{\full} = m_{\GCV} =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
+		\\
+		\nonumber
+		s^2_\MLE 
+		& =
+		\frac{1}{n^2} 
+		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}, \text{\JRNote{can we remove this?}} \\
+		\nonumber
+		\widehat{\sigma}^2_{\textup{full}} &= \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  \left(\frac{\lambda_1}{n}  - 1  \right), \\
+		% \widehat{\sigma}^2_{\textup{full}}
+		% & =
+		% \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
+		% \\
+		% \nonumber
+		% & \qquad \times
+		% \left[\frac{\lambda_1}{n}{\left(1 - \frac{\widetilde{c}_1}{\lambda_1}\right)^2} + \left(c_0  - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i}\right) \right], \\
+		\nonumber 
+		s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1},
+		\end{align}
+	\end{subequations}
 	\begin{subequations}
 		\label{fastTheta}
 		\begin{align}
@@ -650,6 +701,7 @@ The assumptions and results in this chapter lead to the following theorem.
 		\right], 
 		\end{align}
 	\end{subequations}
+\iffalse
 	\begin{align}
 	\nonumber
 	\hmu_\MLE  &= \hmu_{\full} = \hmu_{\GCV} =
@@ -671,13 +723,15 @@ The assumptions and results in this chapter lead to the following theorem.
 	\left( c_0 - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i} \right) 
 	\right\}^{1/2}.
 	\end{align}
-	Under the further assumption \eqref{addAssump}, it follows that 
+\fi	
+	% Under the further assumption \eqref{addAssump}, it follows that 
 	\begin{equation}
 	\label{muhatGCV-FB-MLE-Simple}
 	\hmu_\MLE  = \hmu_{\full} = \hmu_{\GCV} =
 	\frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
 	\end{equation}
-	and so $\hmu$ is simply the sample mean.  Also, under assumption \eqref{addAssump}, the credible interval half-widths simplify to
+	and so $\hmu$ is simply the sample mean.  
+	Also the credible interval half-widths are
 	\begin{subequations}
 		\label{errSimple}
 		\begin{align}
@@ -701,6 +755,16 @@ The assumptions and results in this chapter lead to the following theorem.
 		\right\}^{1/2}. 
 		\end{align}
 	\end{subequations}
+	
+The resulting credible intervals are then
+\begin{align}
+\label{eqn_prob_CI}
+\mathbb{P}_f \left[
+|\mu-\hmu_{\mathsf{x}}| \leq \err_{\mathsf{x}} \right]  = 99\%, \qquad \mathsf{x} \in \{\MLE, \full, \GCV\}.
+\end{align}
+Here $t_{n-1,0.995}$ denotes the $99.5$ percentile of a standard Student's $t$-distribution with $n-1$ degrees of freedom.  
+% In the formulas above, $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
+
 	In the formulas for the credible interval half-widths and $\vlambda$ depends on $\vtheta$, and  $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
 \end{theorem}
 
@@ -744,19 +808,6 @@ The assumptions and results in this chapter lead to the following theorem.
 
 
 
-\section{Hyperparameter search}
-\JRNote{
-This section explains hyperparameter estimation using gradient descent}
-
-
-The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\CI}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$
-
-Note that $\err_{\CI}$ shows no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\CI}$. This dependence will become explicit once the hyperparameters, $m, s$, and $\vtheta$,  are inferred from integrand data.
-% This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  
-After inferring the hyperparameters, $\err_{\CI}$ \emph{does reflect the size} of the integrand values. 
-%The following next few sections describe three approaches to hyperparameter estimation. 
-Three approaches for hyperparameter estimation were described in \cite{JagHic19a}. 
-% Theorem \label{thm:param} summarizes those approaches for quick reference.  
 
 
 
@@ -768,12 +819,7 @@ Three approaches for hyperparameter estimation were described in \cite{JagHic19a
 
 
 
-
-
-
-
-
-
+\iffalse
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The methods developed for hyperparameter estimation from \cite{JagHic19a} are summarized in the theorem below:
@@ -836,6 +882,7 @@ The methods developed for hyperparameter estimation from \cite{JagHic19a} are su
 	\end{align}
 	Here $t_{n-1,0.995}$ denotes the $99.5$ percentile of a standard Student's $t$-distribution with $n-1$ degrees of freedom.  In the formulas above, $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
 \end{theorem}
+\fi
 
 In the theorem above, note that if the original covariance kernel, $C$, is replaced by $b C$ for some positive constant $b$, the cubature, $\hmu$, the estimates of $\vtheta$, and the credible interval half-widths, $\err_{\mathsf{x}}$ for $\mathsf{x} \in \{\MLE, \full, \GCV\}$, all remain unchanged.  The estimates of $s^2$ are multiplied by $b^{-1}$, as would be expected. 
 
@@ -868,28 +915,29 @@ But \cite{JagHic19a} did not provide any explicit parameter search techniques. W
 
 \subsection{Gradient descent to find optimal shape parameter}
 \label{grad_descent_MLE}
-The equation specifying $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
+The equation specifying $\vtheta_\MLE$ as defined in \eqref{eqn_MLE_loss_func_optimized_2} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
 % Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
 Since the objective function is known we could compute the gradient.
 Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function for the same purpose by excluding the negative sign, which modifies the problem to become a minimization of
 \begin{align*}
-\mathcal{L}(\vtheta | \vy)
-&:= \frac{1}{n} \log(\det\, \mC) +  \log\left( (\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right) + \text{constants.}
+\mathcal{L}_{\MLE}(\vtheta | \vy)
+&:= % \frac{1}{n} \log(\det\, \mC) +  \log\left( (\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right) + \text{constants} \\
+% &= 
+\frac{1}{n}\sum_{i=1}^n \log(\lambda_{i}) + 
+\log\left(
+\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}}
+\right) + \text{constants.}
 \end{align*}
 Taking derivative with respect to $\theta_\ell$, for $\ell=1,\cdots,d$
-\begin{align*}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy)
-&=  \frac{1}{n} \frac{\partial}{\partial \theta_\ell} \log(\det\, \mC) + \frac{\partial}{\partial \theta_\ell} 
-\log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)
-\\
-&= \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \theta_\ell} \right)}
-- 
-\frac
-{\left((\vy-m_\MLE\vone)^T\mCInv\right)^T 
-	\left( \frac{\partial \mC}{\partial \theta_\ell} \right)
-	((\vy-m_\MLE\vone)^T\mCInv)}
-{(\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone)}
-\end{align*}
+\begin{align}
+\label{eqn:deriv_obj_func_MLE}
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy)
+= & \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
+- \left({ \sum_{i=2}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
+\left( {\sum_{i=2}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1}, \\
+& \text{where} \bar{\lambda}_{i(\ell)} = \frac{\partial}{\partial \theta_\ell} {\lambda}_{i(\ell)}
+\end{align}
+where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of $\mC$ in the $\ell$th variable.
 where we used some of the results from \cite{Dong2017a}. 
 This can be used with gradient descent as follows,
 \begin{align}
@@ -935,7 +983,7 @@ Suppose that
 \label{eqn:cone-homogenity}
 \abs{\mu(f) - \hmu_n(f)} \le \err_{\CI} (f(\vx_1), \cdots, f(\vx_n))
 \end{align}
-for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\CI}$ \eqref{eqn:err_MLEGCV} \eqref{FJH:eq:errFull} are positively homogeneous functions, meaning, 
+for some $f$, which it is 99\% of the time under our hypothesis. Also note that our $\err_{\CI}$ \eqref{errGCVSimple} \eqref{FJH:eq:errFullSimple} are positively homogeneous functions, meaning, 
 \begin{align*}
 \err_{\CI} (a y_1, \cdots, a y_n) = \abs{a} \err_{\CI} ( y_1, \cdots,  y_n).
 \end{align*}
@@ -1016,64 +1064,6 @@ When using $n=16$ rank-1 lattice points, and $r=1$ shift-invariant kernel, we ge
 Our Bayesian cubature algorithms compute the approximate integral using only the samples of the integrand. 
 Estimated integral value of our algorithm closely matches the integral of a smooth function that falls within the middle of the confidence interval. If the true integrand were to resemble the smooth approximate function then the estimated integral will be accurate.  
 
-
-
-
-
-
-\section{The Automatic Bayesian Cubature Algorithm} 
-
-
-The previous section presents three credible intervals, \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule.  Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.
-
-Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size.  The steps are detailed in Algorithm~\ref{algorithm1}.
-
-We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability.  The example in the next section and the examples in Section~\ref{sec:NumExp} support that expectation. We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
-
-\algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen\ }
-\algnewcommand{\IElse}{\unskip\ \algorithmicelse\ }
-\algnewcommand{\EndIIf}{\unskip\ \algorithmicend\ \algorithmicif}
-
-
-\begin{algorithm}
-	\caption{Automatic Bayesian Cubature}\label{algorithm1}
-	\begin{algorithmic}[1]
-		\Require a generator for the sequence
-		$\vx_1, \vx_2, \ldots$; 
-		a black-box function, $f$; 
-		an absolute error tolerance,
-		$\varepsilon>0$; the positive initial sample size, $n_0$;
-		the maximum sample size $n_{\textup{max}}$
-		
-		\State $n \gets n_0, \; n' \gets 0, \; \err \gets \infty$
-		
-		\While{$\err > \varepsilon$ and $n \le n_{\textup{max}}$}
-		
-		\State\label{LoopStart}Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$
-		\State Compute $\vtheta$ by \eqref{eqn:thetaMLE} or \eqref{vthetaGCV}
-		\State Compute $\err$  according to \eqref{eqn:err_MLEGCV}, \eqref{FJH:eq:errFull}, or \eqref{GCVerr}
-		
-		\State	$n' \gets n, \; n \gets 2n'$
-		
-		\EndWhile
-		
-		\State Sample size to compute $\hmu$, $n \gets n'$
-		\State Compute $\hmu$, the approximate integral,   according to \eqref{eqn:cubMLE} or \eqref{eqn:muCV}
-		\State \Return $\hmu, \; n$  and $\err$
-	\end{algorithmic}
-\end{algorithm}
-
-As described above, the computational cost of Algorithm~\ref{algorithm1} is the sum of the following:
-\begin{itemize}
-	\item $\Order\bigl(n\$(f) \bigr)$ for the integrand data, where $\$(f)$ is the computational cost of a single $f(\vx)$; $\$(f)$ may be large if it is the result of an expensive simulation; $\$(f)$ is typically proportional to $d$;
-	
-	\item $\Order\bigl(N_{\opt} n^2 \$(C_\vtheta) \bigr)$ for the evaluation of the Gram matrix $\mC_{\vtheta}$, $N_\opt$ is the number of optimization steps required, and  $\$(C_\vtheta)$ is the computational cost of a single $C_\vtheta(\vt,\vx)$; $\$(C_\vtheta)$ is typically proportional to $d$; and
-	
-	\item $\Order\bigl(N_{\opt} n^3 \bigr)$ for the matrix inversions and determinant calculations; this cost is independent of $d$.
-	
-\end{itemize}
-
-As we see in the example in the next section, the cost increases quickly as the $n$ required to meet the error tolerance increases.  This motivates the fast Bayesian cubature algorithm presented in Section~\ref{sec:fast_BC}.
 
 
 
@@ -1279,6 +1269,75 @@ Thus,
 \left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(\ell)} }{\lambda_i^2}  \right),
 \end{multline}
 where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the Gram matrix, $\mC$, in the $\ell$th variable. We discuss a technique to compute $\bar{\lambda}_{i(\ell)}$ in the next section below.
+
+
+
+
+
+
+
+
+
+\section{The Fast Automatic Bayesian Cubature Algorithm} 
+
+
+The previous section presents three credible intervals, \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule.  Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.
+
+Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size.  The steps are detailed in Algorithm~\ref{algorithm1}.
+
+We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability.  The example in the next section and the examples in Section~\ref{sec:NumExp} support that expectation. We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
+
+\algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen\ }
+\algnewcommand{\IElse}{\unskip\ \algorithmicelse\ }
+\algnewcommand{\EndIIf}{\unskip\ \algorithmicend\ \algorithmicif}
+
+
+\begin{algorithm}
+	\caption{Automatic Bayesian Cubature}\label{algorithm1}
+	\begin{algorithmic}[1]
+		\Require a generator for the sequence
+		$\vx_1, \vx_2, \ldots$; 
+		a black-box function, $f$; 
+		an absolute error tolerance,
+		$\varepsilon>0$; the positive initial sample size, $n_0$;
+		the maximum sample size $n_{\textup{max}}$
+		
+		\State $n \gets n_0, \; n' \gets 0, \; \err \gets \infty$
+		
+		\While{$\err > \varepsilon$ and $n \le n_{\textup{max}}$}
+		
+		\State\label{LoopStart}Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$
+		\State Compute $\vtheta$ by \eqref{eqn:thetaMLE} or \eqref{vthetaGCV}
+		\State Compute $\err$  according to \eqref{eqn:err_MLEGCV}, \eqref{FJH:eq:errFull}, or \eqref{GCVerr}
+		
+		\State	$n' \gets n, \; n \gets 2n'$
+		
+		\EndWhile
+		
+		\State Sample size to compute $\hmu$, $n \gets n'$
+		\State Compute $\hmu$, the approximate integral,   according to \eqref{eqn:cubMLE} or \eqref{eqn:muCV}
+		\State \Return $\hmu, \; n$  and $\err$
+	\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
