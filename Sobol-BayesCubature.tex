@@ -555,6 +555,195 @@ Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible lev
 
 
 
+
+
+
+
+
+
+\section{Fast Bayesian Transform Kernel}
+\label{sec:fast_BC}
+
+As introduced in \cite{JagHic19a}}, fast Bayesian transform kernel is defined with the following assumptions. With similar notation
+\begin{align}
+\nonumber
+\mC = \mCtheta &= \Big(C_\vtheta(\vx_i,\vx_j)\Big)_{i,j=1}^n  = (\vC_1,...,\vC_n) 
+\\
+\label{eqn:ftk_factor}
+&= \frac 1n \mV \mLambda \mV^H , 
+\quad \quad \mV^H = n \mV^{-1}, \\
+\nonumber
+\mV &= (\vv_1,...,\vv_n)^T = (\vV_1,...,\vV_n) \\
+\nonumber
+\mC^p  &= \frac 1n \mV \mLambda^{p} \mV^H, \qquad \forall p \in \integers,
+\end{align}
+where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\cdots,\vC_n$ are columns of $\mC$,  $\vV_1,\cdots,\vV_n$ are columns of $\mV$, and $\vv_1,\cdots,\vv_n$ are rows of $\mV$. 
+The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
+In this and later sections, we drop the $\vtheta$ dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  
+For any $n \times 1$ vector $\vb$, define the notation  $\widetilde{\vb} := \mV^H \vb$.
+
+
+We make three assumptions that allow the fast computation:
+\begin{subequations} \label{fastcompAssump}
+	\begin{gather}
+	\label{fastcompAssumpA}
+	\mV \text{ may be identified analytically}, \\
+	\label{fastcompAssumpB}
+	\vv_1 = \vV_1 = \vone, \\
+	\label{fastcompAssumpC}
+	\text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb.
+	\end{gather}
+\end{subequations}
+We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  
+
+
+The covariance kernel used in practice also may satisfy an additional assumption:
+\begin{equation} \label{addAssump}
+\int_{[0,1]^d} C(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
+\end{equation}
+which implies that $c_{0 \vtheta} = 1$ and $\vc_{\vtheta} = \vone$.  Under \eqref{addAssump}, the expressions above may be further simplified:
+
+
+
+The assumptions and results in this chapter lead to the following theorem.
+
+\begin{theorem} \label{thm:fastparam}
+	Under assumptions \eqref{fastcompAssump}, the parameters and credible interval half-widths in Theorem~\ref{thm:param} may be expressed in terms of the fast Bayesian transforms of the integrand data, the first column of the Gram matrix, $c_0$, and $\vc$ as follows:
+	\begin{align}
+	\nonumber
+	m_\MLE &=  m_{\full} = m_{\GCV} =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
+	\\
+	\nonumber
+	s^2_\MLE 
+	& =
+	\frac{1}{n^2} 
+	\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}, \\
+	\nonumber
+	\widehat{\sigma}^2_{\textup{full}}
+	& =
+	\frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
+	% \\
+	% \nonumber
+	% & \qquad \times
+	\left[\frac{\lambda_1}{n}{\left(1 - \frac{\widetilde{c}_1}{\lambda_1}\right)^2} + \left(c_0  - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i}\right) \right], \\
+	\nonumber 
+	s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1},
+	\end{align}
+	\begin{subequations}
+		\label{fastTheta}
+		\begin{align}
+		\label{eqn_MLE_loss_func_optimized_2}
+		\vtheta_\MLE
+		&= 
+		\argmin_{\vtheta}
+		\left[
+		\log\left(
+		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}}
+		\right) 
+		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{i})
+		\right],\\
+		\label{thetaGCV} 
+		\vtheta_{\GCV} 
+		&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}^2} 
+		\right)  
+		-2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{i}} \right)
+		\right], 
+		\end{align}
+	\end{subequations}
+	\begin{align}
+	\nonumber
+	\hmu_\MLE  &= \hmu_{\full} = \hmu_{\GCV} =
+	\frac{\widetilde{y}_1}{n} +
+	\frac 1n \sum_{i=2}^n \frac{ \widetilde{c}_i^* \widetilde{y}_i}{\lambda_i}, \\
+	\nonumber
+	\err_\MLE  &
+	=
+	\frac{2.58}{n}\sqrt{
+		\sum_{i=2}^{n} \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
+		\,
+		\left( c_0 - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i} \right) 
+	}, \\
+	\nonumber
+	\err_{\full} & = t_{n-1,0.995} \hsigma_{\textup{full}}, \\
+	\nonumber
+	\err_{\textup{GCV}} & =
+	\frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1} 
+	\left( c_0 - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i} \right) 
+	\right\}^{1/2}.
+	\end{align}
+	Under the further assumption \eqref{addAssump}, it follows that 
+	\begin{equation}
+	\label{muhatGCV-FB-MLE-Simple}
+	\hmu_\MLE  = \hmu_{\full} = \hmu_{\GCV} =
+	\frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
+	\end{equation}
+	and so $\hmu$ is simply the sample mean.  Also, under assumption \eqref{addAssump}, the credible interval half-widths simplify to
+	\begin{subequations}
+		\label{errSimple}
+		\begin{align}
+		\label{eq:errMLEAllAsump}
+		\err_\MLE  &
+		=
+		\frac{2.58}{n}\sqrt{
+			\sum_{i=2}^{n} \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
+			\,
+			\left( 1 -  \frac{n}{\lambda_1} \right) 
+		}, \\
+		\label{FJH:eq:errFullSimple}
+		\err_{\textup{full}}
+		&=
+		t_{n-1,0.995}
+		\sqrt{\frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  \left(\frac{\lambda_1}{n}  - 1  \right)}, \\
+		\label{errGCVSimple}
+		\err_{\textup{GCV}} & =
+		\frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1} 
+		\left( 1 -  \frac{n}{\lambda_1} \right)  
+		\right\}^{1/2}. 
+		\end{align}
+	\end{subequations}
+	In the formulas for the credible interval half-widths and $\vlambda$ depends on $\vtheta$, and  $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
+\end{theorem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \section{Hyperparameter search}
 \JRNote{
 This section explains hyperparameter estimation using gradient descent}
@@ -885,161 +1074,6 @@ As described above, the computational cost of Algorithm~\ref{algorithm1} is the 
 \end{itemize}
 
 As we see in the example in the next section, the cost increases quickly as the $n$ required to meet the error tolerance increases.  This motivates the fast Bayesian cubature algorithm presented in Section~\ref{sec:fast_BC}.
-
-
-
-
-
-
-
-
-
-
-
-
-\section{Fast Bayesian Transform Kernel}
-\label{sec:fast_BC}
-
-We introduce some further notation
-\begin{align}
-\nonumber
-\mC = \mCtheta &= \Big(C_\vtheta(\vx_i,\vx_j)\Big)_{i,j=1}^n  = (\vC_1,...,\vC_n) 
-\\
-\label{eqn:ftk_factor}
-&= \frac 1n \mV \mLambda \mV^H , 
-\quad \quad \mV^H = n \mV^{-1}, \\
-\nonumber
-\mV &= (\vv_1,...,\vv_n)^T = (\vV_1,...,\vV_n) \\
-\nonumber
-\mC^p  &= \frac 1n \mV \mLambda^{p} \mV^H, \qquad \forall p \in \integers,
-\end{align}
-where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\cdots,\vC_n$ are columns of $\mC$,  $\vV_1,\cdots,\vV_n$ are columns of $\mV$, and $\vv_1,\cdots,\vv_n$ are rows of $\mV$. 
-The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
-In this and later sections, we drop the $\vtheta$ dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  
-For any $n \times 1$ vector $\vb$, define the notation  $\widetilde{\vb} := \mV^H \vb$.
-
-
-We make three assumptions that allow the fast computation:
-\begin{subequations} \label{fastcompAssump}
-	\begin{gather}
-	\label{fastcompAssumpA}
-	\mV \text{ may be identified analytically}, \\
-	\label{fastcompAssumpB}
-	\vv_1 = \vV_1 = \vone, \\
-	\label{fastcompAssumpC}
-	\text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb.
-	\end{gather}
-\end{subequations}
-We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  
-
-
-The covariance kernel used in practice also may satisfy an additional assumption:
-\begin{equation} \label{addAssump}
-\int_{[0,1]^d} C(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
-\end{equation}
-which implies that $c_{0 \vtheta} = 1$ and $\vc_{\vtheta} = \vone$.  Under \eqref{addAssump}, the expressions above may be further simplified:
-
-
-
-The assumptions and results in this chapter lead to the following theorem.
-
-\begin{theorem} \label{thm:fastparam}
-	Under assumptions \eqref{fastcompAssump}, the parameters and credible interval half-widths in Theorem~\ref{thm:param} may be expressed in terms of the fast Bayesian transforms of the integrand data, the first column of the Gram matrix, $c_0$, and $\vc$ as follows:
-	\begin{align}
-	\nonumber
-	m_\MLE &=  m_{\full} = m_{\GCV} =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
-	\\
-	\nonumber
-	s^2_\MLE 
-	& =
-	\frac{1}{n^2} 
-	\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}, \\
-	\nonumber
-	\widehat{\sigma}^2_{\textup{full}}
-	& =
-	\frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
-	% \\
-	% \nonumber
-	% & \qquad \times
-	\left[\frac{\lambda_1}{n}{\left(1 - \frac{\widetilde{c}_1}{\lambda_1}\right)^2} + \left(c_0  - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i}\right) \right], \\
-	\nonumber 
-	s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1},
-	\end{align}
-	\begin{subequations}
-		\label{fastTheta}
-		\begin{align}
-		\label{eqn_MLE_loss_func_optimized_2}
-		\vtheta_\MLE
-		&= 
-		\argmin_{\vtheta}
-		\left[
-		\log\left(
-		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}}
-		\right) 
-		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{i})
-		\right],\\
-		\label{thetaGCV} 
-		\vtheta_{\GCV} 
-		&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}^2} 
-		\right)  
-		-2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{i}} \right)
-		\right], 
-		\end{align}
-	\end{subequations}
-	\begin{align}
-	\nonumber
-	\hmu_\MLE  &= \hmu_{\full} = \hmu_{\GCV} =
-	\frac{\widetilde{y}_1}{n} +
-	\frac 1n \sum_{i=2}^n \frac{ \widetilde{c}_i^* \widetilde{y}_i}{\lambda_i}, \\
-	\nonumber
-	\err_\MLE  &
-	=
-	\frac{2.58}{n}\sqrt{
-		\sum_{i=2}^{n} \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
-		\,
-		\left( c_0 - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i} \right) 
-	}, \\
-	\nonumber
-	\err_{\full} & = t_{n-1,0.995} \hsigma_{\textup{full}}, \\
-	\nonumber
-	\err_{\textup{GCV}} & =
-	\frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1} 
-	\left( c_0 - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i} \right) 
-	\right\}^{1/2}.
-	\end{align}
-	Under the further assumption \eqref{addAssump}, it follows that 
-	\begin{equation}
-	\label{muhatGCV-FB-MLE-Simple}
-	\hmu_\MLE  = \hmu_{\full} = \hmu_{\GCV} =
-	\frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
-	\end{equation}
-	and so $\hmu$ is simply the sample mean.  Also, under assumption \eqref{addAssump}, the credible interval half-widths simplify to
-	\begin{subequations}
-		\label{errSimple}
-		\begin{align}
-		\label{eq:errMLEAllAsump}
-		\err_\MLE  &
-		=
-		\frac{2.58}{n}\sqrt{
-			\sum_{i=2}^{n} \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
-			\,
-			\left( 1 -  \frac{n}{\lambda_1} \right) 
-		}, \\
-		\label{FJH:eq:errFullSimple}
-		\err_{\textup{full}}
-		&=
-		t_{n-1,0.995}
-		\sqrt{\frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  \left(\frac{\lambda_1}{n}  - 1  \right)}, \\
-		\label{errGCVSimple}
-		\err_{\textup{GCV}} & =
-		\frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1} 
-		\left( 1 -  \frac{n}{\lambda_1} \right)  
-		\right\}^{1/2}. 
-		\end{align}
-	\end{subequations}
-	In the formulas for the credible interval half-widths and $\vlambda$ depends on $\vtheta$, and  $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
-\end{theorem}
-
 
 
 
