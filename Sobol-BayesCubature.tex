@@ -1415,26 +1415,15 @@ It was suggested to use gradient descent to find optimal shape parameter in \sec
 % 1 - \eta \mathfrak{C}(x_j,t_j) \biggr] \biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
 % \\
 % & 
-=
-\prod_{j=1}^d \biggl[
-1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
-\sum_{\ell=1}^d 
-\frac{
-	\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
-}{
-	1 - \eta \mathfrak{C}(x_\ell,t_\ell) 
-}
+% =
+% \prod_{j=1}^d \biggl[ 1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
+% \sum_{\ell=1}^d 
+% \frac{ \biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr) }{	1 - \eta \mathfrak{C}(x_\ell,t_\ell) }
 \\
-& =
-C_\vtheta(\vt, \vx) 
-\frac{1}{\eta}
-\sum_{\ell=1}^d 
-\frac{
-	\biggl(1 - \eta \mathfrak{C}({x_\ell,t_\ell})  - 1 \biggr)
-}{
-	1 - \eta \mathfrak{C}(x_\ell,t_\ell) 
-}
-\\
+% & =
+% C_\vtheta(\vt, \vx) \frac{1}{\eta} \sum_{\ell=1}^d 
+% \frac{ \biggl(1 - \eta \mathfrak{C}({x_\ell,t_\ell})  - 1 \biggr) }{ 	1 - \eta \mathfrak{C}(x_\ell,t_\ell) }
+% \\
 % & = C_\vtheta(\vt, \vx) \frac{1}{\eta}\sum_{\ell=1}^d 
 % \biggl( 1 - \frac{1}{	1 - \eta \mathfrak{C}(x_\ell,t_\ell) } \biggr) \\
 & =
@@ -1453,6 +1442,7 @@ C_\vtheta(\vt, \vx)
 \biggr)
 .
 \end{align*}
+\iffalse
 Thus,
 \begin{align*}
 \frac{\partial}{\partial \eta} C_\vtheta(\vt, \vx) = ({d}/{\eta} ) C_\vtheta(\vt, \vx) 
@@ -1463,7 +1453,7 @@ Thus,
 { 1 - \eta \mathfrak{C}(x_\ell,t_\ell) }
 \biggr).
 \end{align*}
-
+\fi
 
 
 \subsubsection{When $\eta_\ell$ is different for each $\ell = 1,\cdots,d$}
@@ -1481,15 +1471,10 @@ In this case, we will have a vector of length $d$ shape parameters. Derivative o
 \biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
 % \\ & = \prod_{j=1}^d \biggl[ 1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr]
 % \frac{ \biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr) }{ 	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) }
-\\
-& =
-C_\vtheta(\vt, \vx) 
-\frac{1}{\eta_\ell}
-\frac{
-	\biggl(1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell)  - 1 \biggr)
-}{
-	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) 
-}
+% \\
+% & =
+% C_\vtheta(\vt, \vx) \frac{1}{\eta_\ell}
+% \frac{ \biggl(1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell)  - 1 \biggr)}{ 1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell)  }
 % \\ & = C_\vtheta(\vt, \vx) \frac{1}{\eta_\ell}
 % \biggl( 1 - \frac{1}{	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) }\biggr)
 \\
@@ -1508,6 +1493,7 @@ C_\vtheta(\vt, \vx)
 \biggr) 
 .
 \end{align*}
+\iffalse
 Thus, 
 \begin{align*}
 \frac{\partial}{\partial \eta_\ell} C_\vtheta(\vt, \vx) = \frac{1}{\eta_\ell} 
@@ -1518,6 +1504,7 @@ Thus,
 { 1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) }
 \biggr).
 \end{align*}
+\fi
 Please note that the above derivatives do not depend on $\mathfrak{C}(x,t)$ and most importantly these computations are applicable to any product kernel of the form \eqref{eqn:prod_kernel}.
 %$ C_\vtheta(\vt, \vx) = \prod_{j=1}^d [ 1 - \eta_j \mathfrak{C}(x_j,t_j) ]$.
 The $\bar{\lambda}_{i(\ell)}$ can be computed now using \eqref{eqn:deriv_eigenval_gram_matrix} with the computed kernel derivative, $\frac{\partial}{\partial \eta_\ell} C_\vtheta$.
@@ -1590,8 +1577,8 @@ We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to de
 
 
 
-The previous section shows an automatic Bayesian cubature algorithm using rank-1 lattice nodes and shift-invariant kernels. 
-In this chapter, we demonstrate a second approach to formulate fast Bayesian transform using matching kernel and point sets. 
+The previous section showed an automatic Bayesian cubature algorithm without using any specific nodes or kernels. 
+In this chapter, we demonstrate an approach to formulate fast Bayesian transform using matching kernels and point sets. 
 Scrambled Sobol' nets and Walsh kernels are paired to achieve $\Order(n^{-1 + \epsilon})$ order error convergence where $n$ is the sample size. 
 Sobol' nets \cite{Sob67} are low discrepancy points, used extensively in numerical integration, simulation, and optimization. 
 %Higher order digital nets with matching smoother kernels could be combined to provide higher order error convergence $\Order(N^{-\alpha + \epsilon})$ for $\alpha \ge 1$ and $\epsilon > 0$ but it is not covered in this work.
@@ -1709,9 +1696,9 @@ The following very useful result, which will be further used to obtain the fast 
 	The proof can be obtained from the definition of digital nets which stated that the digital nets are obtained using generator matrices, $\vec{z}_{i \ell} = \mG_{\ell} \, \vec{\imath} \bmod b$. Rewriting the subtraction using the generating matrix provides the result,
 	\begin{align*}
 	\vec{z}_{i \ell} - \vec{z}_{j\ell} \bmod b & = (\mG_{\ell} \vec{\imath} \bmod b) - (\mG_{\ell} \vec{\jmath} \bmod b) \\
-	& = (\mG_{\ell} \vec{\imath} - \mG_{\ell} \vec{\jmath} ) \bmod b \\
-	& = \mG_{\ell} (\vec{\imath} - \vec{\jmath} ) \bmod b \\
-	& = \mG_{\ell} (\overrightarrow{i \ominus j} ) \bmod b \\
+	& = (\mG_{\ell} \vec{\imath} - \mG_{\ell} \vec{\jmath} ) \bmod b 
+	  = \mG_{\ell} (\vec{\imath} - \vec{\jmath} ) \bmod b 
+	  = \mG_{\ell} (\overrightarrow{i \ominus j} ) \bmod b \\
 	& = \vec{z}_{i \ominus j \; {\ell}}.
 	\end{align*}
 	The rest of the lemma is obvious from the definition of digital nets.
@@ -1745,7 +1732,7 @@ An example of $64$ Sobol' nets in $d=2$ is given in \figref{fig:sobol-fig}.  The
 
 Walsh kernels are product kernels based on the Walsh functions. We introduce the necessary concepts in this section.
 
-\subsection{Walsh functions}
+\subsubsection{Walsh functions}
 Like the Fourier transform used with lattice points (\cite{JagHic19a}), the Walsh-Hadamard transform, which we will simply call Walsh transform, is used for the digital nets. The Walsh transform is defined using Walsh functions. Recall $\naturals_0 := \lbrace 0,1,2,\cdots \rbrace$.
 The one-dimensional Walsh functions in base $b$ are defined as
 \begin{align}
@@ -1777,7 +1764,7 @@ certain Walsh functions without error. Functions that are well approximated by s
 In this research we use Sobol' nodes which are digital nets with base $b=2$. So here afterwards base $b=2$ is assumed. % if not specified or the notation is dropped.  
 In this case, the Walsh function is simply $$\textup{wal}_{2,\vk} (\vx) = (-1)^{\vec{\vk}^T \vec{\vx}}.$$
 
-\subsection{Walsh kernels}
+\subsubsection{Walsh kernels}
 Consider the covariance kernels of the form,
 \begin{align}
 \label{eqn:digital_shift_in_kernel}
@@ -1887,7 +1874,7 @@ An example of Walsh matrix of length $n=8$ is given in Table~\ref{tab:hadamard_m
 \fi
 
 
-\subsection{Eigenvectors of $\mC$ are columns of Walsh-Hadamard matrix}
+\subsubsection{Eigenvectors of $\mC$ are columns of Walsh-Hadamard matrix}
 \label{sec:eigenvector_hadamard}
 The Gram matrix $\mCtheta$ formed by Walsh kernels and Sobol' nodes have a special structure called  block-Toeplitz, which can be used to construct the fast Bayesian transform. 
 A Toeplitz matrix is a diagonal-constant matrix in which each descending diagonal from left to right is constant. A block Toeplitz matrix is a special block matrix, which contains blocks that are repeated down the diagonals of the matrix.
