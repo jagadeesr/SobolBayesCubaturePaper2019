@@ -897,95 +897,56 @@ In the theorem above, note that if the original covariance kernel, $C$, is repla
 % Looking back over the results of Sections \ref{sec:MLE}--\ref{sec:GCV}, it is noted that if the original covariance function, $C$, is replaced by $b C$ for some positive constant $b$, the cubature, $\hmu$, the estimates of $\vtheta$, and the credible interval widths, $\err_{\MLE}, \err_{\full}, \err_{\GCV}$, all remain unchanged.  The estimates of $s^2$ are multiplied by $b^{-1}$, as would be expected.
 
 
-But \cite{JagHic19a} did not provide any explicit parameter search techniques. We provide one such technique using steepest descent in the following. 
+
+
+
+\subsection{The Fast Automatic Bayesian Cubature Algorithm} 
+
+
+The previous section presents three credible intervals, \eqref{eqn_prob_CI}, % \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, 
+for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule.  Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.
+
+Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size.  The steps are detailed in Algorithm~\ref{algorithm1}.
+
+We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability.  The example in the next section and the examples in Section~\ref{sec:NumExp} support that expectation. We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
+
+\algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen\ }
+\algnewcommand{\IElse}{\unskip\ \algorithmicelse\ }
+\algnewcommand{\EndIIf}{\unskip\ \algorithmicend\ \algorithmicif}
+
+
+\begin{algorithm}
+	\caption{Automatic Bayesian Cubature}\label{algorithm1}
+	\begin{algorithmic}[1]
+		\Require a generator for the sequence
+		$\vx_1, \vx_2, \ldots$; 
+		a black-box function, $f$; 
+		an absolute error tolerance,
+		$\varepsilon>0$; the positive initial sample size, $n_0$;
+		the maximum sample size $n_{\textup{max}}$
+		
+		\State $n \gets n_0, \; n' \gets 0, \; \err \gets \infty$
+		
+		\While{$\err > \varepsilon$ and $n \le n_{\textup{max}}$}
+		
+		\State\label{LoopStart}Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$
+		\State Compute $\vtheta$ by \eqref{fastThetaMLE} or \eqref{fastThetaGCV}
+		\State Compute $\err$  according to \eqref{eqn:err_MLEGCV} or \eqref{FJH:eq:errFull}
+		
+		\State	$n' \gets n, \; n \gets 2n'$
+		
+		\EndWhile
+		
+		\State Sample size to compute $\hmu$, $n \gets n'$
+		\State Compute $\hmu$, the approximate integral, according to \eqref{muhatGCV-FB-MLE-Simple}
+		\State \Return $\hmu, \; n$  and $\err$
+	\end{algorithmic}
+\end{algorithm}
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\subsubsection{Gradient descent to find optimal shape parameter}
-\label{grad_descent_MLE}
-The equation specifying $\vtheta_\MLE$ as defined in \eqref{fastThetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
-% Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
-Since the objective function is known we could compute the gradient.
-Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function for the same purpose by excluding the negative sign, which modifies the problem to become a minimization of
-\begin{align*}
-\mathcal{L}_{\MLE}(\vtheta | \vy)
-&:= % \frac{1}{n} \log(\det\, \mC) +  \log\left( (\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right) + \text{constants} \\
-% &= 
-\frac{1}{n}\sum_{i=1}^n \log(\lambda_{i}) + 
-\log\left(
-\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}}
-\right) + \text{constants.}
-\end{align*}
-Taking derivative with respect to $\theta_\ell$, for $\ell=1,\cdots,d$
-\begin{align}
-\label{eqn:deriv_obj_func_MLE}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy)
-= & \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
-- \left({ \sum_{i=2}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
-\left( {\sum_{i=2}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1}, \\
-& \text{where} \bar{\lambda}_{i(\ell)} = \frac{\partial}{\partial \theta_\ell} {\lambda}_{i(\ell)}
-\end{align}
-where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of $\mC$ in the $\ell$th variable. 
-Here we used some of the results from \cite{Dong2017a}. A technique to compute $\bar{\lambda}_{i(\ell)}$ faster is discussed in Section \ref{sec:product_kernel}.
-This result can be used with gradient descent as follows,
-\begin{align}
-\label{eqn:deep_descent}
-\theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu_\ell \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
-\end{align}
-where $\nu_\ell$ is the step size for the gradient descent. 
-
-
-Similarly the derivative of the objective function in \eqref{fastThetaGCV} can be obtained:
-\begin{align*}
-\mathcal{L}_\GCV(\vtheta | \vy)
-&= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
-\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right), 
-\end{align*}
-taking the derivative w.r.t $\theta_\ell$,
-\begin{align}
-\nonumber
-& \frac{\partial}{\partial \theta_\ell}  \mathcal{L}_\GCV(\vtheta | \vy)
-\\
-% &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-% \frac{\partial}{\partial \theta_\ell} \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)
-% -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-% \frac{\partial}{\partial \theta_\ell} \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
-% \\
-% &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-% \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^3} (-2) \frac{\partial\lambda_i}{\partial \theta_\ell}  \right)
-% \\ & \hspace{4cm} 
-% -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-% \left( \sum_{i=1}^n \frac{1}{\lambda_i^2} (-1)\frac{\partial \lambda_i}{\partial  \theta_\ell}  \right)
-% \\
-\label{eqn:deriv_obj_func_full}
-&= -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right)
-+ 2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-\left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(\ell)} }{\lambda_i^2}  \right).
-\end{align}
-where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the Gram matrix, $\mC$, in the $\ell$th variable. 
-
-
+But \cite{JagHic19a} did not provide any explicit parameter search techniques. We provide one such technique using steepest descent in the following section. 
 
 
 
@@ -1103,6 +1064,96 @@ When using $n=16$ rank-1 lattice points, and $r=1$ shift-invariant kernel, we ge
 
 Our Bayesian cubature algorithms compute the approximate integral using only the samples of the integrand. 
 Estimated integral value of our algorithm closely matches the integral of a smooth function that falls within the middle of the confidence interval. If the true integrand were to resemble the smooth approximate function then the estimated integral will be accurate.  
+
+
+
+
+
+
+
+
+
+\subsubsection{Gradient descent to find optimal shape parameter}
+\label{grad_descent_MLE}
+The equation specifying $\vtheta_\MLE$ as defined in \eqref{fastThetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
+% Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
+Since the objective function is known we could compute the gradient.
+Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function for the same purpose by excluding the negative sign, which modifies the problem to become a minimization of
+\begin{align*}
+\mathcal{L}_{\MLE}(\vtheta | \vy)
+&:= % \frac{1}{n} \log(\det\, \mC) +  \log\left( (\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right) + \text{constants} \\
+% &= 
+\frac{1}{n}\sum_{i=1}^n \log(\lambda_{i}) + 
+\log\left(
+\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}}
+\right) + \text{constants.}
+\end{align*}
+Taking derivative with respect to $\theta_\ell$, for $\ell=1,\cdots,d$
+\begin{align}
+\label{eqn:deriv_obj_func_MLE}
+\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy)
+= & \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
+- \left({ \sum_{i=2}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
+\left( {\sum_{i=2}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1}, \\
+& \text{where} \bar{\lambda}_{i(\ell)} = \frac{\partial}{\partial \theta_\ell} {\lambda}_{i(\ell)}
+\end{align}
+where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of $\mC$ in the $\ell$th variable. 
+Here we used some of the results from \cite{Dong2017a}. A technique to compute $\bar{\lambda}_{i(\ell)}$ faster is discussed in Section \ref{sec:product_kernel}.
+This result can be used with gradient descent as follows,
+\begin{align}
+\label{eqn:deep_descent}
+\theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu_\ell \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
+\end{align}
+where $\nu_\ell$ is the step size for the gradient descent. 
+
+
+Similarly the derivative of the objective function in \eqref{fastThetaGCV} can be obtained:
+\begin{align*}
+\mathcal{L}_\GCV(\vtheta | \vy)
+&= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
+\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right), 
+\end{align*}
+taking the derivative w.r.t $\theta_\ell$,
+\begin{align}
+\nonumber
+& \frac{\partial}{\partial \theta_\ell}  \mathcal{L}_\GCV(\vtheta | \vy)
+\\
+% &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+% \frac{\partial}{\partial \theta_\ell} \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)
+% -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+% \frac{\partial}{\partial \theta_\ell} \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
+% \\
+% &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+% \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^3} (-2) \frac{\partial\lambda_i}{\partial \theta_\ell}  \right)
+% \\ & \hspace{4cm} 
+% -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+% \left( \sum_{i=1}^n \frac{1}{\lambda_i^2} (-1)\frac{\partial \lambda_i}{\partial  \theta_\ell}  \right)
+% \\
+\label{eqn:deriv_obj_func_full}
+&= -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
+\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right)
++ 2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
+\left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(\ell)} }{\lambda_i^2}  \right).
+\end{align}
+where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the Gram matrix, $\mC$, in the $\ell$th variable. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1318,51 +1369,6 @@ where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the
 
 
 
-\subsection{The Fast Automatic Bayesian Cubature Algorithm} 
-
-
-The previous section presents three credible intervals, \eqref{eqn_prob_CI}, % \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, 
-for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule.  Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.
-
-Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size.  The steps are detailed in Algorithm~\ref{algorithm1}.
-
-We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability.  The example in the next section and the examples in Section~\ref{sec:NumExp} support that expectation. We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
-
-\algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen\ }
-\algnewcommand{\IElse}{\unskip\ \algorithmicelse\ }
-\algnewcommand{\EndIIf}{\unskip\ \algorithmicend\ \algorithmicif}
-
-
-\begin{algorithm}
-	\caption{Automatic Bayesian Cubature}\label{algorithm1}
-	\begin{algorithmic}[1]
-		\Require a generator for the sequence
-		$\vx_1, \vx_2, \ldots$; 
-		a black-box function, $f$; 
-		an absolute error tolerance,
-		$\varepsilon>0$; the positive initial sample size, $n_0$;
-		the maximum sample size $n_{\textup{max}}$
-		
-		\State $n \gets n_0, \; n' \gets 0, \; \err \gets \infty$
-		
-		\While{$\err > \varepsilon$ and $n \le n_{\textup{max}}$}
-		
-		\State\label{LoopStart}Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$
-		\State Compute $\vtheta$ by \eqref{fastThetaMLE} or \eqref{fastThetaGCV}
-		\State Compute $\err$  according to \eqref{eqn:err_MLEGCV} or \eqref{FJH:eq:errFull}
-		
-		\State	$n' \gets n, \; n \gets 2n'$
-		
-		\EndWhile
-		
-		\State Sample size to compute $\hmu$, $n \gets n'$
-		\State Compute $\hmu$, the approximate integral, according to \eqref{muhatGCV-FB-MLE-Simple}
-		\State \Return $\hmu, \; n$  and $\err$
-	\end{algorithmic}
-\end{algorithm}
-
-
-
 
 
 
@@ -1543,6 +1549,639 @@ We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to de
 \begin{align*}
 \bar{\vC}_{1{(\ell)}} = \left(\frac{\partial }{\partial{\theta}_\ell} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
 \end{align*}
+
+
+
+
+
+
+
+
+\section{Continuous Valued Kernel Order}
+\label{sec:non_integer_kernel_order}
+
+\JRNote{Need better and more convincing motivation}
+
+In the previous sections, we assumed that the shift-invariant kernel's order is an even valued integer and also fixed. It requires the practitioner to be aware of the integrand's smoothness to precisely handpick the kernel order to match the integrand's smoothness. However, it is not possible to know the integrand's smoothness in most of the practical applications. The constraint to have an integer-valued kernel order also limits the ability to continuously vary the kernel's smoothness to match the integrand like the shape parameter is varied to match. 
+
+The integer kernel order is not suitable to optimally search by standard optimization algorithm.
+As a consequence, one usually ends up choosing a higher kernel order when the integrand is not  smooth or lower kernel order when the integrand is very smooth.
+Often it leads to longer computation time or poor accuracy in the numerical integration.
+Here we explore two alternative forms of the kernel which allow the kernel order to be positive continuous value greater than one or a continuous value in the range $(0,1)$. Let us recall the infinite series expression that was used to construct the kernel \eqref{the_kernel_eqn_bernoulli}:
+\begin{align*}
+C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2 \pi\sqrt{-1} \vk^T\vx}
+e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \text{where} \; 
+\alpha_{\vk,\vtheta} = \prod_{\ell=1}^d \frac{\eta_\ell}{{|k_\ell|}^r} 
+\end{align*}
+and $\vtheta = (r, \veta)$.  This form is convenient for analytical derivations.
+To make the derivations easier to follow, we fix the dimension $d=1$,
+\begin{align*}
+C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
+e^{ 2 \pi\sqrt{-1} k x}
+e^{-2 \pi\sqrt{-1} k t}.
+\end{align*}
+
+
+
+
+
+
+
+
+
+
+\subsection{Truncated series kernel}
+\label{sec:trunc_series_kernel}
+The following variation to the infinite series kernel \eqref{the_kernel_eqn_bernoulli} has the kernel order in the interval $(1, \infty)$. This kernel provides algebraic decay but it is more robust in the hyperparameter search.
+We reuse the original definition of the infinite kernel \eqref{the_kernel_eqn_bernoulli} but truncate to a finite length. This allows the kernel order $r$ continuous valued so that it does not have to be an even integer,  which was a constraint previously. 
+For $d=1$,
+\begin{align*}
+C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
+e^{ 2 \pi\sqrt{-1} k (x-t)},
+\end{align*}
+where $\theta = (r, \eta)$. 
+Since the infinite sum cannot be used directly, we truncate to length $n$,
+\begin{align*}
+C_{\vtheta, n}(x, t) = & 1 + \eta \sum_{k = - n/2 }^{n/2 - 1} \frac{1}{\abs{k}^r} 
+e^{ 2 \pi\sqrt{-1} k (x-t)}.
+\end{align*}
+The Gram matrix is written as 
+\begin{align*}
+\mC_{\vtheta, n} = & \biggl( C_{\vtheta, n}(\vx_i, \vx_j) \biggr)_{i,j=1}^n,
+\end{align*}
+where $n$ is the number of samples. 
+The reason for having the truncation length and the number of samples equal will be obvious as we proceed further.
+The first column of the Gram matrix is
+\begin{align*}
+\vC_{\vtheta, n} &= \biggl( C_{\vtheta, n}(\vx_i, \vx_1) \biggr)_{i=1}^n
+\\
+&= \left( \prod_{\ell=1}^d \left[ 1 + \eta_\ell \sum_{k = - n/2, k \neq 0 }^{n/2 - 1} \frac{1}{\abs{k_l}^r} 
+e^{ 2 \pi\sqrt{-1} k_l (x_{i\ell}-x_{1\ell})}\right] \right)_{i=1}^n, 
+\end{align*}
+where $d$ is the number of dimensions. 
+However the direct computation involves $n^2$ computations since we have chosen the truncation length to $n$. We can reduce the computations to $\Order(n\log n)$ using the FFT.
+Define
+\begin{align*}
+\mathfrak{C}_r(t) &:= \sum_{k = - n/2, k \neq 0 }^{n/2 -1} \frac{1}{\abs{k}^r} 
+e^{ 2 \pi\sqrt{-1} k\, t}.
+\end{align*}
+Using the $\mathfrak{C}_r$, rewrite
+\begin{align}
+\label{eqn:trunc_series_kernel}
+\vC_{\vtheta, n}
+&= \left( \prod_{l=1}^d \left[ 1 + \eta \mathfrak{C}_r( \abs{x_{il} - x_{1l}})\right] \right)_{i=1}^n.
+\end{align}
+One can observe
+$\abs{x_{i\ell}-x_{1\ell}} \in \lbrace 0, \frac 1n, \frac 2n, \dots \frac{n-1}{n}  \rbrace$ by using the definition of lattice points from \eqref{eqn:lattice_def}. This can be used to rewrite $\mathfrak{C}_r$ in a much simpler form,
+\begin{align*}
+\mathfrak{C}_r \left(\frac jn \right) &= \sum_{k = - n/2, k \neq 0 }^{n/2 - 1} \frac{1}{\abs{k}^r} 
+e^{ 2 \pi\sqrt{-1} k (\frac jn)}, \quad \text{where} \;  j=0,1,\dots n-1.
+\end{align*}
+This notation is very convenient to show that $\widetilde{\mathfrak{C}}_r$,  the discrete Fourier transform of $\mathfrak{C}_r$, can be computed analytically
+\begin{align*}
+\widetilde{\mathfrak{C}}_r(m) &= \sum_{j=0}^{n-1} \mathfrak{C}_r (j/n) e^{- 2 \pi\sqrt{-1} jm/n} 
+\\
+% &= \sum_{k = - n/2, k \neq 0 }^{n/2-1} 
+% \sum_{j=0}^{n-1} \frac{1}{\abs{k}^r} 
+% e^{ 2 \pi\sqrt{-1} k  j/n} e^{- 2 \pi\sqrt{-1} jm/n} 
+% \\
+&= \sum_{k = - n/2, k \neq 0 }^{n/2-1} 
+\sum_{j=0}^{n-1} \frac{1}{\abs{k}^r} e^{ 2 \pi\sqrt{-1} (k-m)  j/n} , \quad \text{by \eqref{eqn:dft_delta_fact}}
+\\
+&= \sum_{k = - n/2, k \neq 0  }^{n/2-1} \frac{n}{\abs{k}^r} \; \delta_{k-m \bmod n, 0} \; .
+\end{align*}
+This is the reason we have chosen the truncation length to $n$. 
+Based on the above result, it is evident that $\widetilde{\mathfrak{C}}_r$ can be computed analytically,
+\begin{align} \label{dft_of_g}
+\widetilde{\bm{\mathfrak{C}}}_r := \left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}, \quad
+\text{where} \quad
+\widetilde{\mathfrak{C}}_r(m) = 
+\begin{cases}
+0, & \text{for} \quad m=0 \\
+\frac{n}{\abs{m}^r}, & \text{for} \quad m=1,\dots,n/2-1 \\
+\frac{n}{\abs{n-m}^r}, & \text{for} \quad m=n/2,\dots,n-1
+\end{cases}
+\end{align}
+where we used the fact,
+\begin{align}
+\label{eqn:dft_delta_fact}
+\sum_{i=0}^{n-1} e^{2 \pi \sqrt{-1} i j /n} = 
+\begin{cases}
+\frac{1 - e^{2\pi \sqrt{-1} j n /n}}{1 - e^{2\pi \sqrt{-1} j /n}} = 0, &j \ne 0 \bmod n
+\\
+n, & j = 0 \bmod n.
+\end{cases}
+\end{align}
+Having these results, we can easily back-compute $\mathfrak{C}$ using inverse discrete Fourier transform. It can be shown that inverse DFT of $\widetilde{\mathfrak{C}}_{r}$ returns $\mathfrak{C}$,
+\begin{align*}
+\frac{1}{n} &\sum_{m=0}^{n-1} \widetilde{\mathfrak{C}}_{r} (m) e^{2 \pi\sqrt{-1} lm/n} \\
+& = \frac{1}{n} \sum_{m=0}^{n-1} 
+\sum_{j=0}^{n-1} \mathfrak{C}_{r} (j/n) e^{- 2 \pi\sqrt{-1} jm/n}
+e^{2 \pi\sqrt{-1} lm/n}, \quad \text{by \eqref{eqn:dft_delta_fact}}  \\
+% & = \frac{1}{n} \sum_{j=0}^{n-1} \mathfrak{C}_{r} (j/n) \sum_{m=0}^{n-1} e^{2 \pi\sqrt{-1} (l-j)m/n} \\
+& = \frac{1}{n}  \sum_{j=0}^{n-1} \mathfrak{C}_{r} (j/n) n \delta_{(l-j) \bmod n, 0} \\
+& = \mathfrak{C}_{r} (l/n), \quad \text{for} \quad l=0,\dots,n-1
+\end{align*}
+This implies that to compute $n$ values of $\biggl( C_{\vtheta, n}(\vx_i, \vx_1) \biggr)_{i=1}^n$, we need to have the number of samples and the truncation length the same. 
+The above results are summarized as an algorithm to compute $\mathfrak{C}$ using FFT in Algorithm~\ref{algorithm-cont-val-kernel-order}.
+\begin{algorithm}
+	\caption{The kernel with continuous valued order}\label{algorithm-cont-val-kernel-order}
+	\begin{algorithmic}[1]
+		
+		\Require
+		Number of points to use, $n$; 
+		
+		\State Analytically compute $ \widetilde{\bm{\mathfrak{C}}}_r $ in \eqref{eqn:trunc_series_kernel}, the discrete Fourier transform of ${\bm{\mathfrak{C}}}_r$ using \eqref{dft_of_g}
+		\State Take the inverse FFT of $\widetilde{\bm{\mathfrak{C}}}_r$ to get ${\bm{\mathfrak{C}}}_r$
+		
+		\State Using ${\bm{\mathfrak{C}}}_r$ compute the truncated series of kernel of truncation length $n$ using \eqref{eqn:trunc_series_kernel}
+		
+		%\State Analytically compute $ \widetilde{\bm{\mathfrak{C}}}_r = \left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}$, the discrete Fourier transform of $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$ using \eqref{dft_of_g}
+		% \State Take the inverse FFT of $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}$ to get $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$
+	\end{algorithmic}
+	
+\end{algorithm}
+
+In Algorithm \ref{algorithm-cont-val-kernel-order}, the computational cost of  computing ${\bm{\mathfrak{C}}}_r$ % $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$ 
+is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of ${\bm{\mathfrak{C}}}_r$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is that the FFT approach in Algorithm \ref{algorithm-cont-val-kernel-order} is the computations are numerically more stable than the direct sum approach. Please note that these kernels evolve with the truncation length $n$. The larger $n$ value the closer the kernel resembles the original infinite series kernel. One disadvantage is, the truncated series kernels obtain algebraic order decay at best. The infinite series kernel with little modification can be enhanced to obtain exponential decay as shown next.
+
+
+
+
+
+
+
+
+
+\subsection{Exponentially decaying kernel}
+\label{sec:exp_decay_kernel}
+We propose the following alternative form of the kernel. This kernel can provide exponential decay,
+\begin{align*}
+C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } q^{\abs{k}}  
+e^{ 2 \pi\sqrt{-1} k (x-t)}, \quad \text{with} \quad 0 < q < 1
+\end{align*}
+where $q$ is used to denote the kernel order to distinguish it from the notation in \eqref{eqn:trunc_series_kernel}. This can be rewritten as
+\begin{align*}
+C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } 
+e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
+\\
+=& 1 + \eta 
+\left(
+\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
++
+\sum_{k=\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
+\right)
+\\
+=& 1 + \eta 
+\left(
+\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
++
+\sum_{k=-\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
+\right)
+\\
+=& 1 + \eta 
+\left(
+\underbrace{
+	\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} }_{*}
++
+\sum_{k=1}^{\infty} e^{ -2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
+\right).
+\end{align*}
+Let us focus on the first term $(*)$ within the parenthesis in the previous equation,
+\begin{align*}
+\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} & =
+\sum_{k=1}^\infty \left[e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)} \right]^k
+\\
+& = \frac{e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)}}{1- e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)}}
+= \frac{1}{ e^{- 2 \pi\sqrt{-1} (x-t) -  \log(q)} -1 }
+\\
+& =\frac{1}{ q^{-1} e^{- 2 \pi\sqrt{-1} (x-t)} -1 }
+\end{align*}
+Using this result
+\begin{align*}
+C_\vtheta(x, t) &= 
+1 + \eta 
+\left(
+\frac{1}{ q^{-1} e^{- 2 \pi\sqrt{-1} (x-t)} -1 }
++
+\frac{1}{ q^{-1} e^{ 2 \pi\sqrt{-1} (x-t)} -1 }
+\right)
+\\
+&= 
+1 + \eta 
+\left(
+\frac{q^{-1} \left(e^{2 \pi\sqrt{-1} (x-t) }+ e^{ -2 \pi\sqrt{-1} (x-t)}\right) -2 }
+{q^{-2} - q^{-1} \left(e^{ 2 \pi\sqrt{-1} (x-t)} + e^{ -2 \pi\sqrt{-1} (x-t)}\right) + 1 }
+\right)
+\\
+&= 
+1 + \eta 
+\left(
+\frac{2 q^{-1} \cos({2 \pi\sqrt{-1} (x-t) }) -2 }
+{q^{-2} - 2 q^{-1} \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
+\right)
+\\
+&= 
+1 + 2 \eta q
+\left(
+\frac{ \cos({2 \pi\sqrt{-1} (x-t) }) - q }
+{q^{2} - 2 q \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
+\right).
+\end{align*}
+Using the fact $\cos^2(t) + \sin^2(t) = 1$,
+\begin{align*}
+C_\vtheta(x, t) &= 
+1 + 2 \eta q
+\left(
+\frac{ \cos({2 \pi\sqrt{-1} (x-t) }) - q }
+{ \left[\cos({ 2 \pi\sqrt{-1} (x-t)})-q\right]^2 + \sin^2({ 2 \pi\sqrt{-1} (x-t)}) }
+\right),
+\end{align*}
+which shows that the kernel order $q$ can be continuously varied while searching for the optimal value. 
+The hyperparameters need to be $\eta > 0$ and $ 0 < q < 1$ while searching for the optimum value, so we use the transformations demonstrated in Section~\ref{sec:kernel_param_search} to map the values to or from $\reals$, where the search is usually done.
+% \begin{align*}
+% q: & \quad \frac{1}{1 + e^{-t}} & :(-\infty, \infty) \to (0, 1)
+% \\
+% \eta: & \quad e^{t} & :(-\infty, \infty) \to (0, \infty).
+% \end{align*}
+One disadvantage of this kernel is that it is very sensitive to the changes in kernel order $q \in (0,1)$, for even small values, which might cause the hyperparameter search to miss the global minima.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+\section{Kernel Hyperparameters Search}
+\label{sec:kernel_param_search}
+
+\JRNote{Explain the transformation used to make the search range positive, $> 0$ , etc.}
+
+The various hyperparameters introduced and used by our algorithms need to be optimally chosen. % We have not discussed how that will be done. 
+The parameter search can be done in two major ways. 
+Bounded minima search, if the search interval is known, else unbounded search.  Most of the scenarios, the search interval is unknown. So the natural choice is to use unbounded search over the unbound domain such as \code{fminsearch} provided by MATLAB.
+% line in -- that is semi-bounded.
+However hyperparameters need to live in a domain that is bounded or semi-bounded. 
+There are some simple domain transformations available to achieve this.
+
+\subsection{Positive kernel shape parameter}
+The following parameter map is used to ensure that the shape parameter values are positive real numbers. For $\eta > 0$ as introduced in Section \ref{sec:deriv_of_kernel}, let
+% We need to have $\eta > 0$ and $ 0 < b < 1$ while searching for the optimum value, so we use the following transformations
+\begin{align*}
+\eta{(t_1)} = & \quad e^{t_1}, & \eta : (-\infty, \infty) \to (0, \infty).
+\end{align*}
+Instead of searching for $\eta \in (0, \infty)$, we may search for the optimal $t_1 = \log(\eta)$ over the whole real line $\reals$. 
+% After the successful completion the minima 
+The optimal value $t_{1, \textup{opt}}$ can be transformed back to the $(0, \infty)$ interval using 
+% the inverse of the transform $\log(t_0 )$ where $t_0$ is the minima.
+\begin{align*}
+\eta_{\textup{opt}} = e^{t_{1,\textup{opt}}}.
+\end{align*}
+
+
+
+\subsection{Kernel order $1 < r < \infty$}
+The following map is used to ensure that the kernel order values are positive real number and greater than one, i.e., in the $(1, \infty)$ interval as required in \secref{sec:trunc_series_kernel},
+\begin{align*}
+r(t_2) = & \quad {1 + e^{t_2}}, & r:  (-\infty, \infty) \to (1,\infty).
+\end{align*}
+So one may search for the optimal $t_2 = -\log(r-1)$ in the whole real line $\reals$.
+The optimal value $t_{2, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ using 
+\begin{align*}
+r_{\textup{opt}} = 1+ e^{t_{2, \textup{opt}}}.
+\end{align*}
+
+
+
+
+
+\subsection{Kernel order $0 < q < 1$}
+The following multivariate map is used to ensure that the kernel order values are positive real and less than one, i.e., in the $(0,1)$ interval to use with exponentially decaying kernel, as introduced in \secref{sec:exp_decay_kernel},
+\begin{align*}
+q(t_3) = & \quad \frac{1}{1 + e^{t_3}}, & q: (-\infty, \infty) \to (0, 1).
+\end{align*}
+So one may search for the optimal $t_3 = \log(q^{-1}-1)$ in the whole real line $\reals$.
+The optimal value $t_{3, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ by using
+\begin{align*}
+q_{\textup{opt}} = \frac{1}{1 + e^{t_{3, \textup{opt}}}}.
+\end{align*}
+
+
+
+
+\subsection{Combined searching of kernel order $r$ and shape parameter $\veta$}
+Instead of searching $\veta$ and $r$ separately one would prefer to search them together so that the most optimal values can be obtained, where $\veta = (\eta_1, \cdots, \eta_d)$ such that $\eta_l \ne \eta_k$,  for $l \ne k$.
+We can combine the parameter maps used above to ensure that the kernel order values in $(1, \infty)$ and shape parameter $\veta$ in $(0,\infty)^d$ as required in \secref{sec:trunc_series_kernel},
+\begin{align*}
+\vtheta(\vt) = 
+\begin{pmatrix}
+r(t_{1}) \\ \eta(t_2) \\ \vdots \\ \eta(t_{d+1}) 
+\end{pmatrix} =
+\begin{pmatrix}
+1 + e^{t_1} \\ e^{t_2} \\ \vdots \\ e^{t_{d+1}}
+\end{pmatrix}, 
+\quad
+\vtheta: \reals^{d+1} \to (1,\infty) \times (0,\infty)^d .
+\end{align*}
+So instead of searching for $\vtheta_{\textup{opt}}$ in $(1,\infty) \times (0,\infty)^d$, one may search for the optimal 
+$$
+\vt = \vt^{-1} (\vtheta) = 
+\begin{pmatrix}
+\log(r-1) \\ \log(\eta_1) \\ \vdots \\ \log(\eta_d)
+\end{pmatrix}
+$$ in the whole real line $\reals^{d+1}$.
+The optimal value $\vt_{\textup{opt}}$ can be transformed back to the desired interval $(1,\infty) \times (0,\infty)^d$ using 
+\begin{align*}
+\vtheta_{\textup{opt}} = 
+\begin{pmatrix}
+1 + e^{t_{1, \textup{opt}}} \\
+e^{t_{2, \textup{opt}}} \\
+\vdots \\
+e^{t_{d+1, \textup{opt}}} \\
+\end{pmatrix}.
+\end{align*}
+Similarly one can map the kernel order $q \in (0,1)$ \secref{sec:exp_decay_kernel}, and $\veta$ in to a multivariate hyperparameter search.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Diagnostics for the Gaussian Process Assumption}
+
+The starting point for our Bayesian cubature is the assumption that the integrand arises from a Gaussian process. This means that the function data, $\vf$, shall satisfy a multivariate Gaussian distribution, as in \eqref{eqn:fGaussDist}. We propose a transform, $\vZ = \frac 1n \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone)$, to the given function data $\vf$ to verify the assumption.  We can verify that the transformed data, $\vZ$, has zero mean and is also uncorrelated because
+\begin{align*}
+\Ex\left[\vZ \right] &= 
+\frac 1n \mV \mLambda^{-\frac 12} \mV^H(\Ex\left[\vf\right] - m \vone) 
+\\
+& = 0
+\end{align*}
+\begin{align*}
+\cov (\vZ) 
+&= \frac {1}{n^2} \Ex\left[  
+\mV \mLambda^{-\frac 12} \mV^H (\vf - m \vone)
+(\vf - m \vone)^T \mV \mLambda^{-\frac 12} \mV^H
+\right]
+\\
+&=
+\frac {1}{n^2} \mV \mLambda^{-\frac 12} \mV^H 
+\Ex \biggl[ (\vf - m \vone)
+(\vf - m \vone)^T \biggr] \mV \mLambda^{-\frac 12} \mV^H
+\\ % Note : \mV^h \mV = n
+&=
+\frac{1}{n^2} \mV \mLambda^{-\frac 12} \mV^H 
+\frac 1n \mV \mLambda \mV^H \mV \mLambda^{-\frac 12} \mV^H
+\\
+&=
+\frac{1}{n^3} \mV \mLambda^{-\frac 12} (n) \mLambda (n) \mLambda^{-\frac 12} \mV^H
+= \mathsf{I}
+\end{align*}
+Thus, the elements of $\vZ$ are IID standard Gaussian random variables.  
+In practice, using the estimated $m_\MLE$ further simplifies, 
+\begin{align*}
+\vZ &= \frac 1n \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone) \\
+&= \frac 1n \mV \mLambda^{-\frac 12} (\mV^H \vf - \frac{\tilde{f}_1}{n} \mV^H \vone) 
+\\
+&= \frac 1n \mV \mLambda^{-\frac 12} \left(\mV^H \vf - \tilde{f}_1 \begin{pmatrix}1, 0, \hdots, 0 \end{pmatrix}^T \right) 
+\end{align*}
+
+
+To verify this hypothesis, we build a toy function using the known Bernoulli polynomial series,
+\begin{align}
+\label{toy_func}
+f_{\theta, r}(x) = \hat{f}_0 + \sqrt{\theta} \sum_{k > 0}
+\frac{f_{c,k} \cos(2\pi k x) + f_{s,k} \sin(2\pi k x)}{k^r}
+\end{align}
+where $f_0 \sim \text{IID} \calN(c, b^2) $, $f_{c,k}, f_{s,k} \sim \text{IID} \calN(0, a^2)$ and $a, b, c$ are constants. The series in \eqref{toy_func} is truncated to an arbitrarily chosen length $N$. It has zero mean and covariance
+\begin{align*}
+\cov(f) &= \Ex[f_{\theta, r}(x) f_{\theta, r}(t)] \\
+&= \cov(f_0) + \theta \sum_{k=1}^N 
+\left(	
+\Ex(f_{c,k}^2) \frac{\cos(2\pi k x) \cos(2\pi k t)}{k^{2r}} +
+\Ex(f_{s,k}^2) \frac{\sin(2\pi k x) \sin(2\pi k t)}{k^{2r}} \right) \\
+&= b^2 + a^2 \theta \sum_{k=1}^N 	
+\frac{\cos(2\pi k (x - t)) }{k^{2r}} 
+\end{align*}
+
+
+
+Figures \ref{fig:keister-normplot} and \ref{fig:mvn-normplot} are normal probability plots of the $Z_i$ using empirical Bayes estimates of $m$ and $\vtheta$. \textbf{more goes here}.
+
+
+
+
+\iftrue
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.9\linewidth]{"figures/Keister Normplot d_2 bernoulli_2 Period_C1sin n_32768"}
+	\caption{Normal plot : Keister function with arbMean assumption}
+	\label{fig:keister-normplot}
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.9\linewidth]{"figures/MVN Normplot d_2 bernoulli_2 Period_C1sin n_32768"}
+	\caption{Normal plot : MVN with arbMean assumption}
+	\label{fig:mvn-normplot}
+\end{figure}
+\fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Posterior} We compute posterior distribution to verify the Gaussian assumption.
+
+\subsubsection{Non-informative prior}
+Assume the prior is of the form $ \rho_{m,s^2} (\xi, \lambda) = \frac{1}{\lambda} $ 
+
+\begin{align*}
+\rho_{f(\vx)}(\vy) &=\int_{0}^\infty \int_{-\infty}^\infty \rho_{f} (\vy | m=\xi, s^2=\lambda) 
+\rho_{m,s^2} (\xi, \lambda) \dif{\xi} \dif{\lambda} 
+\\
+&= \int_{0}^\infty \int_{-\infty}^\infty \frac{1}{(\sqrt{2 \pi})^n \sqrt{\det(\lambda \mC)}} 
+\exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right) \frac{1}{\lambda} \dif{\xi} \dif{\lambda}
+\\
+& \propto \frac{1}{(\sqrt{2 \pi})^n} \int_{0}^\infty \frac{1}{\lambda ^{\frac n2} \lambda}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} 
+\underbrace{(\vone^T \mCInv \vone)}_{D}
+\left[
+\xi^2 -2 \xi \underbrace{\frac{\vone^T \mCInv \vy }{\vone^T \mCInv \vone}}_{A} + \underbrace{\frac{\vy^T \mCInv \vy }{\vone^T \mCInv \vone}}_{B} 
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2 - A^2 + B
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2
+\right]
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac{(n+1)}{2}}}
+\frac{1}{\sqrt{2\pi\lambda/D}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi-A
+\right]^2
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac{(n+1)}{2}}}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto (D[B-A^2])^{-\frac{(n-1)}{2}}
+\\
+& \propto \left(\vy^T\mCInv\vy - \frac{(\vone^T\mCInv\vy)^2}{\vone^T\mCInv\vone} \right)^{-\frac{(n-1)}{2}}
+\\
+&=  \left(\vy^T \left[\mCInv - \frac{(\mCInv\vone \vone^T \mCInv)}{\vone^T\mCInv\vone} \right]\vy \right)^{-\frac{(n-1)}{2}}
+\\
+&=  \biggl((\vy-m_\MLE)^T \mCInv (\vy-m_\MLE) \biggr)^{-\frac{(n-1)}{2}}, 
+\quad \text{where} \quad
+m_\MLE=\frac{(\vone^T \mCInv \vy)}{\vone^T\mCInv\vone}
+\end{align*}
+
+\subsubsection{TODO: How to interpret as Student's $t$-distribution?}
+
+
+
+
+\subsubsection{Generic prior}
+Assume the prior is of the form $ \rho_{m,s^2} (\xi, \lambda) = g(\lambda) $ 
+
+\begin{align*}
+\rho_{f(\vx)}(\vy) &=\int_{0}^\infty \int_{-\infty}^\infty \rho_{f} (\vy | m=\xi, s^2=\lambda) 
+\rho_{m,s^2} (\xi, \lambda) \dif{\xi} \dif{\lambda} 
+\\
+&= \int_{0}^\infty \int_{-\infty}^\infty \frac{1}{(\sqrt{2 \pi})^n \sqrt{\det(\lambda \mC)}} 
+\exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right) g(\lambda) \dif{\xi} \dif{\lambda}
+\\
+& \propto \frac{1}{(\sqrt{2 \pi})^n} \int_{0}^\infty \frac{g(\lambda)}{\lambda ^{\frac n2} } 
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2 }}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} 
+\underbrace{(\vone^T \mCInv \vone)}_{D}
+\left[
+\xi^2 -2 \xi \underbrace{\frac{\vone^T \mCInv \vy }{\vone^T \mCInv \vone}}_{A} + \underbrace{\frac{\vy^T \mCInv \vy }{\vone^T \mCInv \vone}}_{B} 
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2 - A^2 + B
+\right]
+\right)  \dif{\xi} \dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi^2 -2 \xi A + A^2
+\right]
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
+\frac{1}{\sqrt{2\pi\lambda/D}}
+\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
+\left[
+\xi-A
+\right]^2
+\right) \dif{\xi}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\\
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda}
+\end{align*}
+This can be interpreted as Laplace transform of $g(\lambda)$.
+Let $\eta = \frac{1}{2} D [B - A^2] $ and $\lambda = \frac{1}{w}, \dif{\lambda} = -w^{-2} \dif{w}$ 
+\begin{align*}
+\rho_{f(\vx)}(\vy) 
+& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
+\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
+\dif{\lambda} 
+\\
+&= \int_{0}^\infty \frac{g(1/w)  }{w^{-\frac{(n-1)}{2}}}
+\exp \left(  - w \eta \right)
+(-w^{-2})\dif{w}
+\\
+&= \int_\infty^0 -g(1/w) w^{\frac{(n-1)}{2} - 2}
+\exp \left(  - w \eta \right)
+\dif{w}
+\\
+&= \int_{0}^\infty g(1/w) w^{\frac{(n-5)}{2}}
+\exp \left(  - w \eta \right)
+\dif{w}
+\\
+& = \mathcal{LT}\{ g(1/\eta) \}^{(\frac{n-5}{2})'}
+\end{align*}
+where $\mathcal{LT}(.)$ denotes the Laplace transform and $(\frac{n-5}2)'$ indicates the $(\frac{n-5}2)$th derivative taken after the transform.
+Here we used frequency domain derivative property of the Laplace transform. 
+$\rho_{f(\vx)}(\vy)$  is proportional to $(\frac{n-5}2)$th derivative of the Laplace transform of $g(1/\eta)$.
+
+\begin{align*}
+D [B - A^2] &= \left(\vy^T\mCInv\vy - \frac{(\vone^T\mCInv\vy)^2}{\vone^T\mCInv\vone} \right)
+\\
+&= \biggl((\vy-m_\MLE)^T \mCInv (\vy-m_\MLE) \biggr), 
+\quad \text{where} \quad
+m_\MLE=\frac{(\vone^T \mCInv \vy)}{\vone^T\mCInv\vone}
+\end{align*}
+\subsubsection{TODO: How to integrate further?}
+
+
 
 
 
@@ -2303,386 +2942,22 @@ One could develop matching digitally shift invariant kernels to formulate the fa
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
 
 
-\section{Kernel Hyperparameters Search}
-\label{sec:kernel_param_search}
 
-\JRNote{Explain the transformation used to make the search range positive, $> 0$ , etc.}
 
-The various hyperparameters introduced and used by our algorithms need to be optimally chosen. % We have not discussed how that will be done. 
-The parameter search can be done in two major ways. 
-Bounded minima search, if the search interval is known, else unbounded search.  Most of the scenarios, the search interval is unknown. So the natural choice is to use unbounded search over the unbound domain such as \code{fminsearch} provided by MATLAB.
-% line in -- that is semi-bounded.
-However hyperparameters need to live in a domain that is bounded or semi-bounded. 
-There are some simple domain transformations available to achieve this.
 
-\subsection{Positive kernel shape parameter}
-The following parameter map is used to ensure that the shape parameter values are positive real numbers. For $\eta > 0$ as introduced in Section \ref{sec:deriv_of_kernel}, let
-% We need to have $\eta > 0$ and $ 0 < b < 1$ while searching for the optimum value, so we use the following transformations
-\begin{align*}
-\eta{(t_1)} = & \quad e^{t_1}, & \eta : (-\infty, \infty) \to (0, \infty).
-\end{align*}
-Instead of searching for $\eta \in (0, \infty)$, we may search for the optimal $t_1 = \log(\eta)$ over the whole real line $\reals$. 
-% After the successful completion the minima 
-The optimal value $t_{1, \textup{opt}}$ can be transformed back to the $(0, \infty)$ interval using 
-% the inverse of the transform $\log(t_0 )$ where $t_0$ is the minima.
-\begin{align*}
-\eta_{\textup{opt}} = e^{t_{1,\textup{opt}}}.
-\end{align*}
 
 
 
-\subsection{Kernel order $1 < r < \infty$}
-The following map is used to ensure that the kernel order values are positive real number and greater than one, i.e., in the $(1, \infty)$ interval as required in \secref{sec:trunc_series_kernel},
-\begin{align*}
-r(t_2) = & \quad {1 + e^{t_2}}, & r:  (-\infty, \infty) \to (1,\infty).
-\end{align*}
-So one may search for the optimal $t_2 = -\log(r-1)$ in the whole real line $\reals$.
-The optimal value $t_{2, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ using 
-\begin{align*}
-r_{\textup{opt}} = 1+ e^{t_{2, \textup{opt}}}.
-\end{align*}
 
-
-
-
-
-\subsection{Kernel order $0 < q < 1$}
-The following multivariate map is used to ensure that the kernel order values are positive real and less than one, i.e., in the $(0,1)$ interval to use with exponentially decaying kernel, as introduced in \secref{sec:exp_decay_kernel},
-\begin{align*}
-q(t_3) = & \quad \frac{1}{1 + e^{t_3}}, & q: (-\infty, \infty) \to (0, 1).
-\end{align*}
-So one may search for the optimal $t_3 = \log(q^{-1}-1)$ in the whole real line $\reals$.
-The optimal value $t_{3, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ by using
-\begin{align*}
-q_{\textup{opt}} = \frac{1}{1 + e^{t_{3, \textup{opt}}}}.
-\end{align*}
-
-
-
-
-\subsection{Combined searching of kernel order $r$ and shape parameter $\veta$}
-Instead of searching $\veta$ and $r$ separately one would prefer to search them together so that the most optimal values can be obtained, where $\veta = (\eta_1, \cdots, \eta_d)$ such that $\eta_l \ne \eta_k$,  for $l \ne k$.
-We can combine the parameter maps used above to ensure that the kernel order values in $(1, \infty)$ and shape parameter $\veta$ in $(0,\infty)^d$ as required in \secref{sec:trunc_series_kernel},
-\begin{align*}
-\vtheta(\vt) = 
-\begin{pmatrix}
-r(t_{1}) \\ \eta(t_2) \\ \vdots \\ \eta(t_{d+1}) 
-\end{pmatrix} =
-\begin{pmatrix}
-1 + e^{t_1} \\ e^{t_2} \\ \vdots \\ e^{t_{d+1}}
-\end{pmatrix}, 
-\quad
-\vtheta: \reals^{d+1} \to (1,\infty) \times (0,\infty)^d .
-\end{align*}
-So instead of searching for $\vtheta_{\textup{opt}}$ in $(1,\infty) \times (0,\infty)^d$, one may search for the optimal 
-$$
-\vt = \vt^{-1} (\vtheta) = 
-\begin{pmatrix}
-\log(r-1) \\ \log(\eta_1) \\ \vdots \\ \log(\eta_d)
-\end{pmatrix}
-$$ in the whole real line $\reals^{d+1}$.
-The optimal value $\vt_{\textup{opt}}$ can be transformed back to the desired interval $(1,\infty) \times (0,\infty)^d$ using 
-\begin{align*}
-\vtheta_{\textup{opt}} = 
-\begin{pmatrix}
-1 + e^{t_{1, \textup{opt}}} \\
-e^{t_{2, \textup{opt}}} \\
-\vdots \\
-e^{t_{d+1, \textup{opt}}} \\
-\end{pmatrix}.
-\end{align*}
-Similarly one can map the kernel order $q \in (0,1)$ \secref{sec:exp_decay_kernel}, and $\veta$ in to a multivariate hyperparameter search.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\section{Diagnostics for the Gaussian Process Assumption}
-
-The starting point for our Bayesian cubature is the assumption that the integrand arises from a Gaussian process. This means that the function data, $\vf$, shall satisfy a multivariate Gaussian distribution, as in \eqref{eqn:fGaussDist}. We propose a transform, $\vZ = \frac 1n \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone)$, to the given function data $\vf$ to verify the assumption.  We can verify that the transformed data, $\vZ$, has zero mean and is also uncorrelated because
-\begin{align*}
-\Ex\left[\vZ \right] &= 
-\frac 1n \mV \mLambda^{-\frac 12} \mV^H(\Ex\left[\vf\right] - m \vone) 
-\\
-& = 0
-\end{align*}
-\begin{align*}
-\cov (\vZ) 
-&= \frac {1}{n^2} \Ex\left[  
-\mV \mLambda^{-\frac 12} \mV^H (\vf - m \vone)
-(\vf - m \vone)^T \mV \mLambda^{-\frac 12} \mV^H
-\right]
-\\
-&=
-\frac {1}{n^2} \mV \mLambda^{-\frac 12} \mV^H 
-\Ex \biggl[ (\vf - m \vone)
-(\vf - m \vone)^T \biggr] \mV \mLambda^{-\frac 12} \mV^H
-\\ % Note : \mV^h \mV = n
-&=
-\frac{1}{n^2} \mV \mLambda^{-\frac 12} \mV^H 
-\frac 1n \mV \mLambda \mV^H \mV \mLambda^{-\frac 12} \mV^H
-\\
-&=
-\frac{1}{n^3} \mV \mLambda^{-\frac 12} (n) \mLambda (n) \mLambda^{-\frac 12} \mV^H
-= \mathsf{I}
-\end{align*}
-Thus, the elements of $\vZ$ are IID standard Gaussian random variables.  
-In practice, using the estimated $m_\MLE$ further simplifies, 
-\begin{align*}
-\vZ &= \frac 1n \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone) \\
-&= \frac 1n \mV \mLambda^{-\frac 12} (\mV^H \vf - \frac{\tilde{f}_1}{n} \mV^H \vone) 
-\\
-&= \frac 1n \mV \mLambda^{-\frac 12} \left(\mV^H \vf - \tilde{f}_1 \begin{pmatrix}1, 0, \hdots, 0 \end{pmatrix}^T \right) 
-\end{align*}
-
-
-To verify this hypothesis, we build a toy function using the known Bernoulli polynomial series,
-\begin{align}
-\label{toy_func}
-f_{\theta, r}(x) = \hat{f}_0 + \sqrt{\theta} \sum_{k > 0}
-\frac{f_{c,k} \cos(2\pi k x) + f_{s,k} \sin(2\pi k x)}{k^r}
-\end{align}
-where $f_0 \sim \text{IID} \calN(c, b^2) $, $f_{c,k}, f_{s,k} \sim \text{IID} \calN(0, a^2)$ and $a, b, c$ are constants. The series in \eqref{toy_func} is truncated to an arbitrarily chosen length $N$. It has zero mean and covariance
-\begin{align*}
-\cov(f) &= \Ex[f_{\theta, r}(x) f_{\theta, r}(t)] \\
-&= \cov(f_0) + \theta \sum_{k=1}^N 
-\left(	
-\Ex(f_{c,k}^2) \frac{\cos(2\pi k x) \cos(2\pi k t)}{k^{2r}} +
-\Ex(f_{s,k}^2) \frac{\sin(2\pi k x) \sin(2\pi k t)}{k^{2r}} \right) \\
-&= b^2 + a^2 \theta \sum_{k=1}^N 	
-\frac{\cos(2\pi k (x - t)) }{k^{2r}} 
-\end{align*}
-
-
-
-Figures \ref{fig:keister-normplot} and \ref{fig:mvn-normplot} are normal probability plots of the $Z_i$ using empirical Bayes estimates of $m$ and $\vtheta$. \textbf{more goes here}.
-
-
-
-
-\iftrue
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=0.9\linewidth]{"figures/Keister Normplot d_2 bernoulli_2 Period_C1sin n_32768"}
-	\caption{Normal plot : Keister function with arbMean assumption}
-	\label{fig:keister-normplot}
-\end{figure}
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=0.9\linewidth]{"figures/MVN Normplot d_2 bernoulli_2 Period_C1sin n_32768"}
-	\caption{Normal plot : MVN with arbMean assumption}
-	\label{fig:mvn-normplot}
-\end{figure}
-\fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\subsection{Posterior} We compute posterior distribution to verify the Gaussian assumption.
-
-\subsubsection{Non-informative prior}
-Assume the prior is of the form $ \rho_{m,s^2} (\xi, \lambda) = \frac{1}{\lambda} $ 
-
-\begin{align*}
-\rho_{f(\vx)}(\vy) &=\int_{0}^\infty \int_{-\infty}^\infty \rho_{f} (\vy | m=\xi, s^2=\lambda) 
-\rho_{m,s^2} (\xi, \lambda) \dif{\xi} \dif{\lambda} 
-\\
-&= \int_{0}^\infty \int_{-\infty}^\infty \frac{1}{(\sqrt{2 \pi})^n \sqrt{\det(\lambda \mC)}} 
-\exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right) \frac{1}{\lambda} \dif{\xi} \dif{\lambda}
-\\
-& \propto \frac{1}{(\sqrt{2 \pi})^n} \int_{0}^\infty \frac{1}{\lambda ^{\frac n2} \lambda}
-\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right)  \dif{\xi} \dif{\lambda}
-\\
-& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
-\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} 
-\underbrace{(\vone^T \mCInv \vone)}_{D}
-\left[
-\xi^2 -2 \xi \underbrace{\frac{\vone^T \mCInv \vy }{\vone^T \mCInv \vone}}_{A} + \underbrace{\frac{\vy^T \mCInv \vy }{\vone^T \mCInv \vone}}_{B} 
-\right]
-\right)  \dif{\xi} \dif{\lambda}
-\\
-& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
-\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
-\left[
-\xi^2 -2 \xi A + A^2 - A^2 + B
-\right]
-\right)  \dif{\xi} \dif{\lambda}
-\\
-& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac n2 + 1}}
-\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
-\left[
-\xi^2 -2 \xi A + A^2
-\right]
-\right) \dif{\xi}
-\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
-\dif{\lambda}
-\\
-& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac{(n+1)}{2}}}
-\frac{1}{\sqrt{2\pi\lambda/D}}
-\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
-\left[
-\xi-A
-\right]^2
-\right) \dif{\xi}
-\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
-\dif{\lambda}
-\\
-& \propto \int_{0}^\infty \frac{1}{\lambda^{\frac{(n+1)}{2}}}
-\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
-\dif{\lambda}
-\\
-& \propto (D[B-A^2])^{-\frac{(n-1)}{2}}
-\\
-& \propto \left(\vy^T\mCInv\vy - \frac{(\vone^T\mCInv\vy)^2}{\vone^T\mCInv\vone} \right)^{-\frac{(n-1)}{2}}
-\\
-&=  \left(\vy^T \left[\mCInv - \frac{(\mCInv\vone \vone^T \mCInv)}{\vone^T\mCInv\vone} \right]\vy \right)^{-\frac{(n-1)}{2}}
-\\
-&=  \biggl((\vy-m_\MLE)^T \mCInv (\vy-m_\MLE) \biggr)^{-\frac{(n-1)}{2}}, 
-\quad \text{where} \quad
-m_\MLE=\frac{(\vone^T \mCInv \vy)}{\vone^T\mCInv\vone}
-\end{align*}
-
-\subsubsection{TODO: How to interpret as Student's $t$-distribution?}
-
-
-
-
-\subsubsection{Generic prior}
-Assume the prior is of the form $ \rho_{m,s^2} (\xi, \lambda) = g(\lambda) $ 
-
-\begin{align*}
-\rho_{f(\vx)}(\vy) &=\int_{0}^\infty \int_{-\infty}^\infty \rho_{f} (\vy | m=\xi, s^2=\lambda) 
-\rho_{m,s^2} (\xi, \lambda) \dif{\xi} \dif{\lambda} 
-\\
-&= \int_{0}^\infty \int_{-\infty}^\infty \frac{1}{(\sqrt{2 \pi})^n \sqrt{\det(\lambda \mC)}} 
-\exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right) g(\lambda) \dif{\xi} \dif{\lambda}
-\\
-& \propto \frac{1}{(\sqrt{2 \pi})^n} \int_{0}^\infty \frac{g(\lambda)}{\lambda ^{\frac n2} } 
-\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} (\vy - \xi \vone)^T\mCInv (\vy- \xi\vone)\right)  \dif{\xi} \dif{\lambda}
-\\
-& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2 }}
-\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} 
-\underbrace{(\vone^T \mCInv \vone)}_{D}
-\left[
-\xi^2 -2 \xi \underbrace{\frac{\vone^T \mCInv \vy }{\vone^T \mCInv \vone}}_{A} + \underbrace{\frac{\vy^T \mCInv \vy }{\vone^T \mCInv \vone}}_{B} 
-\right]
-\right)  \dif{\xi} \dif{\lambda}
-\\
-& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2}}
-\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
-\left[
-\xi^2 -2 \xi A + A^2 - A^2 + B
-\right]
-\right)  \dif{\xi} \dif{\lambda}
-\\
-& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac n2}}
-\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
-\left[
-\xi^2 -2 \xi A + A^2
-\right]
-\right) \dif{\xi}
-\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
-\dif{\lambda}
-\\
-& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
-\frac{1}{\sqrt{2\pi\lambda/D}}
-\int_{-\infty}^\infty \exp \left( -\frac{1}{2\lambda} D
-\left[
-\xi-A
-\right]^2
-\right) \dif{\xi}
-\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
-\dif{\lambda}
-\\
-& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
-\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
-\dif{\lambda}
-\end{align*}
-This can be interpreted as Laplace transform of $g(\lambda)$.
-Let $\eta = \frac{1}{2} D [B - A^2] $ and $\lambda = \frac{1}{w}, \dif{\lambda} = -w^{-2} \dif{w}$ 
-\begin{align*}
-\rho_{f(\vx)}(\vy) 
-& \propto \int_{0}^\infty \frac{g(\lambda)}{\lambda^{\frac{(n-1)}{2}}}
-\exp \left(  - \frac{1}{2\lambda} D [B - A^2] \right)
-\dif{\lambda} 
-\\
-&= \int_{0}^\infty \frac{g(1/w)  }{w^{-\frac{(n-1)}{2}}}
-\exp \left(  - w \eta \right)
-(-w^{-2})\dif{w}
-\\
-&= \int_\infty^0 -g(1/w) w^{\frac{(n-1)}{2} - 2}
-\exp \left(  - w \eta \right)
-\dif{w}
-\\
-&= \int_{0}^\infty g(1/w) w^{\frac{(n-5)}{2}}
-\exp \left(  - w \eta \right)
-\dif{w}
-\\
-& = \mathcal{LT}\{ g(1/\eta) \}^{(\frac{n-5}{2})'}
-\end{align*}
-where $\mathcal{LT}(.)$ denotes the Laplace transform and $(\frac{n-5}2)'$ indicates the $(\frac{n-5}2)$th derivative taken after the transform.
-Here we used frequency domain derivative property of the Laplace transform. 
-$\rho_{f(\vx)}(\vy)$  is proportional to $(\frac{n-5}2)$th derivative of the Laplace transform of $g(1/\eta)$.
-
-\begin{align*}
-D [B - A^2] &= \left(\vy^T\mCInv\vy - \frac{(\vone^T\mCInv\vy)^2}{\vone^T\mCInv\vone} \right)
-\\
-&= \biggl((\vy-m_\MLE)^T \mCInv (\vy-m_\MLE) \biggr), 
-\quad \text{where} \quad
-m_\MLE=\frac{(\vone^T \mCInv \vy)}{\vone^T\mCInv\vone}
-\end{align*}
-\subsubsection{TODO: How to integrate further?}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
