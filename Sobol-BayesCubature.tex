@@ -7,20 +7,33 @@
 % content for various journals. Please consult a previous issue of
 % your journal as needed.
 %
-\RequirePackage{amsmath}
-\RequirePackage{fix-cm}
 %
 \documentclass{svjour3}                     % onecolumn (standard format)
 %\documentclass[smallcondensed]{svjour3}     % onecolumn (ditto)
 %\documentclass[smallextended]{svjour3}       % onecolumn (second format)
 %\documentclass[twocolumn]{svjour3}          % twocolumn
 %
+
+% \vec is not showing arruw, so redefine
+% \AtBeginDocument{\renewcommand{\vec}[1]{\overrightarrow{#1}}}
+
+% This approach is better than the above
+% remove the definition of \vec by svjour3
+\let\vec\relax
+% restore the original definition in fontmath.ltx
+\DeclareMathAccent{\vec}{\mathord}{letters}{"7E}
+
+\RequirePackage{amsmath}
+\RequirePackage{fix-cm}
+
 \smartqed  % flush right qed marks, e.g. at end of proof
 %
-\usepackage{natbib}
-\usepackage{xspace}
 \usepackage{graphicx}
 \usepackage{amssymb}
+% \usepackage{amsthm}
+
+\usepackage{natbib}
+\usepackage{xspace}
 \usepackage{mathrsfs}  
 \usepackage{hhline}
 \usepackage{siunitx}
@@ -2200,7 +2213,7 @@ m_\MLE=\frac{(\vone^T \mCInv \vy)}{\vone^T\mCInv\vone}
 
 
 
-
+\pagebreak
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2260,7 +2273,7 @@ Digital $(t,m, d)$-nets are a special case of $(t,m, d)$-nets, constructed using
 
 
 \begin{defn}
-	For any non-negative integer $i = \dots i_3 i_2 i_1(\textup{base} \, b)$, define the $\infty \times 1$ vector $\vec{\imath}$ as the vector of its digits, that is, $\vec{\imath} = (i_1, i_2, \dots)^T$. 
+	For any non-negative integer $i = \dots i_3 i_2 i_1(\textup{base} \, b)$, define the $\infty \times 1$ vector $\vec{\imath}$ as the vector of its digits, that is, $ \vec{\imath} = (i_1, i_2, \dots)^T$. 
 	For any point $z = 0.z_1 z_2 \dots (\textup{base}\, b) \in [0, 1)$, define the $\infty \times 1$ vector of the digits of $z$, that is, $\vec{z} = (z_1, z_2, \dots)^T$. 
 	Let $ \mathsf{G}_1, \dots , \mathsf{G}_d$ denote predetermined $\infty \times \infty$ generator matrices. 
 	The digital sequence in \textup{base} $b$ is $\{\vz_0, \vz_1, \vz_2, \dots\}$, where each $\vz_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
