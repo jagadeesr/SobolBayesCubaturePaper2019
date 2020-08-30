@@ -1947,50 +1947,57 @@ Similarly one can map the kernel order $q \in (0,1)$ \secref{sec:exp_decay_kerne
 
 \section{Diagnostics for the Gaussian Process Assumption}
 
-The starting point for our Bayesian cubature is the assumption that the integrand arises from a Gaussian process. This means that the function data, $\vf$, shall satisfy a multivariate Gaussian distribution, as in \eqref{eqn:fGaussDist}. We propose a transform, $\vZ = \frac 1n \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone)$, to the given function data $\vf$ to verify the assumption.  We can verify that the transformed data, $\vZ$, has zero mean and is also uncorrelated because
+The starting point for our Bayesian cubature is the assumption that the integrand arises from a Gaussian process,  $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$. This means that the function data, $\vf$, shall satisfy a multivariate Gaussian distribution, as in \eqref{eqn:fGaussDist}. If we you could transform it to the standard Gaussian, we can visually verify with readily available tools such as Q-Q plot. We propose a transform, $\vZ = \frac 1n s^{-1} \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone)$, to the given function data $\vf$ to get standard Gaussian.  We can show that the transformed data, $\vZ$, has zero mean and is also uncorrelated because
 \begin{align*}
 \Ex\left[\vZ \right] &= 
-\frac 1n \mV \mLambda^{-\frac 12} \mV^H(\Ex\left[\vf\right] - m \vone) 
+\frac 1n s^{-1} \mV \mLambda^{-\frac 12} \mV^H(\Ex\left[\vf\right] - m \vone) 
 \\
-& = 0
+& = 0, \hspace{1cm} \text{because } \Ex\left[\vf\right] = m
 \end{align*}
 \begin{align*}
 \cov (\vZ) 
-&= \frac {1}{n^2} \Ex\left[  
+&= \frac {1}{n^2} s^{-2} \Ex\left[  
 \mV \mLambda^{-\frac 12} \mV^H (\vf - m \vone)
 (\vf - m \vone)^T \mV \mLambda^{-\frac 12} \mV^H
 \right]
 \\
 &=
-\frac {1}{n^2} \mV \mLambda^{-\frac 12} \mV^H 
+\frac {1}{n^2} s^{-2} \mV \mLambda^{-\frac 12} \mV^H 
 \Ex \biggl[ (\vf - m \vone)
 (\vf - m \vone)^T \biggr] \mV \mLambda^{-\frac 12} \mV^H
 \\ % Note : \mV^h \mV = n
 &=
-\frac{1}{n^2} \mV \mLambda^{-\frac 12} \mV^H 
-\frac 1n \mV \mLambda \mV^H \mV \mLambda^{-\frac 12} \mV^H
+\frac{1}{n^2} s^{-2} \mV \mLambda^{-\frac 12} \mV^H 
+ s^{2} \frac 1n \mV \mLambda \mV^H \mV \mLambda^{-\frac 12} \mV^H
 \\
 &=
 \frac{1}{n^3} \mV \mLambda^{-\frac 12} (n) \mLambda (n) \mLambda^{-\frac 12} \mV^H
 = \mathsf{I}
 \end{align*}
 Thus, the elements of $\vZ$ are IID standard Gaussian random variables.  
-In practice, using the estimated $m_\MLE$ further simplifies, 
+In practice, using the estimated $m_\MLE$, such as empirical Bayes, further simplifies, 
 \begin{align*}
-\vZ &= \frac 1n \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone) \\
-&= \frac 1n \mV \mLambda^{-\frac 12} (\mV^H \vf - \frac{\tilde{f}_1}{n} \mV^H \vone) 
+\vZ &= \frac 1n s^{-1} \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone) \\
+&= \frac 1n s^{-1} \mV \mLambda^{-\frac 12} (\mV^H \vf - \frac{\tilde{f}_1}{n} \mV^H \vone) 
 \\
-&= \frac 1n \mV \mLambda^{-\frac 12} \left(\mV^H \vf - \tilde{f}_1 \begin{pmatrix}1, 0, \hdots, 0 \end{pmatrix}^T \right) 
+&= \frac 1n s^{-1} \mV \mLambda^{-\frac 12} \left(\mV^H \vf - \tilde{f}_1 \begin{pmatrix}1, 0, \hdots, 0 \end{pmatrix}^T \right) 
 \end{align*}
 
 
-To verify this hypothesis, we build a toy function using the known Bernoulli polynomial series,
+To verify this hypothesis, we build a custom function using the known Bernoulli polynomial series,
 \begin{align}
 \label{toy_func}
-f_{\theta, r}(x) = \hat{f}_0 + \sqrt{\theta} \sum_{k > 0}
-\frac{f_{c,k} \cos(2\pi k x) + f_{s,k} \sin(2\pi k x)}{k^r}
+f_{\theta, r}(\vx) & = \widehat{f}_0 + \sum_{\vk \in \lbrace 1, \dots, N \rbrace^d}
+\left[\widehat{f}_{c}(\vk) \cos(2\pi \vk^T \vx) + \widehat{f}_{s}(\vk) \sin(2\pi \vk^T \vx)\right]
+\\
+\nonumber
+& \text{where} \quad 
+\widehat{f}_0, \widehat{f}_{c}(\vk), \widehat{f}_{s}(\vk) \overset{\text{IID}}{\sim} \calN(0, a^{\norm[0]{\vk}} b^{d-\norm[0]{\vk}} \prod_{k_j \ne 0} k_j^{-r} ), 
+\\
+\nonumber
+&\theta = a/b
 \end{align}
-where $f_0 \sim \text{IID} \calN(c, b^2) $, $f_{c,k}, f_{s,k} \sim \text{IID} \calN(0, a^2)$ and $a, b, c$ are constants. The series in \eqref{toy_func} is truncated to an arbitrarily chosen length $N$. It has zero mean and covariance
+The series in \eqref{toy_func} is truncated to an arbitrarily chosen length $N$. It has zero mean and covariance
 \begin{align*}
 \cov(f) &= \Ex[f_{\theta, r}(x) f_{\theta, r}(t)] \\
 &= \cov(f_0) + \theta \sum_{k=1}^N 

@@ -1,0 +1,11 @@
+\[ 
+ \begin{array}{rccccc} 
+ \toprule 
+\multicolumn{6}{c}{\varepsilon = \num{1e-04}, \ d = 5,\ \mSigma = 0.4 \mI, + 0.6\vone\vone^T , \ \va=(-\infty,\dots,-\infty), \ \vb\sim \sqrt{d}\cu[0,1]^d } \\ \midrule 
+ \text{Method} & \text{MC} & \text{Lattice} & \text{Sobol'} & \text{BayesLat} & \text{BayesSobol}  \\
+ \text{Absolute Error} & \num{2.90e-05} & \num{5.40e-06} & \num{3.70e-06}  & \num{4.20e-06}  & \num{4.40e-06}  \\
+ \text{Tolerance Met} & \num{  100} \% & \num{  100} \% & \num{  100} \% & \num{  100} \% & \num{  100} \%  \\
+ n & \num{21000000} & \num{    4100} & \num{    4500} & \num{    4100} & \num{    4100} \\
+ \text{Time (seconds)} & \num{ 4.4000} & \num{ 0.0096} & \num{ 0.0055} & \num{ 0.1300} & \num{ 0.0750}  
+\end{array} 
+ \]

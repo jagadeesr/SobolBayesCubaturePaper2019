@@ -1,0 +1,13 @@
+\[ 
+ \begin{array}{rccccc} 
+ \toprule 
+\multicolumn{6}{c}{\varepsilon = \num{5e-03}, \ d = 3} \\ 
+ \hline 
+ \text{Method} & \text{MC} & \text{Lattice} & \text{Sobol} & \text{BayesLat} & \text{BayesSobol}  \\ 
+ \text{Absolute Error} & \num{1.200000e-03} & \num{7.30e-04} & \num{3.30e-04}  & \num{4.00e-04}  & \num{3.30e-04}  \\ 
+ \text{Tolerance Met} & \num{  100} \% & \num{  100} \% & \num{  100} \% & \num{  100} \% & \num{  100} \%  \\
+ n & \num{ 2500000} & \num{    4100} & \num{    4100} & \num{     510} & \num{    1900} \\
+ \text{Time (seconds)} & \num{ 0.1200} & \num{ 0.0079} & \num{ 0.0078} & \num{ 0.0027} & \num{ 0.0450} \\ 
+ \\ 
+\end{array} 
+ \]
