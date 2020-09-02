@@ -1987,7 +1987,7 @@ In practice, using the estimated $m_\MLE$, such as empirical Bayes, further simp
 To verify this hypothesis, we build a custom function using the known Bernoulli polynomial series,
 \begin{align}
 \label{toy_func}
-f_{\theta, r}(\vx) & = \widehat{f}_0 + \sum_{\vk \in \lbrace 1, \dots, N \rbrace^d}
+f_{\theta, r}(\vx) & = \widehat{f}_0 + \theta \sum_{\vk \in \lbrace 1, \dots, N \rbrace^d}
 \left[\widehat{f}_{c}(\vk) \cos(2\pi \vk^T \vx) + \widehat{f}_{s}(\vk) \sin(2\pi \vk^T \vx)\right]
 \\
 \nonumber
@@ -2018,15 +2018,15 @@ Figures \ref{fig:keister-normplot} and \ref{fig:mvn-normplot} are normal probabi
 \iftrue
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=0.9\linewidth]{"figures/Keister Normplot d_2 bernoulli_2 Period_C1sin n_32768"}
-	\caption{Normal plot : Keister function with arbMean assumption}
+	\includegraphics[width=0.9\linewidth]{"programs/Keister-QQPlot-n-64-d-3-1"}
+	\caption{Normal plot : Keister function integrand}
 	\label{fig:keister-normplot}
 \end{figure}
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=0.9\linewidth]{"figures/MVN Normplot d_2 bernoulli_2 Period_C1sin n_32768"}
-	\caption{Normal plot : MVN with arbMean assumption}
+	\includegraphics[width=0.9\linewidth]{"programs/rand-QQPlot-n-64-d-2-r-150-th-100-1"}
+	\caption{Normal plot : Multivariate normal}
 	\label{fig:mvn-normplot}
 \end{figure}
 \fi
@@ -2551,6 +2551,8 @@ We prove that the eigenvectors of $\mCtheta$ are columns of a Walsh-Hadamard mat
 	is a $2\times 2$ block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks, etc. are also $2\times 2$ block-Toeplitz. 
 \end{theorem}
 
+
+\iffalse
 %\Subsubsection
 \begin{proof}
 	
@@ -2720,6 +2722,7 @@ We prove that the eigenvectors of $\mCtheta$ are columns of a Walsh-Hadamard mat
 	%\end{itemize}
 	Thus $\mC_{\vtheta}^{(m)}$ of size $2^m\times 2^m$, for $m \in \naturals$, is a $2\times2$ block-Toeplitz and every block and it's sub-blocks of size $2^p, \; p \in \naturals, \; p \le m$ are also $2\times2$ block-Toeplitz.
 \end{proof}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2795,6 +2798,9 @@ Now we prove every arbitrary sub-block is also block-Toeplitz:
 	\end{align*}
 \end{theorem}
 
+A detailed proof for Theorem \ref{thrm:block-toeplitz} and \ref{thrm:hadamard_eigenvector} can be found in \cite{JagThesis19a}.
+
+\iffalse
 \begin{proof}
 	
 	Again, we use the proof-by-induction technique to show that the Walsh-Hadamard matrix factorizes $\mK^{(m,q)}$.
@@ -2877,6 +2883,7 @@ Now we prove every arbitrary sub-block is also block-Toeplitz:
 	\end{align*}
 	Thus, $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$ to a diagonal matrix $\mLambda^{(m+1,q)}$. This implies $\mH^{(p)}$ factorizes $\mC_\vtheta^{(p)}$ for $p \in \naturals$. Please recall $\mC_\vtheta^{(p)} = \mK^{(p,0)}$.  Here we used the fact that both $\mH$ and $\mK$ are symmetric positive definite. 
 \end{proof}
+\fi
 
 \iffalse
 Next, we show the eigenvectors of a block-Toeplitz matrix can be obtained by Kronecker product of its sub-block matrices. If $\mA, \mB$ share same eigenvalues $\mA \mV = \mLambda \mV, \mB \mV = \mV \mSigma$ then

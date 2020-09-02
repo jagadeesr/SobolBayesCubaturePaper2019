@@ -133,12 +133,17 @@ end
 
 end
 
+function save_plot_as_image(figH, filename)
+  AxesH = gca;   % Not the GCF
+  F = getframe(AxesH);
+  imwrite(F.cdata, filename);
+end
 
 function create_plots(type, vz_real, fName, dim, iii, r, rOpt, theta, thetaOpt)
 hFigNormplot = figure();
-set(hFigNormplot,'defaultaxesfontsize',24, ...
-  'defaulttextfontsize',24, ... %make font larger
-  'defaultLineLineWidth',2, 'defaultLineMarkerSize',8)
+set(hFigNormplot,'defaultaxesfontsize',16, ...
+  'defaulttextfontsize',12, ... %make font larger
+  'defaultLineLineWidth',2, 'defaultLineMarkerSize',6)
 if strcmp(type, 'normplot')
   normplot(vz_real)
 else
@@ -170,7 +175,7 @@ if isnan(theta)
          '-' int2str(iii) '.jpg'])
 else
    saveas(hFigNormplot,[fName '-QQPlot-n-' int2str(n) '-d-' int2str(dim) ...
-         '-r-' int2str(r*100) '-th-' int2str(100*theta) '-' int2str(iii) '.jpg'])
+         '-r-' int2str(r*100) '-th-' int2str(100*theta) '-' int2str(iii) '.jpg']) 
 end
 end
 
