@@ -969,11 +969,11 @@ But \cite{JagHic19a} did not provide any explicit parameter search techniques. W
 
 
 
+\section{Enhancements to Bayesian Cubature}
 
 
 
-
-
+This section covers enhancements developed to the Bayesian Cubature proposed in \cite{JagHic19a}. First, we start with explaining the underlying function space of desired integrands.
 
 
 
@@ -991,7 +991,7 @@ But \cite{JagHic19a} did not provide any explicit parameter search techniques. W
 
 %\JRNote{Done: Revise $f_{\NICE}$ using kernel approximation}
 
-In this research, we assume that the integrand belongs to a cone of well-behaved functions, $\mathscr{C}$, to make the computations bounded in terms of function data. The concept of cone in general for cubature error analysis can be stated using the error bound definition. 
+Bayesian cubature assumes that the integrand belongs to a cone of well-behaved functions, $\mathscr{C}$, to make the computations bounded in terms of function data. The concept of cone in general for cubature error analysis can be stated using the error bound definition. 
 Suppose that 
 \begin{align}
 \label{eqn:cone-homogenity}
@@ -1086,7 +1086,7 @@ Estimated integral value of our algorithm closely matches the integral of a smoo
 
 
 
-\subsubsection{Gradient descent to find optimal shape parameter}
+\subsection{Gradient descent to find optimal shape parameter}
 \label{grad_descent_MLE}
 The equation specifying $\vtheta_\MLE$ as defined in \eqref{fastThetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
 % Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
@@ -1411,7 +1411,7 @@ where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the
 \subsection{Product Kernels}
 \label{sec:product_kernel}
 
-In this research, we use product kernels in the demonstrations and numerical implementations. They got nice properties which are helpful to obtain analytical results easily. Product kernels in $d$ dimensions are of the form,
+The Bayesian cubature in this research uses product kernels for the demonstrations and numerical implementations. They got nice properties which are helpful to obtain analytical results easily. Product kernels in $d$ dimensions are of the form,
 \begin{align}
 \label{eqn:prod_kernel}
 C_\vtheta(\vt, \vx) = 
@@ -1570,17 +1570,18 @@ We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to de
 
 
 
-\section{Continuous Valued Kernel Order}
+\subsection{Continuous Valued Kernel Order}
 \label{sec:non_integer_kernel_order}
 
 \JRNote{Need better and more convincing motivation}
 
-In the previous sections, we assumed that the shift-invariant kernel's order is an even valued integer and also fixed. It requires the practitioner to be aware of the integrand's smoothness to precisely handpick the kernel order to match the integrand's smoothness. However, it is not possible to know the integrand's smoothness in most of the practical applications. The constraint to have an integer-valued kernel order also limits the ability to continuously vary the kernel's smoothness to match the integrand like the shape parameter is varied to match. 
+In the \cite{JagHic19a} % previous sections
+, it was assumed that the shift-invariant kernel's order is an even valued integer and also fixed. It requires the practitioner to be aware of the integrand's smoothness to precisely handpick the kernel order to match the integrand's smoothness. However, it is not possible to know the integrand's smoothness in most of the practical applications. The constraint to have an integer-valued kernel order also limits the ability to continuously vary the kernel's smoothness to match the integrand like the shape parameter is varied to match. 
 
 The integer kernel order is not suitable to optimally search by standard optimization algorithm.
 As a consequence, one usually ends up choosing a higher kernel order when the integrand is not  smooth or lower kernel order when the integrand is very smooth.
 Often it leads to longer computation time or poor accuracy in the numerical integration.
-Here we explore two alternative forms of the kernel which allow the kernel order to be positive continuous value greater than one or a continuous value in the range $(0,1)$. Let us recall the infinite series expression that was used to construct the kernel \eqref{the_kernel_eqn_bernoulli}:
+Here we explore two alternative forms of the kernel which allow the kernel order to be positive continuous value greater than one or a continuous value in the range $(0,1)$. Let us recall the infinite series expression that was used to construct the kernel \cite{JagHic19a}: % \eqref{the_kernel_eqn_bernoulli}:
 \begin{align*}
 C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2 \pi\sqrt{-1} \vk^T\vx}
 e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \text{where} \; 
@@ -1603,7 +1604,7 @@ e^{-2 \pi\sqrt{-1} k t}.
 
 
 
-\subsection{Truncated series kernel}
+\subsubsection{Truncated series kernel}
 \label{sec:trunc_series_kernel}
 The following variation to the infinite series kernel \eqref{the_kernel_eqn_bernoulli} has the kernel order in the interval $(1, \infty)$. This kernel provides algebraic decay but it is more robust in the hyperparameter search.
 We reuse the original definition of the infinite kernel \eqref{the_kernel_eqn_bernoulli} but truncate to a finite length. This allows the kernel order $r$ continuous valued so that it does not have to be an even integer,  which was a constraint previously. 
@@ -1645,7 +1646,8 @@ Using the $\mathfrak{C}_r$, rewrite
 &= \left( \prod_{l=1}^d \left[ 1 + \eta \mathfrak{C}_r( \abs{x_{il} - x_{1l}})\right] \right)_{i=1}^n.
 \end{align}
 One can observe
-$\abs{x_{i\ell}-x_{1\ell}} \in \lbrace 0, \frac 1n, \frac 2n, \dots \frac{n-1}{n}  \rbrace$ by using the definition of lattice points from \eqref{eqn:lattice_def}. This can be used to rewrite $\mathfrak{C}_r$ in a much simpler form,
+$\abs{x_{i\ell}-x_{1\ell}} \in \lbrace 0, \frac 1n, \frac 2n, \dots \frac{n-1}{n}  \rbrace$ by using the definition of lattice points from \cite{JagThesis19a}. % \eqref{eqn:lattice_def}. 
+This can be used to rewrite $\mathfrak{C}_r$ in a much simpler form,
 \begin{align*}
 \mathfrak{C}_r \left(\frac jn \right) &= \sum_{k = - n/2, k \neq 0 }^{n/2 - 1} \frac{1}{\abs{k}^r} 
 e^{ 2 \pi\sqrt{-1} k (\frac jn)}, \quad \text{where} \;  j=0,1,\dots n-1.
@@ -1726,7 +1728,7 @@ is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of ${\bm{
 
 
 
-\subsection{Exponentially decaying kernel}
+\subsubsection{Exponentially decaying kernel}
 \label{sec:exp_decay_kernel}
 We propose the following alternative form of the kernel. This kernel can provide exponential decay,
 \begin{align*}
@@ -1839,7 +1841,7 @@ One disadvantage of this kernel is that it is very sensitive to the changes in k
 
 
 
-\section{Kernel Hyperparameters Search}
+\subsection{Kernel Hyperparameters Search}
 \label{sec:kernel_param_search}
 
 \JRNote{Explain the transformation used to make the search range positive, $> 0$ , etc.}
@@ -1851,7 +1853,7 @@ Bounded minima search, if the search interval is known, else unbounded search.  
 However hyperparameters need to live in a domain that is bounded or semi-bounded. 
 There are some simple domain transformations available to achieve this.
 
-\subsection{Positive kernel shape parameter}
+\subsubsection{Positive kernel shape parameter}
 The following parameter map is used to ensure that the shape parameter values are positive real numbers. For $\eta > 0$ as introduced in Section \ref{sec:deriv_of_kernel}, let
 % We need to have $\eta > 0$ and $ 0 < b < 1$ while searching for the optimum value, so we use the following transformations
 \begin{align*}
@@ -1867,7 +1869,7 @@ The optimal value $t_{1, \textup{opt}}$ can be transformed back to the $(0, \inf
 
 
 
-\subsection{Kernel order $1 < r < \infty$}
+\subsubsection{Kernel order $1 < r < \infty$}
 The following map is used to ensure that the kernel order values are positive real number and greater than one, i.e., in the $(1, \infty)$ interval as required in \secref{sec:trunc_series_kernel},
 \begin{align*}
 r(t_2) = & \quad {1 + e^{t_2}}, & r:  (-\infty, \infty) \to (1,\infty).
@@ -1882,7 +1884,7 @@ r_{\textup{opt}} = 1+ e^{t_{2, \textup{opt}}}.
 
 
 
-\subsection{Kernel order $0 < q < 1$}
+\subsubsection{Kernel order $0 < q < 1$}
 The following multivariate map is used to ensure that the kernel order values are positive real and less than one, i.e., in the $(0,1)$ interval to use with exponentially decaying kernel, as introduced in \secref{sec:exp_decay_kernel},
 \begin{align*}
 q(t_3) = & \quad \frac{1}{1 + e^{t_3}}, & q: (-\infty, \infty) \to (0, 1).
@@ -1896,7 +1898,7 @@ q_{\textup{opt}} = \frac{1}{1 + e^{t_{3, \textup{opt}}}}.
 
 
 
-\subsection{Combined searching of kernel order $r$ and shape parameter $\veta$}
+\subsubsection{Combined searching of kernel order $r$ and shape parameter $\veta$}
 Instead of searching $\veta$ and $r$ separately one would prefer to search them together so that the most optimal values can be obtained, where $\veta = (\eta_1, \cdots, \eta_d)$ such that $\eta_l \ne \eta_k$,  for $l \ne k$.
 We can combine the parameter maps used above to ensure that the kernel order values in $(1, \infty)$ and shape parameter $\veta$ in $(0,\infty)^d$ as required in \secref{sec:trunc_series_kernel},
 \begin{align*}
@@ -1947,7 +1949,12 @@ Similarly one can map the kernel order $q \in (0,1)$ \secref{sec:exp_decay_kerne
 
 \section{Diagnostics for the Gaussian Process Assumption}
 
-The starting point for our Bayesian cubature is the assumption that the integrand arises from a Gaussian process,  $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$. This means that the function data, $\vf$, shall satisfy a multivariate Gaussian distribution, as in \eqref{eqn:fGaussDist}. If we you could transform it to the standard Gaussian, we can visually verify with readily available tools such as Q-Q plot. We propose a transform, $\vZ = \frac 1n s^{-1} \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone)$, to the given function data $\vf$ to get standard Gaussian.  We can show that the transformed data, $\vZ$, has zero mean and is also uncorrelated because
+The starting point for our Bayesian cubature is the assumption that the integrand arises from a Gaussian process,  $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$. This implies that the function values, $\vf$, shall satisfy a multivariate Gaussian distribution, as in \eqref{eqn:fGaussDist}. If we you could transform it to the standard Gaussian, we can visually verify with readily available tools such as Q-Q plot. We propose a transform to the given function data $\vf$ to get standard Gaussian, resulting in $\vZ$:
+\begin{align}
+	\label{gauss_diagnostics_tx}
+	\vZ = \frac 1n s^{-1} \mV \mLambda^{-\frac 12} \mV^H(\vf - m \vone).
+\end{align} 
+We can show that the transformed data, $\vZ$, has zero mean and is also uncorrelated because
 \begin{align*}
 \Ex\left[\vZ \right] &= 
 \frac 1n s^{-1} \mV \mLambda^{-\frac 12} \mV^H(\Ex\left[\vf\right] - m \vone) 
@@ -2018,15 +2025,22 @@ Figures \ref{fig:keister-normplot} and \ref{fig:mvn-normplot} are normal probabi
 \iftrue
 \begin{figure}[ht]
 	\centering
+	\includegraphics[width=0.9\linewidth]{"programs/rand-QQPlot-n-64-d-2-r-150-th-100-1"}
+	\caption{Q-Q plot : Multivariate normal}
+	\label{fig:mvn-normplot}
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
 	\includegraphics[width=0.9\linewidth]{"programs/Keister-QQPlot-n-64-d-3-1"}
-	\caption{Normal plot : Keister function integrand}
+	\caption{Q-Q plot : Keister function integrand}
 	\label{fig:keister-normplot}
 \end{figure}
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=0.9\linewidth]{"programs/rand-QQPlot-n-64-d-2-r-150-th-100-1"}
-	\caption{Normal plot : Multivariate normal}
+	\includegraphics[width=0.9\linewidth]{"programs/ExpCos-QQPlot-n-64-d-3-1"}
+	\caption{Q-Q plot : ExpCos}
 	\label{fig:mvn-normplot}
 \end{figure}
 \fi
@@ -2035,8 +2049,8 @@ Figures \ref{fig:keister-normplot} and \ref{fig:mvn-normplot} are normal probabi
 
 
 
-
-
+\JRNote{write your observations from the numerical experiments}
+The Q-Q plots in the figures \ref{fig:keister-normplot} and \ref{fig:mvn-normplot} show that the transformed integrand values $\vZ$ using \eqref{gauss_diagnostics_tx} behave like standard Gaussian.
 
 
 
