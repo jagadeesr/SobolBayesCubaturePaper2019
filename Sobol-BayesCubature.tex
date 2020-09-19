@@ -519,7 +519,7 @@ We need the following lemma to derive the posterior error of our cubature.
 
 It follows from Lemma 1 
 % \ref{thrm:condDist} 
-in \cite{JagHic19a}, that the \emph{conditional} distribution of the integral given observed function values, $\vf = \vy$ is also Gaussian:
+in \cite{JagHic19a} that the \emph{conditional} distribution of the integral, given observed function values, $\vf = \vy$, is also Gaussian:
 \begin{align} \label{eqn:condInteg}
 \mu | (\vf = \vy) \sim \calN \bigl(m (1 - \vc^T \mC^{-1} \vone)  + \vc^T \mC^{-1} \vy, \;\;
 s^2(c_0  -\vc ^T \mC^{-1} \vc) \bigr).
@@ -555,17 +555,19 @@ Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible lev
 
 
 
-Any Bayesian cubature algorithm based on \eqref{eqn_prob_confidence_interval} has  computational cost that is sum of the following:
+Any Bayesian cubature algorithm based on \eqref{eqn_prob_confidence_interval} has  computational cost that is $\Order\bigl( n^3 \bigr)$.
+\iffalse
+sum of the following:
 \begin{itemize}
 	\item $\Order\bigl(n\$(f) \bigr)$ for the integrand data, where $\$(f)$ is the computational cost of a single $f(\vx)$; $\$(f)$ may be large if it is the result of an expensive simulation; $\$(f)$ is typically proportional to $d$;
 	
 	\item $\Order\bigl(N_{\opt} n^2 \$(C_\vtheta) \bigr)$ for the evaluation of the Gram matrix $\mC$, $N_\opt$ is the number of optimization steps required, and  $\$(C)$ is the computational cost of a single $C(\vt,\vx)$; $\$(C)$ is typically proportional to $d$; and
 	
 	\item $\Order\bigl(N_{\opt} n^3 \bigr)$ for the matrix inversions and determinant calculations; this cost is independent of $d$.
-	
 \end{itemize}
+\fi
 
-As shown in the numerical experiments, the cost increases quickly as the $n$ required to meet the error tolerance increases.  This motivates the fast Bayesian cubature algorithm presented in Section~\ref{sec:fast_BC}.
+As shown in the numerical experiments \cite{JagHic19a}, the cost increases quickly as the $n$ required to meet the error tolerance increases.  This motivates the fast Bayesian cubature algorithm presented in Section~\ref{sec:fast_BC}.
 
 
 
@@ -605,11 +607,11 @@ As introduced in \cite{JagHic19a}, fast Bayesian transform kernel is defined wit
 \end{align}
 where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\cdots,\vC_n$ are columns of $\mC$,  $\vV_1,\cdots,\vV_n$ are columns of $\mV$, and $\vv_1,\cdots,\vv_n$ are rows of $\mV$. 
 The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
-In this and later sections, we drop the $\vtheta$ dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  
+In this and later sections, we drop the notation of $\vtheta$'s dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  
 For any $n \times 1$ vector $\vb$, define the notation  $\widetilde{\vb} := \mV^H \vb$.
 
 
-We make three assumptions that allow the fast computation:
+We make three assumptions that allow $\widetilde{\vb}$'s fast computation:
 \begin{subequations} \label{fastcompAssump}
 	\begin{gather}
 	\label{fastcompAssumpA}
@@ -646,11 +648,12 @@ which implies that $c_{0} = 1$ \eqref{eqn:fGaussDist_c0} and $\vc_{} = \vone$ 	\
 	This section explains hyperparameter estimation using gradient descent}
 
 
-The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\CI}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$
+The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\CI}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$.
+The $\err_{\CI}$ depends on the integrand values, which becomes explicit once the hyperparameters, $m, s$, and $\vtheta$, are inferred from integrand data. 
 
-However, $\err_{\CI}$ shows no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\CI}$. This dependence will become explicit once the hyperparameters, $m, s$, and $\vtheta$,  are inferred from integrand data.
-% This is because the hyperparameters, $m, s$, and $\vtheta$, have not yet been inferred from integrand data.  
-After inferring the hyperparameters, $\err_{\CI}$ \emph{does reflect the size} of the integrand values. 
+
+% However, $\err_{\CI}$ shows no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\CI}$. This dependence will become explicit once the hyperparameters, $m, s$, and $\vtheta$,  are inferred from integrand data. 
+% After inferring the hyperparameters, $\err_{\CI}$ \emph{does reflect the size} of the integrand values. 
 %The following next few sections describe three approaches to hyperparameter estimation. 
 % Three approaches for hyperparameter estimation were described in \cite{JagHic19a}. 
 % Theorem \label{thm:param} summarizes those approaches for quick reference.  
@@ -663,7 +666,7 @@ After inferring the hyperparameters, $\err_{\CI}$ \emph{does reflect the size} o
 
 There were three methods developed for hyperparameter estimation in \cite{JagHic19a} as summarized below. With the assumptions for a fast Bayesian transform kernel,
 % \eqref{fastcompAssump} and \eqref{addAssump} hold then 
-the computation cost can be significantly reduced.
+the computation cost including the hyperparameter estimation can be significantly reduced.
 
 \begin{theorem} \label{thm:param} There are at least three approaches to estimating or integrating out the hyperparameters defining a Gaussian process from which the integrand is drawn: empirical Bayes, full Bayes, and generalized cross-validation.  
 %\begin{theorem} \label{thm:fastparam}
@@ -905,23 +908,26 @@ The methods developed for hyperparameter estimation from \cite{JagHic19a} are su
 \end{theorem}
 \fi
 
-In the theorem above, note that if the original covariance kernel, $C$, is replaced by $b C$ for some positive constant $b$, the cubature, $\hmu$, the estimates of $\vtheta$, and the credible interval half-widths, $\err_{\mathsf{x}}$ for $\mathsf{x} \in \{\MLE, \full, \GCV\}$, all remain unchanged.  The estimates of $s^2$ are multiplied by $b^{-1}$, as would be expected. 
+% In the theorem above, note that if the original covariance kernel, $C$, is replaced by $b C$ for some positive constant $b$, the cubature, $\hmu$, the estimates of $\vtheta$, and the credible interval half-widths, $\err_{\mathsf{x}}$ for $\mathsf{x} \in \{\MLE, \full, \GCV\}$, all remain unchanged.  The estimates of $s^2$ are multiplied by $b^{-1}$, as would be expected. 
 
 % Looking back over the results of Sections \ref{sec:MLE}--\ref{sec:GCV}, it is noted that if the original covariance function, $C$, is replaced by $b C$ for some positive constant $b$, the cubature, $\hmu$, the estimates of $\vtheta$, and the credible interval widths, $\err_{\MLE}, \err_{\full}, \err_{\GCV}$, all remain unchanged.  The estimates of $s^2$ are multiplied by $b^{-1}$, as would be expected.
 
+Equation \eqref{eqn_prob_CI} presents three credible intervals,  % \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, 
+for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  
+% We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule. 
+Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process  as explained further in Section \ref{sec:cone_of_functions}. We apply these results in Section \ref {sec:fast_bayes} to speedup the computations.
 
 
 
 
 \subsection{The Fast Automatic Bayesian Cubature Algorithm} 
+\label{sec:fast_bayes}
 
 
-The previous section presents three credible intervals, \eqref{eqn_prob_CI}, % \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, 
-for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule.  Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.
 
-Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size.  The steps are detailed in Algorithm~\ref{algorithm1}.
+Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size; these steps are detailed in Algorithm~\ref{algorithm1}.
 
-We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability.  The example in the next section and the examples in Section~\ref{sec:NumExp} support that expectation. We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
+We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space (Section \ref{sec:cone_of_functions}) and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability. The examples in Section~\ref{sec:NumExp} support that expectation. % We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
 
 \algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen\ }
 \algnewcommand{\IElse}{\unskip\ \algorithmicelse\ }
@@ -958,8 +964,7 @@ We recognize that multiple applications of our credible intervals in one run of 
 
 
 
-
-But \cite{JagHic19a} did not provide any explicit parameter search techniques. We provide one such technique using steepest descent in the following section. 
+The results in \cite{JagHic19a} provide techniques to speedup the computation, but did not provide any explicit technique for parameter search. We provide one such approach using steepest descent in the Section \ref{grad_descent_MLE}. 
 
 
 
@@ -973,7 +978,7 @@ But \cite{JagHic19a} did not provide any explicit parameter search techniques. W
 
 
 
-This section covers enhancements developed to the Bayesian Cubature proposed in \cite{JagHic19a}. First, we start with explaining the underlying function space of desired integrands.
+This section covers enhancements developed to the Bayesian Cubature proposed in \cite{JagHic19a}. First, we start with explaining the underlying function space of  integrands as desired in Section \ref{sec:fast_bayes}.
 
 
 
@@ -1088,10 +1093,10 @@ Estimated integral value of our algorithm closely matches the integral of a smoo
 
 \subsection{Gradient descent to find optimal shape parameter}
 \label{grad_descent_MLE}
-The equation specifying $\vtheta_\MLE$ as defined in \eqref{fastThetaMLE} does not say how the parameter search can be done. There exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
+The equation specifying $\vtheta_\MLE$ as defined in \eqref{fastThetaMLE} does not say how the parameter search can be done. However there exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
 % Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
 Since the objective function is known we could compute the gradient.
-Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function for the same purpose by excluding the negative sign, which modifies the problem to become a minimization of
+Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function to guide the search by excluding the negative sign, which modifies the problem to become a minimization of
 \begin{align*}
 \mathcal{L}_{\MLE}(\vtheta | \vy)
 &:= % \frac{1}{n} \log(\det\, \mC) +  \log\left( (\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right) + \text{constants} \\
@@ -1411,7 +1416,8 @@ where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the
 \subsection{Product Kernels}
 \label{sec:product_kernel}
 
-The Bayesian cubature in this research uses product kernels for the demonstrations and numerical implementations. They got nice properties which are helpful to obtain analytical results easily. Product kernels in $d$ dimensions are of the form,
+
+The Bayesian cubature in this research uses product kernels for the demonstrations and numerical implementations. They got nice properties which are helpful to obtain analytical results easily. Especially the gradient descent for parameter search can be explicitly expressed with the derivatives of the kernel as shown in Section \ref{sec:prod-kernel-steep-descent}. Product kernels in $d$ dimensions are of the form,
 \begin{align}
 \label{eqn:prod_kernel}
 C_\vtheta(\vt, \vx) = 
@@ -1533,6 +1539,7 @@ The $\bar{\lambda}_{i(\ell)}$ can be computed now using \eqref{eqn:deriv_eigenva
 
 
 \subsubsection{Shape parameter search using steepest descent}
+\label{sec:prod-kernel-steep-descent}
 Using the obtained derivative of the eigenvalues, $\bar{\lambda}_{i(\ell)}$, one can easily compute the gradient of the objective function \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full}. This can be further used to implement the steepest descent search as introduced in \secref{grad_descent_MLE} 
 %\eqref{Dong2017a}
 \begin{align*}
@@ -1575,7 +1582,7 @@ We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to de
 
 \JRNote{Need better and more convincing motivation}
 
-In the \cite{JagHic19a} % previous sections
+In the \cite{JagHic19a}% previous sections
 , it was assumed that the shift-invariant kernel's order is an even valued integer and also fixed. It requires the practitioner to be aware of the integrand's smoothness to precisely handpick the kernel order to match the integrand's smoothness. However, it is not possible to know the integrand's smoothness in most of the practical applications. The constraint to have an integer-valued kernel order also limits the ability to continuously vary the kernel's smoothness to match the integrand like the shape parameter is varied to match. 
 
 The integer kernel order is not suitable to optimally search by standard optimization algorithm.
@@ -1740,20 +1747,20 @@ where $q$ is used to denote the kernel order to distinguish it from the notation
 C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } 
 e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
 \\
-=& 1 + \eta 
-\left(
-\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
-+
-\sum_{k=\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
-\right)
-\\
-=& 1 + \eta 
-\left(
-\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
-+
-\sum_{k=-\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
-\right)
-\\
+% =& 1 + \eta 
+% \left(
+% \sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
+% +
+% \sum_{k=\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
+% \right)
+% \\
+% =& 1 + \eta 
+% \left(
+% \sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
+% +
+% \sum_{k=-\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
+% \right)
+% \\
 =& 1 + \eta 
 \left(
 \underbrace{
@@ -1782,20 +1789,20 @@ C_\vtheta(x, t) &=
 \frac{1}{ q^{-1} e^{ 2 \pi\sqrt{-1} (x-t)} -1 }
 \right)
 \\
-&= 
-1 + \eta 
-\left(
-\frac{q^{-1} \left(e^{2 \pi\sqrt{-1} (x-t) }+ e^{ -2 \pi\sqrt{-1} (x-t)}\right) -2 }
-{q^{-2} - q^{-1} \left(e^{ 2 \pi\sqrt{-1} (x-t)} + e^{ -2 \pi\sqrt{-1} (x-t)}\right) + 1 }
-\right)
-\\
-&= 
-1 + \eta 
-\left(
-\frac{2 q^{-1} \cos({2 \pi\sqrt{-1} (x-t) }) -2 }
-{q^{-2} - 2 q^{-1} \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
-\right)
-\\
+% &= 
+% 1 + \eta 
+% \left(
+% \frac{q^{-1} \left(e^{2 \pi\sqrt{-1} (x-t) }+ e^{ -2 \pi\sqrt{-1} (x-t)}\right) -2 }
+% {q^{-2} - q^{-1} \left(e^{ 2 \pi\sqrt{-1} (x-t)} + e^{ -2 \pi\sqrt{-1} (x-t)}\right) + 1 }
+% \right)
+% \\
+% &= 
+% 1 + \eta 
+% \left(
+% \frac{2 q^{-1} \cos({2 \pi\sqrt{-1} (x-t) }) -2 }
+% {q^{-2} - 2 q^{-1} \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
+% \right)
+% \\
 &= 
 1 + 2 \eta q
 \left(
