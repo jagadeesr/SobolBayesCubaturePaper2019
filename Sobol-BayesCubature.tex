@@ -365,8 +365,11 @@ Rather than relying on strong assumptions about the integrand, such as an upper 
 To study numerical algorithms from a statistical point of view, where uncertainty is formally due to the presence of an unknown numerical error, is the goal of probabilistic numerics.
 
 
+The primary contribution of this work is to extend the fast Bayesian cubature \cite{JagHic19a} to use digital nets and Walsh kernels. Additional enhancements also provided to have the ability to search the hyperparameters using steepest descent and to use continuous valued kernel order.
+We also provide a diagnostics to verify the Gaussian process assumption that was made in developing the Bayesian cubature.
 
 
+\iffalse
 Our primary contribution in this research is to demonstrate how the choice of a family of covariance kernels that match the low discrepancy sampling nodes facilitates fast computation of the cubature and the data-driven stopping criterion.  Our Bayesian cubature requires a computational cost of
 \begin{equation} \label{eqn:OuralgoCost}
 \Order\bigl(n \$(f) + N_{\opt}[n\$(C) + 
@@ -396,20 +399,25 @@ D(\mathcal{P}) := \sup_{M \in \mathcal{M}}
 where $\abs{\mathcal{P}}$ is the cardinality of the set $\mathcal{P}$, and $\lambda_L$ is the Lebesgue measure.
 The \emph{low discrepancy points} satisfy $D(\mathcal{P}) = \Order((\log n)^d/n)$.
 In this work we experiment with two most popular low discrepancy point sets, 1) lattice points, and 2) Sobol' points.
+\fi
+
 
 % \Section{Prior Work}
+\cite{JagHic19a} introduces Bayesian cubature and develops the fast Bayesian transform with certain assumptions. The fast Bayesian transform helps to speedup the computations.  Using rank-1 lattice points and shift-invariant kernels demonstrates the fast Bayesian cubature. 
+
 
 Hickernell~\cite{Hic17a} compares different approaches to cubature error analysis depending on whether the rule is deterministic or random and whether the integrand is assumed to be deterministic or random.  Error analysis that assumes a deterministic integrand lying in a Banach space leads to an error bound that is typically impractical for deciding how large $n$ must be to satisfy \eqref{eqn:err_crit}.  The deterministic error bound includes a (semi-)norm of the integrand, which is often more complex to compute than the original integral.
 
-Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Fourier coefficients of the integrand.  The algorithms proposed here also rely on discrete Fourier coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in the MATLAB implementation of our algorithms.
+Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Walsh coefficients of the integrand.  The algorithms proposed here also rely on discrete Walsh coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in the MATLAB implementation of our algorithms.
 
-Section~\ref{sec:BC} explains the Bayesian approach to calculate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We end Chapter~\ref{sec:BC}  by demonstrating why Bayesian cubature is typically computationally expensive.
-Chapter~\ref{sec:fast_BC}  introduces the concept of covariance kernels that match the nodes and expedite the computations required by our automatic Bayesian cubature. 
-Chapter~\ref{sec:shift_invariant_kernel} implements this concept for shift invariant kernels and rank-1 lattice nodes. It also develops approaches to build shift-invariant kernels of continuous valued kernel order rather than fixing the kernel order to integer values.
-Chapter~\ref{sec:sobol_walsh} demonstrates another implementation of matching nodes and kernel using Sobol' points and Walsh kernels. It also shows that the fast Walsh Hadamard as the fast Bayesian transform for this case.
-Chapter~\ref{sec:NumImpl} describes how to avoid cancellation error for kernels of product form. 
-It also covers  some of the additional techniques used in the implementation of our Bayesian Cubature algorithms. 
-Numerical examples are provided in Chapter~\ref{sec:NumExp} to demonstrate the performance and advantages of our new algorithms.  We conclude with a brief discussion and potential future work in Chapter~\ref{sec:conclusion-future-work}.
+Section~\ref{sec:BC} explains the Bayesian approach to calculate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We also briefly introduce foundational concepts such as the fast Bayesian transform and the confidence intervals that will be basis of our main contributions.
+% Section~\ref{sec:fast_BC}  introduces the concept of covariance kernels that match the nodes and expedite the computations required by our automatic Bayesian cubature. 
+% Section~\ref{sec:shift_invariant_kernel} implements this concept for shift invariant kernels and rank-1 lattice nodes. It also develops approaches to build shift-invariant kernels of continuous valued kernel order rather than fixing the kernel order to integer values.
+Section~\ref{sec:bayes-cub-enhancements} provides enhancements to the fast Bayesian cubature introduced in \cite{JagHic19a}.
+Section~\ref{sec:gauss-diagnostics} provides a diagnostics using Q-Q plots to verify the Gaussian process assumption used in developing the Bayesian cubature.
+Section~\ref{sec:sobol_walsh} demonstrates our new implementation of matching nodes and kernel using Sobol' points and Walsh kernels. It also shows that the fast Walsh Hadamard as the fast Bayesian transform for this case.
+% Section~\ref{sec:NumImpl} describes how to avoid cancellation error for kernels of product form. It also covers  some of the additional techniques used in the implementation of our Bayesian Cubature algorithms. 
+Numerical examples are provided in Section~\ref{sec:NumExp} to demonstrate the performance and advantages of our new algorithms.  We conclude with a brief discussion and potential future work in Section~\ref{sec:conclusion-future-work}.
 
 
 We use the terms integrand or function interchangeably to denote the function $f$ being considered for the numerical integration. Also, we use the terms, nodes, points, node-sets, designs, and data-sites interchangeably to denote the points $\mathcal{P}$ used in the cubature.
@@ -566,7 +574,6 @@ sum of the following:
 	\item $\Order\bigl(N_{\opt} n^3 \bigr)$ for the matrix inversions and determinant calculations; this cost is independent of $d$.
 \end{itemize}
 \fi
-
 As shown in the numerical experiments \cite{JagHic19a}, the cost increases quickly as the $n$ required to meet the error tolerance increases.  This motivates the fast Bayesian cubature algorithm presented in Section~\ref{sec:fast_BC}.
 
 
@@ -975,7 +982,7 @@ The results in \cite{JagHic19a} provide techniques to speedup the computation, b
 
 
 \section{Enhancements to Bayesian Cubature}
-
+\label{sec:bayes-cub-enhancements}
 
 
 This section covers enhancements developed to the Bayesian Cubature proposed in \cite{JagHic19a}. First, we start with explaining the underlying function space of  integrands as desired in Section \ref{sec:fast_bayes}.
@@ -1955,6 +1962,7 @@ Similarly one can map the kernel order $q \in (0,1)$ \secref{sec:exp_decay_kerne
 
 
 \section{Diagnostics for the Gaussian Process Assumption}
+\label{sec:gauss-diagnostics}
 
 The starting point for our Bayesian cubature is the assumption that the integrand arises from a Gaussian process,  $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$. This implies that the function values, $\vf$, shall satisfy a multivariate Gaussian distribution, as in \eqref{eqn:fGaussDist}. If we you could transform it to the standard Gaussian, we can visually verify with readily available tools such as Q-Q plot. We propose a transform to the given function data $\vf$ to get standard Gaussian, resulting in $\vZ$:
 \begin{align}
@@ -2029,12 +2037,12 @@ Figures \ref{fig:keister-normplot} and \ref{fig:mvn-normplot} are normal probabi
 
 
 
-\iftrue
+
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.9\linewidth]{"programs/rand-QQPlot-n-64-d-2-r-150-th-100-1"}
-	\caption{Q-Q plot : Multivariate normal}
-	\label{fig:mvn-normplot}
+	\caption{Q-Q plot : Random function}
+	\label{fig:randf-normplot}
 \end{figure}
 
 \begin{figure}[ht]
@@ -2048,23 +2056,19 @@ Figures \ref{fig:keister-normplot} and \ref{fig:mvn-normplot} are normal probabi
 	\centering
 	\includegraphics[width=0.9\linewidth]{"programs/ExpCos-QQPlot-n-64-d-3-1"}
 	\caption{Q-Q plot : ExpCos}
-	\label{fig:mvn-normplot}
+	\label{fig:expcos-normplot}
 \end{figure}
-\fi
 
 
 
 
-
+\subsection{observations}
 \JRNote{write your observations from the numerical experiments}
-The Q-Q plots in the figures \ref{fig:keister-normplot} and \ref{fig:mvn-normplot} show that the transformed integrand values $\vZ$ using \eqref{gauss_diagnostics_tx} behave like standard Gaussian.
 
+The Q-Q plots in the figures \ref{fig:randf-normplot}, \ref{fig:keister-normplot} and \ref{fig:expcos-normplot} show that the transformed integrand values $\vZ$ using \eqref{gauss_diagnostics_tx} behave like standard Gaussian.
+Also for the random function the Q-Q plot is much nicer than the other functions.
 
-
-
-
-
-
+\iffalse
 
 
 \subsection{Posterior} We compute posterior distribution to verify the Gaussian assumption.
@@ -2224,7 +2228,7 @@ m_\MLE=\frac{(\vone^T \mCInv \vy)}{\vone^T\mCInv\vone}
 
 
 
-
+\fi
 
 
 
@@ -2257,8 +2261,9 @@ m_\MLE=\frac{(\vone^T \mCInv \vy)}{\vone^T\mCInv\vone}
 
 
 
-The previous section showed an automatic Bayesian cubature algorithm without using any specific nodes or kernels. 
-In this chapter, we demonstrate an approach to formulate fast Bayesian transform using matching kernels and point sets. 
+The previous section showed an automatic Bayesian cubature algorithm without mentioning any specific nodes or kernels. 
+In this chapter, we demonstrate another approach to formulate fast Bayesian transform using matching kernels and point sets. 
+\cite{JagHic19a} demonstrated Bayesian cubature using rank-1 lattice points and shift-invariant kernels.
 Scrambled Sobol' nets and Walsh kernels are paired to achieve $\Order(n^{-1 + \epsilon})$ order error convergence where $n$ is the sample size. 
 Sobol' nets \cite{Sob67} are low discrepancy points, used extensively in numerical integration, simulation, and optimization. 
 %Higher order digital nets with matching smoother kernels could be combined to provide higher order error convergence $\Order(N^{-\alpha + \epsilon})$ for $\alpha \ge 1$ and $\epsilon > 0$ but it is not covered in this work.
@@ -2370,7 +2375,9 @@ The following very useful result, which will be further used to obtain the fast 
 	\vx_i \ominus \vx_j = \vx_j \ominus \vx_i, \quad \forall i,j \in \naturals_0.
 	\end{align}
 \end{lemma}
+A simple proof can be found in \cite{JagThesis19a}.
 
+\iffalse
 \begin{proof}
 	
 	The proof can be obtained from the definition of digital nets which stated that the digital nets are obtained using generator matrices, $\vec{z}_{i \ell} = \mG_{\ell} \, \vec{\imath} \bmod b$. Rewriting the subtraction using the generating matrix provides the result,
@@ -2383,6 +2390,7 @@ The following very useful result, which will be further used to obtain the fast 
 	\end{align*}
 	The rest of the lemma is obvious from the definition of digital nets.
 \end{proof}
+\fi
 
 % \JRNote{Define and explain scrambling}
 We chose digitally shifted and scrambled nets \cite{HicYue00} for our Bayesian cubature algorithm. Digital shifts help to avoid having nodes at the origin, similar to the random shift used with lattice nodes.
@@ -3042,9 +3050,8 @@ Periodization variable transforms are not used in the examples with \\ \allowbre
 
 \subsection{Multivariate Gaussian Probability}
 
-This example is introduced in Section~\ref{MVN_example}, where we use the Mat\'ern covariance kernel.  We reuse $f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} and apply a periodization transform to obtain $f_{\textup{GenzP}}$ when required.
-
-Here we use $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} without any periodization, and chose $d=3$ and $r=1$. The simulation results for this example integrand are summarized in Figures \ref{fig:Sobol-mvn-guaranteed-MLE}, \ref{fig:Sobol-mvn-guaranteed-FB}, and \ref{fig:Sobol-mvn-guaranteed-GCV}.  In all cases, {\code{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \secref{MVN_example} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes about 2 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
+This example was introduced in \cite{JagHic19a}, where we used with the Mat\'ern covariance kernel and shift-invariant kernel. 
+Here we use $ f_{\textup{Genz}}$ \eqref{eqn:fGenzdef} without any periodization as it is not required, and chose $d=3$ and $r=1$. The simulation results for this example integrand are summarized in Figures \ref{fig:Sobol-mvn-guaranteed-MLE}, \ref{fig:Sobol-mvn-guaranteed-FB}, and \ref{fig:Sobol-mvn-guaranteed-GCV}.  In all cases, {\code{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. We used the same setting as before with generic slow Bayesian cubature in \cite{JagHic19a} for comparision. For error threshold $\varepsilon=10^{-5}$ with empirical stopping criterion, our fast algorithm takes about 2 seconds as shown in \figref{fig:mvn-guaranteed-MLE} whereas the basic algorithm takes 30 seconds as shown in \figref{fig:MVN_Metern_d2b2}. 
 {\code{cubBayesNet\_g} uses fast Walsh transform which is slower in MATLAB due to the way it was implemented. This is reason it takes more longer the {\code{cubBayesLattice\_g}. 
 But comparing the number of samples, $n$, used for integration provides more insight which directly relates to alogrithm's computational cost. The {\code{cubBayesLattice\_g} used $n=16384$ samples whereas {\code{cubBayesNet\_g} used $n=32768$ samples even with $r=1$ order kernel.
 
@@ -3350,6 +3357,7 @@ We ran this test for 1000 times. In comparison, both the methods successfully co
 
 
 \section{Conclusion and future work}
+\label{sec:conclusion-future-work}
 
 \paragraph{TBD}
 
