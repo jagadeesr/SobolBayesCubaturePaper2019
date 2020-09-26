@@ -410,7 +410,7 @@ In this work we experiment with two most popular low discrepancy point sets, 1) 
 
 \cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Walsh coefficients of the integrand.  The algorithms proposed here also rely on discrete Walsh coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by \cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in the MATLAB implementation of our algorithms.
 
-Section~\ref{sec:BC} explains the Bayesian approach to calculate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We also briefly introduce foundational concepts such as the fast Bayesian transform and the confidence intervals that will be basis of our main contributions.
+Section~\ref{sec:BC} explains the Bayesian approach to calculate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We also briefly introduce foundational concepts such as the fast Bayesian transform and the credible intervals that will be basis of our main contributions.
 % Section~\ref{sec:fast_BC}  introduces the concept of covariance kernels that match the nodes and expedite the computations required by our automatic Bayesian cubature. 
 % Section~\ref{sec:shift_invariant_kernel} implements this concept for shift invariant kernels and rank-1 lattice nodes. It also develops approaches to build shift-invariant kernels of continuous valued kernel order rather than fixing the kernel order to integer values.
 Section~\ref{sec:bayes-cub-enhancements} provides enhancements to the fast Bayesian cubature introduced in \cite{JagHic19a}.
@@ -611,7 +611,7 @@ As introduced in \cite{JagHic19a}, fast Bayesian transform kernel is defined wit
 \nonumber
 \mC^p  &= \frac 1n \mV \mLambda^{p} \mV^H, \qquad \forall p \in \integers,
 \end{align}
-where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\cdots,\vC_n$ are columns of $\mC$,  $\vV_1,\cdots,\vV_n$ are columns of $\mV$, and $\vv_1,\cdots,\vv_n$ are rows of $\mV$. 
+where $\mV^H$ is the Hermitian of $\mV$, $\vC_1,\dots,\vC_n$ are columns of $\mC$,  $\vV_1,\dots,\vV_n$ are columns of $\mV$, and $\vv_1,\dots,\vv_n$ are rows of $\mV$. 
 The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$.
 In this and later sections, we drop the notation of $\vtheta$'s dependence of various quantities for simplicity of notation.  The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.  
 For any $n \times 1$ vector $\vb$, define the notation  $\widetilde{\vb} := \mV^H \vb$.
@@ -1057,7 +1057,10 @@ We demonstrate the credible interval using the following example. For this purpo
 % Here $a_{\PEAKY} \in \reals, a_{\NICE} \in \reals$, and 
 Here $f_{\NOISE}(\vx) = (1 - \exp(2\pi \sqrt{-1} \vx^T \vzeta))$, $\vzeta \in \reals^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes for some $\{ \vx_i\}_{i=1}^n$. %chosen to sample the integrand. 
 The $\vzeta$ in the dual space of lattice nodes implies that $f_{\NOISE}(\vx_i)=0$ at the sampling nodes $\{ \vx_i\}_{i=1}^n$.
-The $f_{\NICE}$ is obtained by kernel interpolation of the $n$ samples of $f_\TRUE$ at $\{ \vx_i\}_{i=1}^n$. We chose the Mat\'ern kernel \eqref{eqn:matern_kernel} for the interpolation.
+The $f_{\NICE}$ is obtained by kernel interpolation of the $n$ samples of $f_\TRUE$ at $\{ \vx_i\}_{i=1}^n$. We chose the Mat\'ern covariance kernel
+$
+	C_{\theta}(\vx, \vt) = \prod_{k=1}^d \exp(-\theta|\vx_k-\vt_k|)(1+\theta |\vx_k-\vt_k|),
+$ for the interpolation.
 Please note that $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$.
 
 
@@ -1074,7 +1077,7 @@ Please note that $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for 
 	%\begin{subfigure}[h]{0.48\linewidth}
 	\includegraphics[width=0.8\linewidth]{figures/cone_bayes_mu_pdf}
 	%\end{subfigure}
-	\caption{Probability distributions showing the relative integral position of a smooth and a peaky function. $f_{\NICE}$ lies within the center 99\% of the confidence interval, and $f_{\PEAKY}$ lies on the outside of 99\% of  the confidence interval. This plot can be conditionally reproduced using \code{DemoCone.m} \cite{ChoEtal20a}}
+	\caption{Probability distributions showing the relative integral position of a smooth and a peaky function. $\mu_{\NICE}$ lies within the center 99\% of the credible interval, and $\mu_{\PEAKY}$ lies on the outside of 99\% of  the credible interval. This plot can be conditionally reproduced using \code{DemoCone.m} \cite{ChoEtal20a}}
 	\label{fig:cone_bayes_posterior}
 \end{figure}
 % Done: \JRNote{Use standard deviation $\sigma$ in x-axis.  $f_{\NICE}$ using kernel approximation} 
@@ -1112,7 +1115,7 @@ Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniq
 \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}}
 \right) + \text{constants.}
 \end{align*}
-Taking derivative with respect to $\theta_\ell$, for $\ell=1,\cdots,d$
+Taking derivative with respect to $\theta_\ell$, for $\ell=1,\dots,d$
 \begin{align}
 \label{eqn:deriv_obj_func_MLE}
 \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy)
@@ -1126,7 +1129,7 @@ Here we used some of the results from \cite{Dong2017a}. A technique to compute $
 This result can be used with gradient descent as follows,
 \begin{align}
 \label{eqn:deep_descent}
-\theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu_\ell \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
+\theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu_\ell \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\dots
 \end{align}
 where $\nu_\ell$ is the step size for the gradient descent. 
 
@@ -1430,11 +1433,11 @@ C_\vtheta(\vt, \vx) =
 \prod_{\ell=1}^d \biggl[ 1 - \eta_\ell \; \mathfrak{C}(x_\ell,t_\ell) \biggr]
 \end{align}
 % $ C_{\vtheta}(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$
-where $\eta_\ell$ is called shape parameter in the $\ell$th variable for $\ell=1,\cdots,d$, and $\mathfrak{C}$ is chosen such that to ensure $C_{\vtheta}$ is symmetric and positive definite. Our goal is to compute $\bar{\lambda}_{i(\ell)}$ for which the kernel derivative is necessary. The derivative of the product kernels can be obtained easily. Please note that $\vtheta$ denotes all the hyper parameters of the kernel $C$ where $\eta$ is one of them and called the shape parameter.
+where $\eta_\ell$ is called shape parameter in the $\ell$th variable for $\ell=1,\dots,d$, and $\mathfrak{C}$ is chosen such that to ensure $C_{\vtheta}$ is symmetric and positive definite. Our goal is to compute $\bar{\lambda}_{i(\ell)}$ for which the kernel derivative is necessary. The derivative of the product kernels can be obtained easily. Please note that $\vtheta$ denotes all the hyper parameters of the kernel $C$ where $\eta$ is one of them and called the shape parameter.
 
-\subsubsection{Derivative of the product kernel when $\eta_1=\cdots=\eta_d=\eta$}
+\subsubsection{Derivative of the product kernel when $\eta_1=\dots=\eta_d=\eta$}
 \label{sec:deriv_of_kernel}
-It was suggested to use gradient descent to find optimal shape parameter in \secref{grad_descent_MLE}. In this section, we compute the gradient for product kernels. When the $\eta_1=\cdots=\eta_d=\eta$, the derivative of a product kernel  w.r.t. $\eta$ can be obtained as below,
+It was suggested to use gradient descent to find optimal shape parameter in \secref{grad_descent_MLE}. In this section, we compute the gradient for product kernels. When the $\eta_1=\dots=\eta_d=\eta$, the derivative of a product kernel  w.r.t. $\eta$ can be obtained as below,
 \begin{align*}
 \frac{\partial}{\partial \eta} C_\vtheta(\vt, \vx) 
 & =
@@ -1487,14 +1490,14 @@ Thus,
 \fi
 
 
-\subsubsection{When $\eta_\ell$ is different for each $\ell = 1,\cdots,d$}
+\subsubsection{When $\eta_\ell$ is different for each $\ell = 1,\dots,d$}
 In this case, we will have a vector of length $d$ shape parameters. Derivative of the kernel, $C_\vtheta(\vt, \vx)$ \eqref{eqn:prod_kernel}, with respect to $\eta_\ell$ is,
 \begin{align*}
 \frac{\partial}{\partial \eta_\ell} C_\vtheta(\vt, \vx) 
 & =
 \frac{\partial}{\partial \eta_\ell} 
 \prod_{j=1}^d \biggl[
-1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr], \quad \text{where} \quad \ell = 1, \cdots, d
+1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr], \quad \text{where} \quad \ell = 1, \dots, d
 \\
 & = 
 \prod_{j=1, j \neq \ell}^d \biggl[
@@ -1549,7 +1552,7 @@ The $\bar{\lambda}_{i(\ell)}$ can be computed now using \eqref{eqn:deriv_eigenva
 Using the obtained derivative of the eigenvalues, $\bar{\lambda}_{i(\ell)}$, one can easily compute the gradient of the objective function \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full}. This can be further used to implement the steepest descent search as introduced in \secref{grad_descent_MLE} 
 %\eqref{Dong2017a}
 \begin{align*}
-\eta^{(j+1)}_\ell = \eta^{(j)}_\ell - \nu \frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots,  \quad \ell = 1, \cdots, d
+\eta^{(j+1)}_\ell = \eta^{(j)}_\ell - \nu \frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\dots,  \quad \ell = 1, \dots, d
 \end{align*}
 where $\nu$ is the step size for the gradient descent, $j$ is the iteration index, and $\frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy)$ is either \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full} depending on the choice of the hyperparameter search method. The parameter $\eta_\ell$ is usually searched in the whole $\reals$ by using the simple domain transformation as explained below. % in Section~\ref{sec:kernel_param_search}.
 
@@ -1912,7 +1915,7 @@ q_{\textup{opt}} = \frac{1}{1 + e^{t_{3, \textup{opt}}}}.
 
 
 \subsubsection{Combined searching of kernel order $r$ and shape parameter $\veta$}
-Instead of searching $\veta$ and $r$ separately one would prefer to search them together so that the most optimal values can be obtained, where $\veta = (\eta_1, \cdots, \eta_d)$ such that $\eta_l \ne \eta_k$,  for $l \ne k$.
+Instead of searching $\veta$ and $r$ separately one would prefer to search them together so that the most optimal values can be obtained, where $\veta = (\eta_1, \dots, \eta_d)$ such that $\eta_l \ne \eta_k$,  for $l \ne k$.
 We can combine the parameter maps used above to ensure that the kernel order values in $(1, \infty)$ and shape parameter $\veta$ in $(0,\infty)^d$ as required in \secref{sec:trunc_series_kernel},
 \begin{align*}
 \vtheta(\vt) = 
@@ -2329,7 +2332,7 @@ where
 \begin{align*}
 \vz = \left( \sum_{j=1}^{\infty} z_{\ell j}b^{-j}\right)_{\ell=1}^d, \quad
 \vy = \left( \sum_{j=1}^{\infty} y_{\ell j}b^{-j}\right)_{\ell=1}^d, \quad
-z_{\ell j}, y_{\ell j} \in \{0,\cdots,b-1\}.
+z_{\ell j}, y_{\ell j} \in \{0,\dots,b-1\}.
 \end{align*}
 
 
@@ -2344,12 +2347,12 @@ where
 \begin{align*}
 \vk = \left( \sum_{j=0}^{\infty} k_{\ell j}b^{j}\right)_{\ell=1}^d, \quad
 \vl = \left( \sum_{j=0}^{\infty} l_{\ell j}b^{j}\right)_{\ell=1}^d, \quad
-\vk_{\ell j}, \vl_{\ell j} \in \{0,\cdots,b-1\}.
+\vk_{\ell j}, \vl_{\ell j} \in \{0,\dots,b-1\}.
 \end{align*}
 
 Let $\{\vz_i\}_{i=0}^{b^m-1}$ be a digital net. Then
 \begin{align*}
-\forall i_1, i_2 \in \{0,\cdots,b^m-1\}, \quad \vz_{j_1} \oplus \vz_{i_2} = \vz_{i_3}, \quad \text{for some} \; i_3 \in \{0,\cdots,b^m-1\}.
+\forall i_1, i_2 \in \{0,\dots,b^m-1\}, \quad \vz_{j_1} \oplus \vz_{i_2} = \vz_{i_3}, \quad \text{for some} \; i_3 \in \{0,\dots,b^m-1\}.
 \end{align*}
 
 The following very useful result, which will be further used to obtain the fast Bayesian transform, arises from the fundamental property of digital nets.
@@ -2420,17 +2423,17 @@ An example of $64$ Sobol' nets in $d=2$ is given in \figref{fig:sobol-fig}.  The
 Walsh kernels are product kernels based on the Walsh functions. We introduce the necessary concepts in this section.
 
 \subsubsection{Walsh functions}
-Like the Fourier transform used with lattice points (\cite{JagHic19a}), the Walsh-Hadamard transform, which we will simply call Walsh transform, is used for the digital nets. The Walsh transform is defined using Walsh functions. Recall $\naturals_0 := \lbrace 0,1,2,\cdots \rbrace$.
+Like the Fourier transform used with lattice points (\cite{JagHic19a}), the Walsh-Hadamard transform, which we will simply call Walsh transform, is used for the digital nets. The Walsh transform is defined using Walsh functions. Recall $\naturals_0 := \lbrace 0,1,2,\dots \rbrace$.
 The one-dimensional Walsh functions in base $b$ are defined as
 \begin{align}
 \label{eqn:walsh_func}
-\textup{wal}_{b,k}(x) := e^{2\pi \sqrt{-1} (x_1 k_0 + x_2 k_1 + \cdots)/b} 
+\textup{wal}_{b,k}(x) := e^{2\pi \sqrt{-1} (x_1 k_0 + x_2 k_1 + \dots)/b} 
 =
 e^{2\pi \sqrt{-1} {\vec{k}}^T{\vec{x}}/b},
 \end{align}
 for $x \in [0,1)$ and $k \in \naturals_0$ and the unique base $b$ expansions 
-$x = \sum_{j \ge 1} x_j b^{-i} = (0.x_1 x_2 \cdots)_b$, $\vec{x} =  (x_1,x_2,\cdots )^T$
-$k = \sum_{j \ge 0} k_j b^{j} = ( \cdots k_1 k_0)_b$, $\vec{k} =  (k_0,k_1,\cdots )^T$, and ${\vec{k}}^T{\vec{x}} = x_1 k_0 + x_2 k_1 + \cdots$
+$x = \sum_{j \ge 1} x_j b^{-i} = (0.x_1 x_2 \dots)_b$, $\vec{x} =  (x_1,x_2,\dots )^T$
+$k = \sum_{j \ge 0} k_j b^{j} = ( \dots k_1 k_0)_b$, $\vec{k} =  (k_0,k_1,\dots )^T$, and ${\vec{k}}^T{\vec{x}} = x_1 k_0 + x_2 k_1 + \dots$
 where the number of digits used in \eqref{eqn:walsh_func} are limited to the length required to represent $x$ or $k$, i.e., $\max \left( {\ceil{ -\log_b{x}}, \ceil{\log_b{k}}  } \right)$.
 % with $n$ at least as large as the number of digits to represent $x$ or $k$.
 Multivariate Walsh functions are defined as the product of the one-dimensional Walsh functions,
@@ -2463,7 +2466,7 @@ The Walsh kernels are of the form,
 \begin{align}
 \label{eqn:walsh_kernel}
 K_{\vtheta} (\vx \ominus \vt) =  
-\prod_{\ell=1}^d  1 + \eta_\ell \omega_{r} (x_\ell \ominus t_\ell), \quad \veta = (\eta_1, \cdots, \eta_d), \quad \vtheta = (r, \veta)
+\prod_{\ell=1}^d  1 + \eta_\ell \omega_{r} (x_\ell \ominus t_\ell), \quad \veta = (\eta_1, \dots, \eta_d), \quad \vtheta = (r, \veta)
 \end{align}
 where $r$ is the kernel order, $\veta$ is the kernel shape parameter, and
 \begin{align*}
