@@ -302,10 +302,10 @@
 	
 	% The process outlined above typically requires a computational cost of $O(N_{\text{opt}}n^3)$, where $N_{\text{opt}}$ is the number of optimization steps required to identify the hyperparameters. Our innovation is to pair low discrepancy nodes with matching covariance kernels to lower the  computational cost to $O(N_{\text{opt}} n \log n)$.   This approach is demonstrated explicitly with rank-1 lattice sequences and shift-invariant kernels.  
 	
-	Our algorithm is  implemented in the Guaranteed Automatic Integration Library (GAIL).
+	Our algorithm and supplementary code is available in the Guaranteed Automatic Integration Library (GAIL).
 	
 	
-	\keywords{Bayesian cubature \and Fast automatic cubature \and GAIL \and Probabilistic numeric methods }
+	\keywords{Bayesian cubature \and Fast automatic cubature \and GAIL \and Probabilistic numeric methods \and Sobol \and Digitatal nets}
 	% \PACS{PACS code1 \and PACS code2 \and more}
 	% \subclass{MSC code1 \and MSC code2 \and more}
 \end{abstract}
@@ -361,7 +361,7 @@ We construct a reliable stopping criterion that determines the number of integra
 \label{eqn:err_crit} 
 \abs{\mu - \hmu} \leq \errtol .
 \end{equation}
-Rather than relying on strong assumptions about the integrand, such as an upper bound on its variance or total variation, we construct a stopping criterion that is based on a credible interval arising from a Bayesian approach to the problem.  We build upon the work of Briol et al.~\cite{BriEtal18a}, Diaconis~\cite{Dia88a}, O'Hagan~\cite{OHa91a}, Ritter~\cite{Rit00a}, Rasmussen and Ghahramani~\cite{RasGha03a}, and others.  Our algorithm is an example of \emph{probabilistic numerics}.
+Rather than relying on strong assumptions about the integrand, such as an upper bound on its variance or total variation, we construct a stopping criterion that is based on a credible interval arising from a Bayesian approach to the problem.  We build upon the work of Briol et al.~\cite{BriEtal18a}, \cite{Dia88a}, \cite{OHa91a}, \cite{Rit00a}, \cite{RasGha03a}, and others.  Our algorithm is an example of \emph{probabilistic numerics}.
 To study numerical algorithms from a statistical point of view, where uncertainty is formally due to the presence of an unknown numerical error, is the goal of probabilistic numerics.
 
 
@@ -406,9 +406,9 @@ In this work we experiment with two most popular low discrepancy point sets, 1) 
 \cite{JagHic19a} introduces Bayesian cubature and develops the fast Bayesian transform with certain assumptions. The fast Bayesian transform helps to speedup the computations.  Using rank-1 lattice points and shift-invariant kernels demonstrates the fast Bayesian cubature. 
 
 
-Hickernell~\cite{Hic17a} compares different approaches to cubature error analysis depending on whether the rule is deterministic or random and whether the integrand is assumed to be deterministic or random.  Error analysis that assumes a deterministic integrand lying in a Banach space leads to an error bound that is typically impractical for deciding how large $n$ must be to satisfy \eqref{eqn:err_crit}.  The deterministic error bound includes a (semi-)norm of the integrand, which is often more complex to compute than the original integral.
+\cite{Hic17a} compares different approaches to cubature error analysis depending on whether the rule is deterministic or random and whether the integrand is assumed to be deterministic or random.  Error analysis that assumes a deterministic integrand lying in a Banach space leads to an error bound that is typically impractical for deciding how large $n$ must be to satisfy \eqref{eqn:err_crit}.  The deterministic error bound includes a (semi-)norm of the integrand, which is often more complex to compute than the original integral.
 
-Hickernell and Jim\'enez-Rugama~\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Walsh coefficients of the integrand.  The algorithms proposed here also rely on discrete Walsh coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by Hickernell, Jim\'enez-Rugama, and Li~\cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in the MATLAB implementation of our algorithms.
+\cite{HicJim16a,JimHic16a} have developed stopping criteria for cubature rules based on low discrepancy nodes by tracking the decay of the discrete Walsh coefficients of the integrand.  The algorithms proposed here also rely on discrete Walsh coefficients, but in a different way.  We only discuss automatic Bayesian cubature for absolute error tolerances in this thesis. The recent work by \cite{HicEtal17a} suggests how one might accommodate more general error criteria, such as relative error tolerances which has been adapted in the MATLAB implementation of our algorithms.
 
 Section~\ref{sec:BC} explains the Bayesian approach to calculate the posterior cubature error and defines our automatic Bayesian cubature. Although much of this material is known, it is included for completeness.  We also briefly introduce foundational concepts such as the fast Bayesian transform and the confidence intervals that will be basis of our main contributions.
 % Section~\ref{sec:fast_BC}  introduces the concept of covariance kernels that match the nodes and expedite the computations required by our automatic Bayesian cubature. 
@@ -459,12 +459,11 @@ Briefly explain and cite our BayesLattice paper
 
 
 The Bayesian approach for numerical analysis was popularized by 
-%Diaconis 
 \cite{Dia88a}. The earliest reference for such kind of approach dates back to Poincar\'e, where, the theory of interpolation was discussed.
 Diaconis motivates the reader by interpreting the most well known numerical methods, 1) trapezoidal rule and 2) splines, from the statistical point of view with whatever is known about the integrand as prior information. 
 For example, the trapezoidal rule can be interpreted as a Bayesian method with prior information being modeled as a Brownian motion in the sample space $\mathcal{C}[0,1)$, the space of continuous functions. %, with normal prior.
 
-This research is focused on the Bayesian approach for numerical integration that is known as Bayesian cubature as introduced by O'Hagan \cite{OHagen1991}.  % $\mathbb{P}_f$
+This research is focused on the Bayesian approach for numerical integration that is known as Bayesian cubature as introduced by \cite{OHagen1991}.  % $\mathbb{P}_f$
 Bayesian cubature returns a probability distribution, that expresses belief about the true value of integral, $\mu(f)$.
 This posterior probability distribution is based on a prior that depends on $f$, which is computed via Bayes' rule using the \emph{data} contained in the function evaluations \cite{BriEtal18a}. 
 %The maximum likelihood estimate of $\mathbb{P}_f$ can be interpreted as a point estimate of the integral. 
@@ -1067,7 +1066,7 @@ Please note that $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for 
 	%\begin{subfigure}[h]{0.48\linewidth}
 	\includegraphics[width=0.8\linewidth]{figures/cone_bayes_f_real}
 	%\end{subfigure}
-	\caption{Example integrands 1) $f_{\NICE}$, a smooth function, 2) $f_{\PEAKY}$, a peaky function. The function values $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$. This plot can be conditionally reproduced using \code{DemoCone.m}}
+	\caption{Example integrands 1) $f_{\NICE}$, a smooth function, 2) $f_{\PEAKY}$, a peaky function. The function values $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$. This plot can be conditionally reproduced using \code{DemoCone.m} \cite{ChoEtal20a}}
 	\label{fig:cone_bayes_functions}
 \end{figure}
 \begin{figure}[ht]
@@ -1075,7 +1074,7 @@ Please note that $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for 
 	%\begin{subfigure}[h]{0.48\linewidth}
 	\includegraphics[width=0.8\linewidth]{figures/cone_bayes_mu_pdf}
 	%\end{subfigure}
-	\caption{Probability distributions showing the relative integral position of a smooth and a peaky function. $f_{\NICE}$ lies within the center 99\% of the confidence interval, and $f_{\PEAKY}$ lies on the outside of 99\% of  the confidence interval. This plot can be conditionally reproduced using \code{DemoCone.m}}
+	\caption{Probability distributions showing the relative integral position of a smooth and a peaky function. $f_{\NICE}$ lies within the center 99\% of the confidence interval, and $f_{\PEAKY}$ lies on the outside of 99\% of  the confidence interval. This plot can be conditionally reproduced using \code{DemoCone.m} \cite{ChoEtal20a}}
 	\label{fig:cone_bayes_posterior}
 \end{figure}
 % Done: \JRNote{Use standard deviation $\sigma$ in x-axis.  $f_{\NICE}$ using kernel approximation} 
@@ -2411,7 +2410,7 @@ An example of $64$ Sobol' nets in $d=2$ is given in \figref{fig:sobol-fig}.  The
 \begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.8\linewidth]{figures/SSobolPoints}
-	\caption{Example of a scrambled Sobol' node set  in $d=2$.  This plot can be reproduced using \code{PlotPoints.m}. \label{sobolfig} }
+	\caption{Example of a scrambled Sobol' node set  in $d=2$.  This plot can be reproduced using \code{PlotPoints.m} \cite{ChoEtal20a}. \label{sobolfig} }
 	\label{fig:sobol-fig}
 \end{figure}
 
@@ -2485,7 +2484,7 @@ Explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \ci
 \begin{figure}
 	\centering
 	\includegraphics[width=0.9\linewidth]{"figures/walsh_kernel dim_1"}
-	\caption[Walsh kernel]{Walsh kernel of order $r=1$ in dimension $d=1$. This figure can be reproduced using \code{plot\_walsh\_kernel.m}. %\JRNote{remove $r=1$ in the figure}
+	\caption[Walsh kernel]{Walsh kernel of order $r=1$ in dimension $d=1$. This figure can be reproduced using \code{plot\_walsh\_kernel.m} \cite{ChoEtal20a}. %\JRNote{remove $r=1$ in the figure}
 	}
 	\label{fig:walshkernel-dim1}
 \end{figure}
@@ -2944,7 +2943,7 @@ We can easily show that the Walsh-Hadamard matrices satisfy the assumptions of f
 Assumption \eqref{fastcompAssumpB} follows automatically by the fact that Walsh-Hadamard matrices can be constructed analytically. Assumption \eqref{fastcompAssumpA} can also be verified as the first row/column are one vectors. Finally, assumption \eqref{fastcompAssumpC} is satisfied due to the fact that fast Walsh transform can be computed in $\Order({n \log n})$ operations using fast Walsh-Hadamard transform.
 Thus the Walsh-Hadamard transform is a fast Bayesian transform, $\mV := \mH$, as per \eqref{fastcompAssump}.
 
-We have implemented a fast adaptive Bayesian cubature algorithm using the kernel \eqref{eqn:walsh_kernel} with $r=1$ and Sobol' points \cite{BraFox88} in MATLAB as part of the Guaranteed Adaptive Integration Library (GAIL) \cite{ChoEtal17b} as \allowbreak \code{cubBayesNet\_g}. The Sobol' points used in this algorithm are generated using MATLAB's builtin function \code{sobolset} and scrambled using MATLAB function \code{scramble} \cite{HonHic00a}. The fast Walsh-Hadamard transform \eqref{eqn:hadamard_fwht} is computed using MATLAB's builtin function \code{fwht} with \emph{hadamard} ordering. 
+We have implemented a fast adaptive Bayesian cubature algorithm using the kernel \eqref{eqn:walsh_kernel} with $r=1$ and Sobol' points \cite{BraFox88} in MATLAB as part of the Guaranteed Adaptive Integration Library (GAIL) \cite{ChoEtal20a} as \allowbreak \code{cubBayesNet\_g}. The Sobol' points used in this algorithm are generated using MATLAB's builtin function \code{sobolset} and scrambled using MATLAB function \code{scramble} \cite{HonHic00a}. The fast Walsh-Hadamard transform \eqref{eqn:hadamard_fwht} is computed using MATLAB's builtin function \code{fwht} with \emph{hadamard} ordering. 
 
 \subsection{Iterative Computation of Walsh Transform}
 In every iteration of our algorithm, we double the number of function values. Using the technique described here, we have to only compute the Walsh transform for the newly added function values.
