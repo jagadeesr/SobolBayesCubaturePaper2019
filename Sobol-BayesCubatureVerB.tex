@@ -198,10 +198,10 @@
 
 \newcommand{\wal}{\textup{wal}}
 \newcommand{\CI}{\textup{CI}}
-\newcommand{\NICE}{\textup{nice}}
-\newcommand{\PEAKY}{\textup{peaky}}
+\newcommand{\NICE}{\textup{smth}}
+\newcommand{\PEAKY}{\textup{pky}}
 \newcommand{\NOISE}{\textup{noise}}
-\newcommand{\TRUE}{\textup{smooth}}
+\newcommand{\TRUE}{\textup{true}}
 
 %\newcommand{\errtol}{\text{tol}}
 \newcommand{\errtol}{\varepsilon}
@@ -309,17 +309,6 @@
 	% \PACS{PACS code1 \and PACS code2 \and more}
 	% \subclass{MSC code1 \and MSC code2 \and more}
 \end{abstract}
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -518,7 +507,6 @@ In the formulas for the credible interval half-widths, $\vtheta$ is assumed to t
 
 Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size; these steps are detailed in Algorithm~\ref{algorithm1}.
 
-We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space (Section \ref{sec:cone_of_functions}) and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability. The examples in Section~\ref{sec:NumExp} support that expectation. % We also believe that an important factor contributing to the occasional failure of our algorithm is unreasonable parameterizations of the stochastic process from which the integrand is hypothesized to be drawn.  Overcoming this latter challenge is a topic for future research.
 
 \algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen\ }
 \algnewcommand{\IElse}{\unskip\ \algorithmicelse\ }
@@ -553,8 +541,46 @@ We recognize that multiple applications of our credible intervals in one run of 
 	\end{algorithmic}
 \end{algorithm}
 
+We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space (Section \ref{sec:cone_of_functions}) and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability. The examples in Section~\ref{sec:NumExp} support that expectation. 
+
+The credible intervals used in our automatic algorithm are homogeneous with respect to the function data.  If they are valid for some integrand, $f$, they are also valid for the integrand $a f$ for any constant $a$.  
+
+The integrands for which our automatic algorithm fail are those that are outliers with respect to the hypothesized Gaussian process.  We demonstrate this with an example where the nodes come from an integration lattice.  Choose a smooth and periodic integrand, $f_{\TRUE}$, and define a peaky one, $f_{\PEAKY}$,  as follows:
+\begin{gather*}
+	f_{\TRUE}(\vx) = \exp\biggl(\sum_{\ell=1}^{d} \cos(2\pi x_\ell) \biggr), \\  
+	 f_{\PEAKY}(\vx) = f_{\TRUE}(\vx) + a_{\PEAKY} (1 - \exp(2\pi \sqrt{-1} \vzeta^T (\vx-\vx_1) )),
+\end{gather*} 
+where the integer vector $\vzeta \in \reals^d$  belongs to the dual lattice, which means that $\vx_i^T \vzeta$ is constant for $i = 1, \ldots, n$. Let  $f_{\NICE}$ be the Gaussian process interpolant for $f_{\TRUE}$.  Note that $f_{\NICE}$ is also the interpolant for $f_{\PEAKY}$ since $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$.
 
 
+\begin{figure}[ht]
+	\centering
+	%\begin{subfigure}[h]{0.48\linewidth}
+	\includegraphics[width=0.45\linewidth]{figures/cone_bayes_f_real} \quad 
+	\includegraphics[width=0.45\linewidth]{figures/cone_bayes_mu_pdf}
+	%\end{subfigure}
+	\caption{Example integrands 1) $f_{\NICE}$, a smooth function, 2) $f_{\PEAKY}$, a peaky function. The function values $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$. This plot can be conditionally reproduced using \code{DemoCone.m}}
+	\label{fig:cone_bayes_functions}
+\end{figure}
+\begin{figure}[ht]
+	\centering
+	%\begin{subfigure}[h]{0.48\linewidth}
+	\includegraphics[width=0.8\linewidth]{figures/cone_bayes_mu_pdf}
+	%\end{subfigure}
+	\caption{Probability distributions showing the relative integral position of a smooth and a peaky function. $f_{\NICE}$ lies within the center 99\% of the confidence interval, and $f_{\PEAKY}$ lies on the outside of 99\% of  the confidence interval. This plot can be conditionally reproduced using \code{DemoCone.m}}
+	\label{fig:cone_bayes_posterior}
+\end{figure}
+% Done: \JRNote{Use standard deviation $\sigma$ in x-axis.  $f_{\NICE}$ using kernel approximation} 
+
+In \figref{fig:cone_bayes_functions}, the sampled function values
+% , $\{f_{\TRUE}(\vx_i)\}_{i=1}^n$, from a smooth integrand $f_{\TRUE}$ 
+are shown as dots. One can imagine these samples % $\{f(\vx_i)\}_{i=1}^n$ 
+were obtained from $f_{\NICE}$, a moderately smoother function or from $f_{\PEAKY}$, a highly oscillating function. In this example, we used $a_{\PEAKY} = 2$.
+
+When using $n=16$ rank-1 lattice points, and $r=1$ shift-invariant kernel, we get the posterior distribution of $\mu$ as shown in \figref{fig:cone_bayes_posterior}. The true integral value is shown as $\mu_{\TRUE}$ which is at the center of the plot. The integral of the peaky function $f_{\PEAKY}$ lies outside of the 99\% of the credible interval given by \eqref{eqn_prob_CI_MLE}, whereas the $\mu_{\NICE}$ falls within.
+
+Our Bayesian cubature algorithms compute the approximate integral using only the samples of the integrand. 
+Estimated integral value of our algorithm closely matches the integral of a smooth function that falls within the middle of the confidence interval. If the true integrand were to resemble the smooth approximate function then the estimated integral will be accurate.  
 
 
 
@@ -605,25 +631,6 @@ for all real $a$. Thus the set of all $f$ satisfying \eqref{eqn:cone-homogenity}
 
 
 
-\iffalse
-Given the data driven error bound $\err_{\CI} = \err_{\CI}(f(\vx_1),\dots,f(\vx_n))$,
-\begin{align*}
-\abs{\mu(f) - \hmu_n(f)} \le \err_{\CI} (f(\vx_1), \dots, f(\vx_n)), \quad \forall f \in \mathscr{C}
-\end{align*}  
-where the cone of functions is defined as $\mathscr{C} = \{f : f \in \mathscr{C} \Rightarrow a f \in \mathscr{C} \}$. More specifically, if a function $f$ belongs to $\mathscr{C}$, then any function obtained by a constant multiplication, $af$, also belongs to the cone. 
-This property is very useful since,
-\begin{align*}
-\abs{\mu(a f) - \hmu_n(a f)} & = \abs{a} \abs{\mu(f) - \hmu_n(f)} \\
-& \le \abs{a} \err_{\CI} (f(\vx_1), \dots, f(\vx_n)) \\
-& = \err_{\CI} (a f(\vx_1), \dots, a f(\vx_n)).
-\end{align*}
-This is due to the fact that the error bound $\err_{\CI}$ is homogeneous, i.e., 
-\begin{align*}
-\err_{\CI}(a f(\vx_1),\dots, a f(\vx_n)) = \abs{a} \err_{\CI}(f(\vx_1),\dots, f(\vx_n)).
-\end{align*}
-If the integrand is multiplied by a constant, say $a=45$, then the integral error is also multiplied by the same constant $a=45$, but the factor $\err_{\CI}$ which depends on the characteristic of $f$ does not change.
-\fi
-
 
 In the context of Bayesian cubature, one can explain the cone concept beginning with the definition of credible interval \eqref{eqn_prob_confidence_interval}. 
 Let $f \sim \mathcal{GP}$, be an instance of a Gaussian stochastic process:
@@ -633,7 +640,12 @@ Let $f \sim \mathcal{GP}$, be an instance of a Gaussian stochastic process:
 \end{align*}
 This can be interpreted as $|\mu(f)-\hmu_n(f)| \leq \err_{\CI}(f)$ with 99\% confidence. If $f$ is in the 99\% middle of the sample space with $f(\vx_i) = y_i$ then $af$ is also in the middle 99\% of the sample space with $a f(\vx_i) = a y_i$.
 
-We demonstrate the credible interval using the following example. For this purpose, choose a smooth and periodic integrand $f_{\TRUE}(\vx) = \exp(\sum_{\ell=1}^{d} \cos(2\pi x_\ell))$ and another integrand $f_{\PEAKY}(\vx) = f_{\TRUE} + a_{\PEAKY} f_{\NOISE}$ where $a_{\PEAKY} \in \reals$. 
+We demonstrate the credible interval using the following example. For this purpose, choose a smooth and periodic integrand, $f_{\TRUE}$, and a peaky one, $f_{\PEAKY}$, defined as follows:
+\begin{equation*}
+   f_{\TRUE}(\vx) = \exp(\sum_{\ell=1}^{d} \cos(2\pi x_\ell)), \quad  f_{\PEAKY}(\vx) = f_{\TRUE} + a_{\PEAKY} (1 - \exp(2\pi \sqrt{-1} \vx^T \vzeta))
+\end{equation*} 
+
+$f_{\TRUE}(\vx) = \exp(\sum_{\ell=1}^{d} \cos(2\pi x_\ell))$ and another integrand $f_{\PEAKY}(\vx) = f_{\TRUE} + a_{\PEAKY} f_{\NOISE}$ where $a_{\PEAKY} \in \reals$. 
 % Here $a_{\PEAKY} \in \reals, a_{\NICE} \in \reals$, and 
 Here $f_{\NOISE}(\vx) = (1 - \exp(2\pi \sqrt{-1} \vx^T \vzeta))$, $\vzeta \in \reals^d$ is some $d$-dimensional vector belonging to the dual space of the lattice nodes for some $\{ \vx_i\}_{i=1}^n$. %chosen to sample the integrand. 
 The $\vzeta$ in the dual space of lattice nodes implies that $f_{\NOISE}(\vx_i)=0$ at the sampling nodes $\{ \vx_i\}_{i=1}^n$.
