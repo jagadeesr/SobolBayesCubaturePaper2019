@@ -371,7 +371,7 @@ We assume the integrand, $f$, is an instance of a stochastic Gaussian process, i
 n\in \mathbb{N}, \; \text{distinct} \; \vx_1, \ldots, \vx_n \in [0,1]^d.
 \end{multline}
 
-As shown in \cite{RatHic19a}, a credible interval for the integral is given by 
+As shown in \cite{RatHic19a}, a credible interval for the integral is given in terms of the nodes, $\{\vx_i\}_{i=1}^n$, and the covariance kernel, $C_\vtheta$,  by 
 \begin{subequations} \label{eqn_prob_confidence_interval}
 	\begin{gather}
 	\mathbb{P}_f \left[
@@ -389,7 +389,9 @@ where
  \vc_\vtheta := \left(  \int_{[0,1]^d} C_\vtheta(\vt,\vx_i) \, \D \vt \right)_{i=1}^n.
 	\end{gather}
 \end{subequations}
-Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible levels.  The covariance function, $C$, and the Gram matrix, $\mC$, and $c_{0,\vtheta}$ and $\vc_\vtheta$ depend implicitly on $\vtheta$, but the notation may omit this for simplicity's sake.  The formula for $\hmu$ is given below in Section \ref{sec:hyperparameters}.
+Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible levels.  The formula for $\hmu$ in terms of the function values at the nodes is given below in Section \ref{sec:hyperparameters}.
+
+The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\CI}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0,\vtheta} - \vc_\vtheta^T\mC_\vtheta^{-1}\vc_\vtheta$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. 
 
 
 
@@ -401,16 +403,16 @@ Normally, computing $\err_{\CI}$ in  \eqref{eqn_prob_confidence_interval} would 
 Let the eigenvector-eigenvalue decomposition of the Gram matrix be expressed as follows:
 \begin{align}
 \nonumber
-\mC = \mCtheta &= \Big(C_\vtheta(\vx_i,\vx_j)\Big)_{i,j=1}^n  = (\vC_1,...,\vC_n) 
+\mC = \mCtheta &= \Big(C_\vtheta(\vx_i,\vx_j)\Big)_{i,j=1}^n  = (\vC_{\vtheta,1},...,\vC_{\vtheta,n}) 
 \\
 \label{eqn:ftk_factor}
-&= \frac 1n \mV \mLambda \mV^H , 
+&= \frac 1n \mV \mLambda_\vtheta \mV^H , 
 \quad \quad \mV^H = n \mV^{-1}, \\
 \nonumber
 \mV &= (\vv_1,...,\vv_n)^T = (\vV_1,...,\vV_n),
 \end{align}
 where $\mV^H$ is the Hermitian of $\mV$.
-The columns of matrix $\mV$ are eigenvectors of $\mC$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC$. The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} conveniently allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.
+The columns of matrix $\mV$ are eigenvectors of $\mC_\vtheta$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC_\vtheta$. The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.
 
 We make three assumptions that allow the fast computation of $\widetilde{\vb} := \mV^H \vb$:
 \begin{subequations} \label{fastcompAssump}
@@ -425,17 +427,16 @@ We make three assumptions that allow the fast computation of $\widetilde{\vb} :=
 \end{subequations}
 We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  The covariance kernel used in practice also may satisfy an additional assumption:
 \begin{equation} \label{addAssump}
-\int_{[0,1]^d} C(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
+\int_{[0,1]^d} C_\vtheta(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
 \end{equation}
-which implies that $c_{0} = 1$ \eqref{eqn:fGaussDist_c0} and $\vc_{} = \vone$ 	\eqref{eqn:fGaussDist_vc}.  In \cite{RatHic19a} we showed that shift invariant kernels and lattice nodes satisfied the above assumptions.
+which implies that $c_{0,\vtheta} = 1$ \eqref{eqn:fGaussDist_c0} and $\vc_{\vtheta} = \vone$ 	\eqref{eqn:fGaussDist_vc}.  \cite{RatHic19a} showed that shift invariant kernels and lattice nodes satisfy the above assumptions.
+
+For fast Bayesian transform kernels, the eigenvalues of 
 
 
 \subsection{Hyperparameter search} \label{sec:hyperparameters}
-\JRNote{
-	This section explains hyperparameter estimation using gradient descent}
 
-
-The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\CI}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0} - \vc^T\mC^{-1}\vc$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$.
+Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$.
 The $\err_{\CI}$ depends on the integrand values, which becomes explicit once the hyperparameters, $m, s$, and $\vtheta$, are inferred from integrand data. 
 
 
