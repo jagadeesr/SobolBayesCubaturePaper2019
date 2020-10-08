@@ -328,10 +328,6 @@
 \section{Introduction}
 \label{intro}
 
-
-\JRNote{discuss prior work}
-
-
 Cubature, or numerical multivariate integration, is the problem of inferring a numerical value for a definite integral, 
 $ \mu := \int_{\reals^d} g(\vx) \, \dif \vx$, where $\mu$ has no closed form analytic expression. Typically, $g$ is accessible through a black-box function routine. 
 Cubature is a key component of many problems in scientific computing, finance \cite{Gla03}, statistical modeling, imaging \cite{Keller2013}, uncertainty quantification, and machine learning \cite{Goodfellow-et-al-2016}. This article extends the fast Bayesian cubature ideas presented in \cite{RatHic19a}.
@@ -345,12 +341,13 @@ After a suitable variable transformation, the integral may often be expressed as
 where $f:[0,1]^d \to \reals$ is the integrand, and $\boldsymbol{X} \sim \mathcal{U}[0,1]^d$.  The process of transforming the original integral into the form of \eqref{eqn:defn_mu} is addressed in \cite{BecHae92b, Sid08a, Sid93, Lau96a, CriEtal07}.  Our goal is to construct a cubature, $\hmu = \hmu(f)$, depending only on integrand values at the nodes $\{\vx_i\}_{i=1}^n$, and determine the $n$ which satisfies the error criterion
 \begin{equation}
 \label{eqn:err_crit} 
-\abs{\mu - \hmu} \leq \errtol.
+\abs{\mu - \hmu} \leq \errtol
 \end{equation}
+with high probability.
 
 Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmussen and Ghahramani~\cite{RasGha03a}, \cite{BriEtal18a}, and others, we assume that our integrand is an instance of a Gaussian process and use a credible interval for $\mu$ to construct $\hmu$.  The integrand is sampled until the credible interval becomes small enough to satisfy \label{eqn:err_crit}  with high probability.  See \cite{RatHic19a} for the details of our approach.  Our earlier work focused on lattice nodes and shift-invariant kernels.
 
-The primary contributions of this article are several. We show that tuning the hyperparameters for the fast Bayesian kernels can be done quickly with gradient descent in Section \ref{grad_descent_MLE}.  We extend our the definition of our fast kernels to have a continuous valued kernel order in Section \ref{sec:non_integer_kernel_order}. Diagnostics that test our assumption that $f$ comes from a Gaussian process are introduced in Section \ref{sec:gauss-diagnostics}. In Section \ref{sec:sobol_walsh} we extend fast Bayesian cubature to use digital nets and Walsh kernels.  Section \ref{sec:NumExp} is devoted to numerical experiments that illustrate these new ideas.  The next section introduces some notation and results from \cite{RatHic19a}.
+The primary contributions of this article are several. We show that tuning the hyperparameters via gradient descent can be done expedited using the fast Bayesian transform in Section \ref{grad_descent_MLE}.  We extend our the definition of our fast kernels to have a continuous valued kernel order in Section \ref{sec:non_integer_kernel_order}. Diagnostics that test our assumption that $f$ comes from a Gaussian process are introduced in Section \ref{sec:gauss-diagnostics}. In Section \ref{sec:sobol_walsh} we extend fast Bayesian cubature to use digital nets and Walsh kernels.  Section \ref{sec:NumExp} is devoted to numerical experiments that illustrate these new ideas.  The next section introduces some notation and results from \cite{RatHic19a}.
 
 
 
