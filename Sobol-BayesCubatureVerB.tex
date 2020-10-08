@@ -347,7 +347,7 @@ with high probability.
 
 Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmussen and Ghahramani~\cite{RasGha03a}, \cite{BriEtal18a}, and others, we assume that our integrand is an instance of a Gaussian process and use a credible interval for $\mu$ to construct $\hmu$.  The integrand is sampled until the credible interval becomes small enough to satisfy \label{eqn:err_crit}  with high probability.  See \cite{RatHic19a} for the details of our approach.  Our earlier work focused on lattice nodes and shift-invariant kernels.
 
-The primary contributions of this article are several. We show that tuning the hyperparameters via gradient descent can be done expedited using the fast Bayesian transform in Section \ref{grad_descent_MLE}.  We extend our the definition of our fast kernels to have a continuous valued kernel order in Section \ref{sec:non_integer_kernel_order}. Diagnostics that test our assumption that $f$ comes from a Gaussian process are introduced in Section \ref{sec:gauss-diagnostics}. In Section \ref{sec:sobol_walsh} we extend fast Bayesian cubature to use digital nets and Walsh kernels.  Section \ref{sec:NumExp} is devoted to numerical experiments that illustrate these new ideas.  The next section introduces some notation and results from \cite{RatHic19a}.
+The primary contributions of this article are several. We show that tuning the hyperparameters via gradient descent can be done expedited using the fast Bayesian transform in Section \ref{grad_descent_MLE}.  We introduce a continuous kernel order for our covariance kernels in Section \ref{sec:non_integer_kernel_order}. Diagnostics testing our assumption that $f$ arises from a Gaussian process are introduced in Section \ref{sec:gauss-diagnostics}. In Section \ref{sec:sobol_walsh} we extend fast Bayesian cubature to digital nets and Walsh kernels.  Section \ref{sec:NumExp} is devoted to numerical experiments that illustrate these new ideas.  The next section introduces some notation and results from \cite{RatHic19a}.
 
 
 
@@ -422,63 +422,47 @@ We make three assumptions that allow the fast computation of $\widetilde{\vb} :=
 	\text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb.
 	\end{gather}
 \end{subequations}
-We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  The covariance kernel used in practice also may satisfy an additional assumption:
+We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  The covariance kernels used in practice also may satisfy an additional assumption:
 \begin{equation} \label{addAssump}
 \int_{[0,1]^d} C_\vtheta(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
 \end{equation}
-which implies that $c_{0,\vtheta} = 1$ \eqref{eqn:fGaussDist_c0} and $\vc_{\vtheta} = \vone$ 	\eqref{eqn:fGaussDist_vc}.  \cite{RatHic19a} showed that shift invariant kernels and lattice nodes satisfy the above assumptions.
+which implies that $c_{0,\vtheta} = 1$ \eqref{eqn:fGaussDist_c0} and $\vc_{\vtheta} = \vone$ 	\eqref{eqn:fGaussDist_vc}.  This additional assumption is not needed to speed up computations, but it does simplify the resulting formulae.  \cite{RatHic19a} showed that shift invariant kernels and lattice nodes satisfy the above assumptions, and the fast Bayesian transform corresponds to the fast Fourier transform.
 
-For fast Bayesian transform kernels, the eigenvalues of 
-
-
-\subsection{Hyperparameter search} \label{sec:hyperparameters}
-
-Please note that the credible interval depends on the parameters $m, s$, and $\vtheta$.
-The $\err_{\CI}$ depends on the integrand values, which becomes explicit once the hyperparameters, $m, s$, and $\vtheta$, are inferred from integrand data. 
-
-
-% However, $\err_{\CI}$ shows no explicit dependence on the integrand values, even though one would intuitively expect that a larger integrand should imply a larger $\err_{\CI}$. This dependence will become explicit once the hyperparameters, $m, s$, and $\vtheta$,  are inferred from integrand data. 
-% After inferring the hyperparameters, $\err_{\CI}$ \emph{does reflect the size} of the integrand values. 
-%The following next few sections describe three approaches to hyperparameter estimation. 
-% Three approaches for hyperparameter estimation were described in \cite{JagHic19a}. 
-% Theorem \label{thm:param} summarizes those approaches for quick reference.  
-
+Under the above assumptions, for fast Bayesian transform kernels, the eigenvalues of $\mC_\vtheta$ can be computed via the fast Bayesisan transform.
+\begin{equation} 
+	\vlambda_\vtheta
+	= \begin{pmatrix}
+		\lambda_{\vtheta,1} \\ \vdots \\ \lambda _{\vtheta,n}
+	\end{pmatrix} = \mLambda \vone  
+	= \mV^H \vC_{\vtheta,1} =  \widetilde{\vC}_{\vtheta,1}.
+	\label{eqn:fast_transform_to_eigvalues}
+\end{equation}
+Likewise, the half-width of the credible interval in \eqref{eqn_prob_confidence_interval} can now be computed in terms of the $\Order(n \log(n))$ fast transform:
+\begin{equation} \label{eqn:errcifast}
+	\err_{\CI} = 2.58 s \sqrt{1 - n/\lambda_{\vtheta,1} }.
+\end{equation}
 
 
+\subsection{Resolving Hyperparameters} \label{sec:hyperparameters}
 
- 
-% and results in this section lead to the following theorem.
+This formula for the credible interval depends essentially on $s$ and $\vtheta$.  Resolving these dependencies should also involve the function data,  $\vy = \bigl (f (\vx_i) \bigr)_{i=1}^n$, since larger function data should tend to imply a larger credible interval. 
 
-There were three methods developed for hyperparameter estimation in \cite{JagHic19a} as summarized below. With the assumptions for a fast Bayesian transform kernel,
-% \eqref{fastcompAssump} and \eqref{addAssump} hold then 
-the computation cost including the hyperparameter estimation can be significantly reduced.
+Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.  This is the motivation behind resolving the hyperparameters from function data. \cite{RatHic19a} introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{fastcompAssump} and \eqref{addAssump}, we have the following \cite[Theorem 2]{RatHic19a}:
 
-\begin{theorem} \label{thm:param} There are at least three approaches to estimating or integrating out the hyperparameters defining a Gaussian process from which the integrand is drawn: empirical Bayes, full Bayes, and generalized cross-validation.  
-%\begin{theorem} \label{thm:fastparam}
-	Under assumptions \eqref{fastcompAssump} and \eqref{addAssump}, the parameters and credible interval half-widths 
-	% in Theorem~\ref{thm:param} 
-	may be expressed in terms of the fast Bayesian transforms of the integrand data, the first column of the Gram matrix, $c_0$, and $\vc$ as follows:
 	\begin{subequations}
 		\begin{align}
-		\nonumber
-		m_\MLE &=  m_{\full} = m_{\GCV} =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
-		\\
+%		\nonumber
+%		m_\MLE &=  m_{\full} = m_{\GCV} =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
+%		\\
 		\nonumber
 		s^2_\MLE 
 		& =
 		\frac{1}{n^2} 
-		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i},  \\
+		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}},  \\
 		\nonumber 
-		s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1}, \\
+		s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_{\vtheta,i}} \right]^{-1}, \\
 		\nonumber
-		\widehat{\sigma}^2_{\textup{full}} &= \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  \left(\frac{\lambda_1}{n}  - 1  \right), 
-		% \widehat{\sigma}^2_{\textup{full}}
-		% & =
-		% \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}
-		% \\
-		% \nonumber
-		% & \qquad \times
-		% \left[\frac{\lambda_1}{n}{\left(1 - \frac{\widetilde{c}_1}{\lambda_1}\right)^2} + \left(c_0  - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i}\right) \right], \\
+		\widehat{\sigma}^2_{\textup{full}} &= \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}}  \left(\frac{\lambda_{\vtheta,1}}{n}  - 1  \right), 
 		\end{align}
 	\end{subequations}
 	\begin{subequations}
@@ -490,218 +474,40 @@ the computation cost including the hyperparameter estimation can be significantl
 		\argmin_{\vtheta}
 		\left[
 		\log\left(
-		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}}
+		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}}
 		\right) 
-		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{i})
+		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{\vtheta,i})
 		\right],\\
 		\label{fastThetaGCV} 
 		\vtheta_{\GCV} 
-		&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}^2} 
+		&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}^2} 
 		\right)  
-		-2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{i}} \right)
-		\right], 
+		-2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{\vtheta,i}} \right)
+		\right].
 		\end{align}
 	\end{subequations}
-\iffalse
-	\begin{align}
-	\nonumber
-	\hmu_\MLE  &= \hmu_{\full} = \hmu_{\GCV} =
-	\frac{\widetilde{y}_1}{n} +
-	\frac 1n \sum_{i=2}^n \frac{ \widetilde{c}_i^* \widetilde{y}_i}{\lambda_i}, \\
-	\nonumber
-	\err_\MLE  &
-	=
-	\frac{2.58}{n}\sqrt{
-		\sum_{i=2}^{n} \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
-		\,
-		\left( c_0 - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i} \right) 
-	}, \\
-	\nonumber
-	\err_{\full} & = t_{n-1,0.995} \hsigma_{\textup{full}}, \\
-	\nonumber
-	\err_{\textup{GCV}} & =
-	\frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1} 
-	\left( c_0 - \frac 1n \sum_{i=1}^n \frac{\abs{\widetilde{c}_i}^2}{\lambda_i} \right) 
-	\right\}^{1/2}.
-	\end{align}
-\fi	
-	% Under the further assumption \eqref{addAssump}, it follows that 
+Then, the resulting credible intervals are then
 	\begin{equation}
-	\label{muhatGCV-FB-MLE-Simple}
-	\hmu_\MLE  = \hmu_{\full} = \hmu_{\GCV} =
-	\frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
-	\end{equation}
-	and so $\hmu$ is simply the sample mean.  
-	Also the credible interval half-widths, $\err_{\CI}$, are given by
-	\begin{subequations}
-		\label{errSimple}
-		\iffalse
-		\begin{align}
-		\label{eq:errMLEAllAsump}
-		\err_\MLE  &
-		=
-		\frac{2.58}{n}\sqrt{
-			\sum_{i=2}^{n} \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  
-			\,
-			\left( 1 -  \frac{n}{\lambda_1} \right) 
-		}, \\
-		\label{FJH:eq:errFullSimple}
-		\err_{\textup{full}}
-		&=
-		t_{n-1,0.995}
-		\sqrt{\frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}  \left(\frac{\lambda_1}{n}  - 1  \right)}, \\
-		\label{errGCVSimple}
-		\err_{\textup{GCV}} & =
-		\frac{2.58}{n}\left\{\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}  \left [ \frac 1n \sum_{i=1}^n \frac{1}{\lambda_i} \right]^{-1} 
-		\left( 1 -  \frac{n}{\lambda_1} \right)  
-		\right\}^{1/2}. 
-		\end{align}
-		\fi
-		\begin{align}
-		\label{eqn:err_MLEGCV}
-		\err_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{1 - \frac{n}{\lambda_1} }, \qquad \mathsf{x} \in \{\MLE, \GCV\},  \\ 
-		\err_{\textup{full}} 
-		& = t_{n-1,0.995} \hsigma_{\textup{full}} > \err_\MLE. \label{FJH:eq:errFull}
-		\end{align}
-	\end{subequations}
-	
-The resulting credible intervals are then
-\begin{align}
-\label{eqn_prob_CI}
-\mathbb{P}_f \left[
-|\mu-\hmu_{\mathsf{x}}| \leq \err_{\mathsf{x}} \right]  = 99\%, \qquad \mathsf{x} \in \{\MLE, \full, \GCV\}.
-\end{align}
-Here $t_{n-1,0.995}$ denotes the $99.5$ percentile of a standard Student's $t$-distribution with $n-1$ degrees of freedom.  
-% In the formulas above, $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
-
-	In the formulas for the credible interval half-widths and $\vlambda$ depends on $\vtheta$, and  $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
-\end{theorem}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\iffalse
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The methods developed for hyperparameter estimation from \cite{JagHic19a} are summarized in the theorem below:
-\begin{theorem} \label{thm:param} There are at least three approaches to estimating or integrating out the hyperparameters defining the Gaussian process from which the integrand is drawn: empirical Bayes, full Bayes, and generalized cross-validation.  %\linebreak[4]
-	Under these three approaches, we have the following:
-	\begin{align}
-	\label{eqn_m_MLE}
-	m_\MLE &= \frac{\vone^T \mCthetaInv \vy }{ \vone^T \mCthetaInv \vone}, \qquad
-	m_{\textup{GCV}} = \frac{\vone^T \mC_\vtheta^{-2} \vy}{\vone^T \mC_\vtheta^{-2} \vone}, \\
-	\label{eqn_s2_MLE}
-	s^2_{\MLE} 
-	&= 
-	\frac{1}{n}
-	\vy^T 
-	\left[ \mCthetaInv - 
-	\frac{ \mCthetaInv \vone \vone^T \mCthetaInv }{\vone^T\mCthetaInv \vone}
-	\right] \vy, \\
-	\nonumber
-	\hsigma_{\full}^2 
-	& = \frac{1}{n-1}
-	\vy^T\left[ \mCthetaInv 
-	- \frac{ \mCthetaInv \vone\vone^T \mCthetaInv}{\vone^T \mCthetaInv \vone}  \right]\vy
-	\\ 
-	\label{eqn:sigma2_full}
-	& \times  \left[\frac{(1 - \vc^T \mCthetaInv \vone)^2}{\vone^T \mCthetaInv \vone} + (c_{0}  -\vc ^T \mCthetaInv \vc) \right], \\
-	\nonumber
-	s^2_{\textup{GCV}} & = \vy^T \left[\mC_\vtheta^{-2} - \frac{\mC_\vtheta^{-2} \vone \vone^T \mC_\vtheta^{-2}}{\vone^T \mC_\vtheta^{-2} \vone}  \right] \vy  \left[ \trace(\mCthetaInv) \right]^{-1}, \\
-	\label{eqn:thetaMLE}
-	\vtheta_\MLE
-	&= \argmin_{\vtheta} \biggl \{
-	\log\left(\vy^T 
-	\left[ \mCthetaInv - 
-	\frac{ \mCthetaInv \vone \vone^T \mCthetaInv }{\vone^T\mCthetaInv \vone}
-	\right] \vy 
-	\right)  
-	+  \frac{1}{n} \log(\det(\mC_\vtheta))
-	\biggr \}, \\
-	\label{vthetaGCV}
-	\vtheta_{\GCV} &= \argmin_\vtheta \biggl\{\log \left(  \vy^T \left[\mC^{-2}_\vtheta - \frac{\mC^{-2}_\vtheta \vone \vone^T \mC^{-2}_\vtheta}{\vone^T \mC^{-2}_\vtheta \vone}  \right] \vy \right)  
-	- \log \left ( \trace(\mC^{-2}_\vtheta) \right ) \biggr\}, \\
-	\label{eqn:cubMLE}
-	\hmu_\MLE  &= \hmu_\full =
-	\left(
-	\frac{ (1 - \vone^T  \mCthetaInv\vc )  \vone }{ \vone^T \mCthetaInv \vone}   +  \vc 
-	\right)^T  \mCthetaInv \vy, \\
-	\label{eqn:muCV}
-	\hmu_{\GCV}
-	& = \left(\frac{(1 - \vone^T  \mCthetaInv\vc) \mCthetaInv \vone}{\vone^T \mC_\vtheta^{-2} \vone} + \vc \right)^T \mCthetaInv \vy.
-	\intertext{The credible intervals widths, $\err_{\CI}$, are given by}
-	\label{eqn:err_MLEGCV}
-	\err_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{c_{0} - \vc^T\mCthetaInv\vc }, \qquad \mathsf{x} \in \{\MLE, \GCV\},  \\ 
-	\err_{\textup{full}} 
-	& = t_{n-1,0.995} \hsigma_{\textup{full}} > \err_\MLE. \label{FJH:eq:errFull}
-	\end{align}
-	The resulting credible intervals are then
-	\begin{align}
 	\label{eqn_prob_CI}
 	\mathbb{P}_f \left[
 	|\mu-\hmu_{\mathsf{x}}| \leq \err_{\mathsf{x}} \right]  = 99\%, \qquad \mathsf{x} \in \{\MLE, \full, \GCV\}.
+	\end{equation}
+where 
+\begin{subequations}
+	\label{errSimple}
+	\begin{align}
+		\label{eqn:err_MLEGCV}
+		\err_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{1 - \frac{n}{\lambda_{\vtheta,1}} }, \qquad \mathsf{x} \in \{\MLE, \GCV\},  \\ 
+		\err_{\textup{full}} 
+		& = t_{n-1,0.995} \hsigma_{\textup{full}} > \err_\MLE. \label{FJH:eq:errFull}
 	\end{align}
-	Here $t_{n-1,0.995}$ denotes the $99.5$ percentile of a standard Student's $t$-distribution with $n-1$ degrees of freedom.  In the formulas above, $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
-\end{theorem}
-\fi
-
-% In the theorem above, note that if the original covariance kernel, $C$, is replaced by $b C$ for some positive constant $b$, the cubature, $\hmu$, the estimates of $\vtheta$, and the credible interval half-widths, $\err_{\mathsf{x}}$ for $\mathsf{x} \in \{\MLE, \full, \GCV\}$, all remain unchanged.  The estimates of $s^2$ are multiplied by $b^{-1}$, as would be expected. 
-
-% Looking back over the results of Sections \ref{sec:MLE}--\ref{sec:GCV}, it is noted that if the original covariance function, $C$, is replaced by $b C$ for some positive constant $b$, the cubature, $\hmu$, the estimates of $\vtheta$, and the credible interval widths, $\err_{\MLE}, \err_{\full}, \err_{\GCV}$, all remain unchanged.  The estimates of $s^2$ are multiplied by $b^{-1}$, as would be expected.
-
-Equation \eqref{eqn_prob_CI} presents three credible intervals,  % \eqref{eqn_prob_CI_MLE}, \eqref{eqn_prob_CI_full}, and \eqref{GCVCI}, 
-for the $\mu$, the desired integral.  Each credible interval is based on different assumptions about the hyperparameters $m$, $s$, and $\vtheta$.  
-% We stress that one must estimate these hyperparameters or assume a prior distribution on them because the credible intervals are used as stopping criteria for our cubature rule. 
-Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process  as explained further in Section \ref{sec:cone_of_functions}. We apply these results in Section \ref {sec:fast_bayes} to speedup the computations.
-
+\end{subequations}
+In the formulas for the credible interval half-widths, $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.  Under all three methods of resolving the hyperparameters, $\hmu$ corresponds to the sample mean:
+	\begin{equation}
+	\label{muhatGCV-FB-MLE-Simple}
+	\hmu_\MLE  = \hmu_{\full} = \hmu_{\GCV} =
+	\frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i.
+	\end{equation}
 
 
 
@@ -746,11 +552,6 @@ We recognize that multiple applications of our credible intervals in one run of 
 		\State \Return $\hmu, \; n$  and $\err$
 	\end{algorithmic}
 \end{algorithm}
-
-
-
-The results in \cite{JagHic19a} provide techniques to speedup the computation, but did not provide any explicit technique for parameter search. We provide one such approach using steepest descent in the Section \ref{grad_descent_MLE}. 
-
 
 
 
