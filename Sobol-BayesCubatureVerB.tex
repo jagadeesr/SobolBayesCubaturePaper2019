@@ -87,6 +87,7 @@
 \newcommand{\Ex}{\mathbb{E}}
 
 \newcommand{\cf}{\mathcal{F}}
+\newcommand{\cl}{\mathcal{L}}
 \newcommand{\cx}{\mathcal{X}}
 \newcommand{\tcx}{\widetilde{\cx}}
 \newcommand{\rC}{\mathring{C}}
@@ -455,9 +456,9 @@ Since a credible interval makes a statement about a typical function---not an ou
 		\end{align}
 	\end{subequations}
 	\begin{subequations}
-		\label{fastTheta}
+		\label{eqn:fastTheta}
 		\begin{align}
-		\label{fastThetaMLE}
+		\label{eqn:fastThetaMLE}
 		\vtheta_\MLE
 		&= 
 		\argmin_{\vtheta}
@@ -467,7 +468,7 @@ Since a credible interval makes a statement about a typical function---not an ou
 		\right) 
 		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{\vtheta,i})
 		\right],\\
-		\label{fastThetaGCV} 
+		\label{eqn:fastThetaGCV} 
 		\vtheta_{\GCV} 
 		&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}^2} 
 		\right)  
@@ -528,7 +529,7 @@ Our  Bayesian cubature algorithm increases the sample size until the width of th
 		\While{$\err > \varepsilon$ and $n \le n_{\textup{max}}$}
 		
 		\State\label{LoopStart}Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$
-		\State Compute $\vtheta$ by \eqref{fastThetaMLE} or \eqref{fastThetaGCV}
+		\State Compute $\vtheta$ by \eqref{eqn:fastThetaMLE} or \eqref{eqn:fastThetaGCV}
 		\State Compute $\err$  according to \eqref{eqn:err_MLEGCV} or \eqref{FJH:eq:errFull}
 		
 		\State	$n' \gets n, \; n \gets 2n'$
@@ -552,6 +553,8 @@ The integrands for which our automatic algorithm fail are those that are outlier
 \end{gather*} 
 where the integer vector $\vzeta \in \reals^d$  belongs to the dual lattice, which means that $\vx_i^T \vzeta$ is constant for $i = 1, \ldots, n$. Let  $f_{\NICE}$ be the Gaussian process interpolant for $f_{\TRUE}$ using a shift invariant kernel from \cite{RatHic19a}.  Note that $f_{\NICE}$ is also the interpolant for $f_{\PEAKY}$ since $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$.
 
+\FJHNote{I modified DemoCone.m.  It seems that you were using different kernels for the interpolant and for the credible interval.  That does not seem right.}
+
 
 \begin{figure}[ht]
 	\centering
@@ -565,16 +568,32 @@ where the integer vector $\vzeta \in \reals^d$  belongs to the dual lattice, whi
 
 Our cubature, $\hmu$, corresponds to the integral of $f_{\NICE}$.  Figure \ref{fig:cone_bayes_functions} displays these three functions and their true integrals.   The  integral of $f_{\TRUE}$ is close to the cubature, but the integral of $f_{\PEAKY}$ lies well outside the credible interval given by \eqref{eqn_prob_CI_MLE}.  Although $f_{\PEAKY}$ lies in the sample space of Gaussian processes with the inferred mean and covariance kernel, it is an outlier, and our algorithm would fail unless the sample size were much larger.
 
+This concludes a review of the key ideas of our fast Bayesian cubature algorithm from \cite{RatHic19a}.  The following sections present some enhancements.
 
-\section{Enhancements to Bayesian Cubature}
-\label{sec:bayes-cub-enhancements}
-
-This section covers enhancements developed to the Bayesian Cubature proposed in \cite{JagHic19a}. First, we start with explaining the underlying function space of  integrands as desired in Section \ref{sec:fast_bayes}.
-
-
-\subsection{Gradient descent to find optimal shape parameter}
+\section{Gradient descent to find optimal shape parameter}
 \label{grad_descent_MLE}
-The equation specifying $\vtheta_\MLE$ as defined in \eqref{fastThetaMLE} does not say how the parameter search can be done. However there exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
+
+To increase the likelihood of our integrand lying in the middle of the sample space of Gaussian processes, we stress the importance of choosing the parameter $\vtheta$ that defines the covariance kernel.  Two optimization problems are posed in \eqref{eqn:fastTheta}, one using empirical Bayes and the other using generalized cross-validation.  The examples in \cite{RatHic19a} were restricted to quite low dimensional $\vtheta$ and we did not explore efficient algorithms for optimization.
+
+One common algorithm is gradient descent, which requires a derivative of the loss function.  Taking for example the empirical Bayes case, one would need to compute $\partial \cl(\vtheta)/\partial \theta_\ell$, where 
+\begin{gather*}
+	\mathcal{L}_{\MLE}(\vtheta) := 
+	\log\left(
+	\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}}.
+	\right)  +
+		\frac{1}{n}\sum_{i=1}^n \log(\lambda_{\vtheta, i}),\\
+	\mathcal{L}_\GCV(\vtheta | \vy)
+	= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
+	\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right).
+\end{gather*}
+Then the gradient descent method proceeds as
+\begin{equation}
+	\label{eqn:deep_descent}
+	\theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu^{(j)} \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
+\end{equation}
+where $\nu^{(j)}$ is the step size.  \FJHNote{You had the step-size depending on $\ell$, but that does not seem right.}
+ 
+The equation specifying $\vtheta_\MLE$ as defined in \eqref{fastTheta} does not say how the parameter search can be done. However there exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
 % Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
 Since the objective function is known we could compute the gradient.
 Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function to guide the search by excluding the negative sign, which modifies the problem to become a minimization of
@@ -723,7 +742,7 @@ We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to de
 \begin{align*}
 \bar{\vC}_{1{(\ell)}} = \left(\frac{\partial }{\partial{\theta}_\ell} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
 \end{align*}
-The goal is to compute the derivative of the objective function faster. First, let's rewrite the objective function from \eqref{fastThetaMLE} in two parts,
+The goal is to compute the derivative of the objective function faster. First, let's rewrite the objective function from \eqref{eqn:fastThetaMLE} in two parts,
 \begin{align*}
 \mathcal{L}_{\MLE}(\vtheta | \vy) &= 
 \underbrace{\frac{1}{n}  \log(\det\, \mC)}_{\mathcal{L}_{\abs{\mC}}} + \underbrace{\log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)}_{\mathcal{L}_{\vy}},
@@ -823,7 +842,7 @@ If $m=0$ assumption can be made,
 \subsection{Generalized Cross-Validation: Gradient of the objective function using fast Bayesian transform}
 % \subsection{Gradient of the objective function}
 
-Using the results obtained from the Section \ref{deriv_obj_func_MLE} with empirical Bayes, one can reduce the computational cost of the derivative of the objective function in \eqref{fastThetaGCV},
+Using the results obtained from the Section \ref{deriv_obj_func_MLE} with empirical Bayes, one can reduce the computational cost of the derivative of the objective function in \eqref{eqn:fastThetaGCV},
 \begin{align*}
 \mathcal{L}_\GCV(\vtheta | \vy)
 &= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
@@ -1747,7 +1766,7 @@ The results of this chapter can be summarized as a theorem,
 
 
 \begin{theorem}
-	Any symmetric, positive definite, digital shift-invariant covariance kernel of the form \eqref{eqn:walsh_kernel} scaled to satisfy \eqref{addAssump}, when matched with digital net data-sites, satisfies assumptions \eqref{fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} (FWHT) can be used to expedite the estimates of $\vtheta$ in \eqref{fastTheta} and the credible interval widths \eqref{errSimple} in $\Order(n \log n)$ operations. The cubature, $\hmu$, is just the sample mean.
+	Any symmetric, positive definite, digital shift-invariant covariance kernel of the form \eqref{eqn:walsh_kernel} scaled to satisfy \eqref{addAssump}, when matched with digital net data-sites, satisfies assumptions \eqref{fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} (FWHT) can be used to expedite the estimates of $\vtheta$ in \eqref{eqn:fastTheta} and the credible interval widths \eqref{errSimple} in $\Order(n \log n)$ operations. The cubature, $\hmu$, is just the sample mean.
 \end{theorem}
 We introduce the necessary concepts and prove this theorem in the remaining of this chapter.
 
