@@ -582,17 +582,25 @@ One common algorithm is gradient descent, which requires a derivative of the los
 	\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}}.
 	\right)  +
 		\frac{1}{n}\sum_{i=1}^n \log(\lambda_{\vtheta, i}),\\
-	\mathcal{L}_\GCV(\vtheta | \vy)
-	= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
-	\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right).
+	\mathcal{L}_\GCV(\vtheta)
+	= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}^2} 
+	\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{\vtheta, i}} \right).
 \end{gather*}
-Then the gradient descent method proceeds as
+Then the gradient descent method for selecting the $L$-vector $\vtheta$ proceeds as
 \begin{equation}
 	\label{eqn:deep_descent}
-	\theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu^{(j)} \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
+	\vtheta^{(j+1)} = \vtheta^{(j)} - \nu^{(j)} \bar{\cl}(\vtheta^{(j)}), \quad j=0,1,\cdots, \qquad \text{where } \bar{\cl} : = \left (\frac{\partial\mathcal{L}}{\partial \theta_\ell} \right)_{\ell = 1}^L,
 \end{equation}
-where $\nu^{(j)}$ is the step size.  \FJHNote{You had the step-size depending on $\ell$, but that does not seem right.}
+and $\nu^{(j)}$ is the step size.  \FJHNote{You had the step-size depending on $\ell$, but that does not seem right.}
  
+The loss functions depend on $\vtheta$ via the eigenvalues $\vlambda_\vtheta = (\lambda_{\vtheta, 1}, \ldots, \lambda_{\vtheta, n})^T$, and the eigenvalues are the fast Bayesian transform of the first column of the Gram matrix (see \eqref{eqn:fast_transform_to_eigvalues}).  Thus, the needed gradient can be obtained by successive applications of the chain rule:
+\[
+\frac{\partial \cl(\vtheta)}{\partial \theta_\ell} = \sum_{i=1}^n \frac{\partial \cl}{\partial \lambda_{\vtheta,i}} \, \frac{\partial \lambda_{\vtheta,i}}{\partial \theta_\ell}
+\]
+
+
+
+
 The equation specifying $\vtheta_\MLE$ as defined in \eqref{fastTheta} does not say how the parameter search can be done. However there exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
 % Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
 Since the objective function is known we could compute the gradient.
