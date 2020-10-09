@@ -556,21 +556,12 @@ where the integer vector $\vzeta \in \reals^d$  belongs to the dual lattice, whi
 \begin{figure}[ht]
 	\centering
 	%\begin{subfigure}[h]{0.48\linewidth}
-	\includegraphics[width=0.45\linewidth]{figures/cone_bayes_f_real} \quad 
-	\includegraphics[width=0.45\linewidth]{figures/cone_bayes_mu_pdf}
+	\includegraphics[width=0.45\linewidth]{figures/cone_bayes_f_real.eps} \quad 
+	\includegraphics[width=0.45\linewidth]{figures/cone_bayes_mu.eps}
 	%\end{subfigure}
-	\caption{Example integrands 1) $f_{\NICE}$, a smooth function, 2) $f_{\PEAKY}$, a peaky function. The function values $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$. This plot can be conditionally reproduced using \code{DemoCone.m}}
+	\caption{Integrands $f_{\NICE}$, $f_{\PEAKY}$, and their interpolant $f_{\NICE}$ (left);  the actual means of these two integrands compared to the probability density function for $\mu$ inferred from the function data (right). Note that the mean of the peaky function lies well outside $2.58$ standard deviations. These plots can be conditionally reproduced using \code{DemoCone.m}}
 	\label{fig:cone_bayes_functions}
 \end{figure}
-\begin{figure}[ht]
-	\centering
-	%\begin{subfigure}[h]{0.48\linewidth}
-	\includegraphics[width=0.8\linewidth]{figures/cone_bayes_mu_pdf}
-	%\end{subfigure}
-	\caption{Probability distributions showing the relative integral position of a smooth and a peaky function. $f_{\NICE}$ lies within the center 99\% of the confidence interval, and $f_{\PEAKY}$ lies on the outside of 99\% of  the confidence interval. This plot can be conditionally reproduced using \code{DemoCone.m}}
-	\label{fig:cone_bayes_posterior}
-\end{figure}
-% Done: \JRNote{Use standard deviation $\sigma$ in x-axis.  $f_{\NICE}$ using kernel approximation} 
 
 In \figref{fig:cone_bayes_functions}, the sampled function values
 % , $\{f_{\TRUE}(\vx_i)\}_{i=1}^n$, from a smooth integrand $f_{\TRUE}$ 
