@@ -119,8 +119,9 @@ plot(xa, gauss((xa*sqrt(s2_MLE)+m_MLE)), 'k')
 hold on
 plot( (mu_nice-m_MLE)/sqrt(s2_MLE), 0, '.', 'color', MATLABBlue,'Markersize',40)
 plot( (mu_peak-m_MLE)/sqrt(s2_MLE), 0, '.', 'color', MATLABOrange,'Markersize',40)
+plot( 0, 0, '.', 'color', MATLABGreen,'Markersize',40)
 
-xlabel('$\mu$','Interpreter','latex')
+xlabel('$\mu - \hat{\mu}$','Interpreter','latex')
 axis tight
 set(gca,'XTickLabel',{'\(-4 \sigma\)', '\(-2 \sigma\)', '0', '\(2 \sigma\)', '\(4 \sigma\)', '\(6 \sigma\)'}) 
 
@@ -128,7 +129,7 @@ set(gca,'XTickLabel',{'\(-4 \sigma\)', '\(-2 \sigma\)', '0', '\(2 \sigma\)', '\(
 % annotation('textarrow',[xa_norm(mu_nice) xa_norm(mu_nice)],[0 0.25],'String','$\mu_{nice}$')
 % annotation('textarrow',[xa_norm(mu_true) xa_norm(mu_true)],[0 0.5],'String','$\mu_{true}$')
 legend({'density', ...
-  '$\mu_\textup{smth}$', '$\mu_\textup{pky}$'},  ...  %, '$\hat{\mu}$'
+  '$\mu_\textup{smth}$', '$\mu_\textup{pky}$', '$\mu_\textup{nice}$'},  ...  %, '$\hat{\mu}$'
   'location','best','Interpreter','latex','box','off')
 % temp = [{'${\vert\mu-\widehat{\mu} \vert}/{\varepsilon}=1$'}, temp'];
 % legend(temp,'location','best','Interpreter','latex'); axis tight
