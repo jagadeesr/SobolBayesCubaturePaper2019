@@ -37,6 +37,7 @@
 \usepackage{mathrsfs}  
 \usepackage{hhline}
 \usepackage{siunitx}
+\usepackage{bbm}
 
 %
 % insert here the call for the packages your document requires
@@ -85,9 +86,12 @@
 \newcommand{\complex}{\mathbb{C}}
 \newcommand{\hilbert}{\mathbb{H}}
 \newcommand{\Ex}{\mathbb{E}}
+\newcommand{\bbone}{\mathbbm{1}}
 
 \newcommand{\cf}{\mathcal{F}}
 \newcommand{\cl}{\mathcal{L}}
+\newcommand{\bbcl}{\bar{\boldsymbol{\cl}}}
+\newcommand{\hbcl}{\hat{\boldsymbol{\cl}}}
 \newcommand{\cx}{\mathcal{X}}
 \newcommand{\tcx}{\widetilde{\cx}}
 \newcommand{\rC}{\mathring{C}}
@@ -576,516 +580,71 @@ This concludes a review of the key ideas of our fast Bayesian cubature algorithm
 To increase the likelihood of our integrand lying in the middle of the sample space of Gaussian processes, we stress the importance of choosing the parameter $\vtheta$ that defines the covariance kernel.  Two optimization problems are posed in \eqref{eqn:fastTheta}, one using empirical Bayes and the other using generalized cross-validation.  The examples in \cite{RatHic19a} were restricted to quite low dimensional $\vtheta$ and we did not explore efficient algorithms for optimization.
 
 One common algorithm is gradient descent, which requires a derivative of the loss function.  Taking for example the empirical Bayes case, one would need to compute $\partial \cl(\vtheta)/\partial \theta_\ell$, where 
-\begin{gather*}
+\begin{subequations} \label{eqn:loss}
+\begin{gather}
 	\mathcal{L}_{\MLE}(\vtheta) := 
 	\log\left(
-	\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}}.
+	\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}}
 	\right)  +
 		\frac{1}{n}\sum_{i=1}^n \log(\lambda_{\vtheta, i}),\\
 	\mathcal{L}_\GCV(\vtheta)
 	= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}^2} 
 	\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{\vtheta, i}} \right).
-\end{gather*}
+\end{gather}
+\end{subequations}
 Then the gradient descent method for selecting the $L$-vector $\vtheta$ proceeds as
 \begin{equation}
 	\label{eqn:deep_descent}
-	\vtheta^{(j+1)} = \vtheta^{(j)} - \nu^{(j)} \bar{\cl}(\vtheta^{(j)}), \quad j=0,1,\cdots, \qquad \text{where } \bar{\cl} : = \left (\frac{\partial\mathcal{L}}{\partial \theta_\ell} \right)_{\ell = 1}^L,
+	\vtheta^{(j+1)} = \vtheta^{(j)} - \nu^{(j)} \bar{\cl}(\vtheta^{(j)}), \quad j=0,1,\cdots, \qquad \text{where } \bbcl : = \left (\frac{\partial\mathcal{L}}{\partial \theta_\ell} \right)_{\ell = 1}^L,
 \end{equation}
 and $\nu^{(j)}$ is the step size.  \FJHNote{You had the step-size depending on $\ell$, but that does not seem right.}
  
-The loss functions depend on $\vtheta$ via the eigenvalues $\vlambda_\vtheta = (\lambda_{\vtheta, 1}, \ldots, \lambda_{\vtheta, n})^T$, and the eigenvalues are the fast Bayesian transform of the first column of the Gram matrix (see \eqref{eqn:fast_transform_to_eigvalues}).  Thus, the needed gradient can be obtained by successive applications of the chain rule:
-\[
-\frac{\partial \cl(\vtheta)}{\partial \theta_\ell} = \sum_{i=1}^n \frac{\partial \cl}{\partial \lambda_{\vtheta,i}} \, \frac{\partial \lambda_{\vtheta,i}}{\partial \theta_\ell}
-\]
-
-
-
-
-The equation specifying $\vtheta_\MLE$ as defined in \eqref{fastTheta} does not say how the parameter search can be done. However there exist empirical algorithms \cite{Bre73, For77} that one could use to accomplish the same.
-% Searching for $\vtheta_\MLE$ as defined in \eqref{eqn:thetaMLE} is not very efficient. 
-Since the objective function is known we could compute the gradient.
-Using the gradient of $l(s,m,\vtheta | \vy)$, one can apply optimization techniques such as gradient descent to find the optimal value faster. Let us define the objective function to guide the search by excluding the negative sign, which modifies the problem to become a minimization of
-\begin{align*}
-\mathcal{L}_{\MLE}(\vtheta | \vy)
-&:= % \frac{1}{n} \log(\det\, \mC) +  \log\left( (\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right) + \text{constants} \\
-% &= 
-\frac{1}{n}\sum_{i=1}^n \log(\lambda_{i}) + 
-\log\left(
-\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{i}}
-\right) + \text{constants.}
-\end{align*}
-Taking derivative with respect to $\theta_\ell$, for $\ell=1,\cdots,d$
+The loss functions depend on $\vtheta$ via the eigenvalues $\vlambda_\vtheta = (\lambda_{\vtheta, 1}, \ldots, \lambda_{\vtheta, n})^T$, and the eigenvalues are the fast Bayesian transform of the first column of the Gram matrix (see \eqref{eqn:fast_transform_to_eigvalues}).  Thus, the needed gradient can be obtained via the chain rule:
+\begin{subequations}
+	\label{eqn:gradient_chain_rule}
+\begin{gather}
+	\bbcl^T (\vtheta)=  \hbcl^T(\vlambda_\vtheta) \mV^{H} \bar{\mC}_{\vtheta}, \\
+	\hbcl^T(\vlambda_\vtheta) : = \left(\frac{\partial \cl}{\partial \lambda_{\vtheta,i}} \right)_{i=1}^n, \qquad
+	\bar{\mC}_{\vtheta} := \left(\frac{\partial C_\vtheta(\vx_i,\vx_1) }{\partial{\theta}_\ell} \right)_{i,\ell=1}^{n,L}.
+\end{gather}
+\end{subequations}
+Since the multiplication by $\mV^H$ is simply a fast Bayesian transform, the evaluation of $\bbcl(\vtheta)$ only requires $\Order(Ln \log(n))$ operations.  We now derive formulas for $\hbcl(\vlambda_\vtheta)$ and $\bar{\mC}_{\vtheta}$.
+The formulas for $\hbcl_{\MLE}(\vlambda_\vtheta)$ and $\hbcl_{\GCV}(\vlambda_\vtheta)$ follow directly from \eqref{eqn:loss}:
 \begin{align}
-\label{eqn:deriv_obj_func_MLE}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy)
-= & \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
-- \left({ \sum_{i=2}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
-\left( {\sum_{i=2}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1}, \\
-& \text{where} \bar{\lambda}_{i(\ell)} = \frac{\partial}{\partial \theta_\ell} {\lambda}_{i(\ell)}
+	\label{eqn:deriv_obj_func_MLE}
+	\frac{\partial \mathcal{L}_{\MLE}}{\partial \lambda_{\vtheta,i}} 
+	= &  
+   - \frac{\bbone_{{[2,n]}}(i) \abs{\tvy_i}^2}{\lambda_{\vtheta,i}^2} 
+   \left( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}}\right)^{-1}
+   + \frac{1}{n\lambda_{\vtheta,i}}, \\
+  	\frac{\partial \mathcal{L}_{\GCV}}{\partial \lambda_{\vtheta,i}} 
+    \label{eqn:deriv_obj_func_full}
+   &= -  \frac{2\bbone_{{[2,n]}}(i) \abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}^3}\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}^2} 
+   \right)^{-1}
+   +  \frac{2}{\lambda_i} \left( \sum_{i=1}^n \frac{1}{\lambda_{\vtheta, i}} \right)^{-1}.
 \end{align}
-where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of $\mC$ in the $\ell$th variable. 
-Here we used some of the results from \cite{Dong2017a}. A technique to compute $\bar{\lambda}_{i(\ell)}$ faster is discussed in Section \ref{sec:product_kernel}.
-This result can be used with gradient descent as follows,
-\begin{align}
-\label{eqn:deep_descent}
-\theta_\ell^{(j+1)} = \theta_\ell^{(j)} - \nu_\ell \frac{\partial}{\partial \theta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots
-\end{align}
-where $\nu_\ell$ is the step size for the gradient descent. 
 
-
-Similarly the derivative of the objective function in \eqref{fastThetaGCV} can be obtained:
-\begin{align*}
-\mathcal{L}_\GCV(\vtheta | \vy)
-&= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
-\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right), 
-\end{align*}
-taking the derivative w.r.t $\theta_\ell$,
-\begin{align}
-\nonumber
-& \frac{\partial}{\partial \theta_\ell}  \mathcal{L}_\GCV(\vtheta | \vy)
-\\
-% &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-% \frac{\partial}{\partial \theta_\ell} \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)
-% -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-% \frac{\partial}{\partial \theta_\ell} \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
-% \\
-% &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-% \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^3} (-2) \frac{\partial\lambda_i}{\partial \theta_\ell}  \right)
-% \\ & \hspace{4cm} 
-% -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-% \left( \sum_{i=1}^n \frac{1}{\lambda_i^2} (-1)\frac{\partial \lambda_i}{\partial  \theta_\ell}  \right)
-% \\
-\label{eqn:deriv_obj_func_full}
-&= -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right)
-+ 2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-\left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(\ell)} }{\lambda_i^2}  \right).
-\end{align}
-where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the Gram matrix, $\mC$, in the $\ell$th variable. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\iffalse
-
-\subsection{Empirical Bayes: Gradient of the objective function using fast Bayesian transform} \label{deriv_obj_func_MLE} 
-We refer back to Section~\ref{grad_descent_MLE}, where we discuss about using gradient descent for hyperparameter search but the computational cost is of $\Order(N_{\opt} n^3)$. Here we develop a techniques to speed up the computation.
-If $\mV$ does not depend on $\vtheta$ then one can fast compute the derivative of Gram matrix $\mC$. Starting from the definition \eqref{eqn:ftk_factor} and taking derivative w.r.t. $\theta_\ell$, 
-\begin{align}
-\nonumber
-\displaystyle \frac{\partial \mC}{\partial \theta_\ell} 
-& = \frac 1n \mV \frac{\partial {\mLambda}}{\partial \theta_\ell} \mV^H
-= \frac 1n \mV \bar{\mLambda}_{(\ell)} \mV^H,
-\\
-\nonumber
-& \text{where} \quad \bar{\mLambda}_{(\ell)} = \diag(\bar{\vlambda}_{(\ell)}), \quad \text{and}
-\\
-\label{eqn:deriv_eigenval_gram_matrix}
-&  \quad \bar{\vlambda}_{(\ell)} = \frac{\partial \vlambda}{\partial \theta_\ell} = \left( \frac{\partial \lambda_i}{\partial \theta_\ell} \right)_{i=1}^n 
-= \left( \frac{\partial }{\partial \theta_\ell} \mV^H {\vC_1} \right)
-= \mV^H \left( \frac{\partial }{\partial \theta_\ell} {C_\vtheta(\vx_1,\vx_i)} \right)_{i=1}^n,
-\end{align}
-where we used the fast Bayesian transform property $\vlambda 
-= \mV^H \vC_1$. % \eqref{eqn:fast_transform_to_eigvalues}.
-We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to denote the derivative of the eigenvalue ${\vlambda}_{(\ell)}$,  where $\bar{\vC}_{1(\ell)}$ denotes the first row of the gram matrix after taking the derivative in the $\ell$th variable, i.e.
-\begin{align*}
-\bar{\vC}_{1{(\ell)}} = \left(\frac{\partial }{\partial{\theta}_\ell} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
-\end{align*}
-The goal is to compute the derivative of the objective function faster. First, let's rewrite the objective function from \eqref{eqn:fastThetaMLE} in two parts,
-\begin{align*}
-\mathcal{L}_{\MLE}(\vtheta | \vy) &= 
-\underbrace{\frac{1}{n}  \log(\det\, \mC)}_{\mathcal{L}_{\abs{\mC}}} + \underbrace{\log\left((\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone) \right)}_{\mathcal{L}_{\vy}},
-\\ &=: \mathcal{L}_{\abs{\mC}} + \mathcal{L}_{\vy}.
-\end{align*}
-Now, take the derivative:
-\begin{align*}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy)
-&=  \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\abs{\mC}} + \frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\vy} \;.
-\end{align*}
-Now we tackle the individual terms,
-\begin{align*}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\abs{\mC}} &= \frac{\partial}{\partial \theta_\ell}  \frac{1}{n} \log(\det\, \mC) 
-% \\ & = \frac 1n \trace{\left( \mCInv \frac{\partial \mC}{\partial \vtheta_\ell} \right)}
-% = \frac{1}{n}
-% \trace{\left( \mV {\mLambda}^{-1} \mV^H
-% 	\frac 1n \mV \overline{\mLambda}_{(\ell)} \mV^H
-% 	\right)}
-% \\
-% & = \frac{1}{n}
-% \trace{\left(
-% 	\mV {\mLambda}^{-1}  \overline{\mLambda}_{(\ell)} \mV^H
-% 	\right)}, \quad \text{where we used } \; \mV^H \mV = n,
-% \\
-& =\frac{1}{n}
-\trace{\left(
-	\mV \;
-	\diag\left( \frac{\overline{\lambda}_{i(\ell)}}{\lambda_i} \right)_{i=1}^n \mV^H
-	\right)}
-= \frac{1}{n} \sum_{i=1}^{n} \frac{\overline{\lambda}_{i(\ell)}}{\lambda_i},
-\end{align*}
-where we used the fact from \cite{Hig08},
-\begin{align*}
-\log(\det\, \mC)  = \trace{ (\log( \mC)) }.
-\end{align*}
-Part of the $\mathcal{L}_{\vy}$ was already simplified using the fast Bayesian transform,
-\begin{align*}
-{(\vy-m_\MLE\vone)^T\mCInv(\vy-m_\MLE\vone)} = \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}.
-\end{align*}
-Using the above result,
-\begin{align*}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\vy} 
-&= \frac{\partial}{\partial \vtheta_\ell} \log\left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)
-% \\ 
-% &= \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i}\right)^{-1}
-% \;
-% \frac{\partial}{\partial \vtheta_\ell} \left(\frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)
-% \\ &= \left(
-% \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} \frac{1}{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2}
-% \left( -\frac{\partial \lambda_i}{\partial \vtheta_\ell} \right)
-% \\ 
-&= -\left(
-\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i} \right)^{-1} 
-\left( \sum_{i=2}^n \abs{\widetilde{y}_i}^2 \frac{ \bar{ \lambda}_{i(\ell)} }{\lambda_i^2}
-\right).
-\end{align*}
-Finally, using the above results,
-\begin{align}
-\label{eqn:deriv_obj_func_MLE}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy)
-&=  \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
-- \left({ \sum_{i=2}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
-\left( {\sum_{i=2}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1},
-\end{align}
-where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of $\mC$ in the $\ell$th variable. Please recollect the gradient descent proposed in \eqref{eqn:deep_descent} can be computed faster in $\Order(n \log n)$ using the result \eqref{eqn:deriv_obj_func_MLE}. A technique to compute this faster is discussed in Section \ref{sec:product_kernel}. 
-
-
-
-
-
-
-\iffalse
-If $m=0$ assumption can be made,
-\begin{align*}
-\frac{\partial}{\partial \theta_\ell} \mathcal{L}_{\MLE}(\vtheta | \vy) 
-&=  \frac 1n \sum_{i=1}^{n} \frac{\bar{\lambda}_{i(\ell)}}{\lambda_i}
-- \left({ \sum_{i=1}^n \frac{\abs{\tvy_i}^2 \bar{\lambda}_{i(\ell)}}{\lambda_i^2}}\right)
-\left( {\sum_{i=1}^n \frac{\abs{\tvy_i}^2}{\lambda_\ell}} \right)^{-1}.
-\end{align*}
-\fi 
-
-
-
-
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-\subsection{Generalized Cross-Validation: Gradient of the objective function using fast Bayesian transform}
-% \subsection{Gradient of the objective function}
-
-Using the results obtained from the Section \ref{deriv_obj_func_MLE} with empirical Bayes, one can reduce the computational cost of the derivative of the objective function in \eqref{eqn:fastThetaGCV},
-\begin{align*}
-\mathcal{L}_\GCV(\vtheta | \vy)
-&= \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} 
-\right) -2\log\left( \sum_{i=1}^n \frac{1}{\lambda_i} \right).
-\end{align*}
-Using the similar techniques from \secref{deriv_obj_func_MLE}, the derivative of the objective function w.r.t $\theta_\ell$:
-\begin{align*}
-& \frac{\partial}{\partial \theta_\ell}  \mathcal{L}_\GCV(\vtheta | \vy)
-\\
-&= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-\frac{\partial}{\partial \theta_\ell} \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)
--2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-\frac{\partial}{\partial \theta_\ell} \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)
-\\
-% &= \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-% \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^3} (-2) \frac{\partial\lambda_i}{\partial \theta_\ell}  \right)
-% \\ & \hspace{4cm} 
-% -2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-% \left( \sum_{i=1}^n \frac{1}{\lambda_i^2} (-1)\frac{\partial \lambda_i}{\partial  \theta_\ell}  \right)
-% \\
-&= -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right)
-+ 2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-\left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(\ell)} }{\lambda_i^2}  \right).
-\end{align*}
-Thus,
-\begin{multline}
-\frac{\partial}{\partial \theta_\ell}  \mathcal{L}_\GCV(\vtheta | \vy)
-\label{eqn:deriv_obj_func_full}
-= -2 \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_i^2} \right)^{-1}
-\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2 \bar{\lambda}_{i(\ell)} }{\lambda_i^3}    \right) \\
-+ 2 \left( \sum_{i=1}^n \frac{1}{\lambda_i} \right)^{-1}
-\left( \sum_{i=1}^n \frac{\bar{\lambda}_{i(\ell)} }{\lambda_i^2}  \right),
-\end{multline}
-where $\bar{\lambda}_{i(\ell)}$ is the derivative of the $i$th eigenvalue of the Gram matrix, $\mC$, in the $\ell$th variable. We discuss a technique to compute $\bar{\lambda}_{i(\ell)}$ in the next section below.
-
-\fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\subsection{Product Kernels}
-\label{sec:product_kernel}
-
-
-The Bayesian cubature in this research uses product kernels for the demonstrations and numerical implementations. They got nice properties which are helpful to obtain analytical results easily. Especially the gradient descent for parameter search can be explicitly expressed with the derivatives of the kernel as shown in Section \ref{sec:prod-kernel-steep-descent}. Product kernels in $d$ dimensions are of the form,
-\begin{align}
-\label{eqn:prod_kernel}
-C_\vtheta(\vt, \vx) = 
-\prod_{\ell=1}^d \biggl[ 1 - \eta_\ell \; \mathfrak{C}(x_\ell,t_\ell) \biggr]
-\end{align}
-% $ C_{\vtheta}(\vt, \vx) = \prod_{l=1}^d [ 1 - \eta_l \mathfrak{C}(x_l,t_l) ]$
-where $\eta_\ell$ is called shape parameter in the $\ell$th variable for $\ell=1,\cdots,d$, and $\mathfrak{C}$ is chosen such that to ensure $C_{\vtheta}$ is symmetric and positive definite. Our goal is to compute $\bar{\lambda}_{i(\ell)}$ for which the kernel derivative is necessary. The derivative of the product kernels can be obtained easily. Please note that $\vtheta$ denotes all the hyper parameters of the kernel $C$ where $\eta$ is one of them and called the shape parameter.
-
-\subsubsection{Derivative of the product kernel when $\eta_1=\cdots=\eta_d=\eta$}
-\label{sec:deriv_of_kernel}
-It was suggested to use gradient descent to find optimal shape parameter in \secref{grad_descent_MLE}. In this section, we compute the gradient for product kernels. When the $\eta_1=\cdots=\eta_d=\eta$, the derivative of a product kernel  w.r.t. $\eta$ can be obtained as below,
-\begin{align*}
-\frac{\partial}{\partial \eta} C_\vtheta(\vt, \vx) 
-& =
-\frac{\partial}{\partial \eta} 
-\prod_{j=1}^d \biggl[
-1 - \eta \mathfrak{C}(x_j,t_j) \biggr] % \quad  \mathfrak{C}(x,t) := (-1)^{r} B_{2r}( |{x-t}| \bmod 1 ) 
-% \\
-% & = \sum_{\ell=1}^d  \prod_{j=1, j \neq \ell}^d \biggl[
-% 1 - \eta \mathfrak{C}(x_j,t_j) \biggr] \biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
-% \\
-% & 
-% =
-% \prod_{j=1}^d \biggl[ 1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
-% \sum_{\ell=1}^d 
-% \frac{ \biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr) }{	1 - \eta \mathfrak{C}(x_\ell,t_\ell) }
-\\
-% & =
-% C_\vtheta(\vt, \vx) \frac{1}{\eta} \sum_{\ell=1}^d 
-% \frac{ \biggl(1 - \eta \mathfrak{C}({x_\ell,t_\ell})  - 1 \biggr) }{ 	1 - \eta \mathfrak{C}(x_\ell,t_\ell) }
-% \\
-% & = C_\vtheta(\vt, \vx) \frac{1}{\eta}\sum_{\ell=1}^d 
-% \biggl( 1 - \frac{1}{	1 - \eta \mathfrak{C}(x_\ell,t_\ell) } \biggr) \\
-& =
-({d}/{\eta} )
-\underbrace{
-	\left(
-	\prod_{j=1}^d \biggl[
-	1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
-	\right) }_
-{ C_\vtheta(\vt, \vx) }
-\biggl(
-1 - 
-\frac{1}{d} \sum_{\ell=1}^d
-\frac{1}
-{ 1 - \eta \mathfrak{C}(x_\ell,t_\ell) }
-\biggr)
-.
-\end{align*}
-\iffalse
-Thus,
-\begin{align*}
-\frac{\partial}{\partial \eta} C_\vtheta(\vt, \vx) = ({d}/{\eta} ) C_\vtheta(\vt, \vx) 
-\biggl(
-1 - 
-\frac{1}{d} \sum_{\ell=1}^d
-\frac{1}
-{ 1 - \eta \mathfrak{C}(x_\ell,t_\ell) }
-\biggr).
-\end{align*}
-\fi
-
-
-\subsubsection{When $\eta_\ell$ is different for each $\ell = 1,\cdots,d$}
-In this case, we will have a vector of length $d$ shape parameters. Derivative of the kernel, $C_\vtheta(\vt, \vx)$ \eqref{eqn:prod_kernel}, with respect to $\eta_\ell$ is,
-\begin{align*}
-\frac{\partial}{\partial \eta_\ell} C_\vtheta(\vt, \vx) 
-& =
-\frac{\partial}{\partial \eta_\ell} 
-\prod_{j=1}^d \biggl[
-1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr], \quad \text{where} \quad \ell = 1, \cdots, d
-\\
-& = 
-\prod_{j=1, j \neq \ell}^d \biggl[
-1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr]
-\biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr)
-% \\ & = \prod_{j=1}^d \biggl[ 1 - \eta_j \mathfrak{C}(x_j,t_j) \biggr]
-% \frac{ \biggl( - \mathfrak{C}(x_\ell,t_\ell) \biggr) }{ 	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) }
-% \\
-% & =
-% C_\vtheta(\vt, \vx) \frac{1}{\eta_\ell}
-% \frac{ \biggl(1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell)  - 1 \biggr)}{ 1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell)  }
-% \\ & = C_\vtheta(\vt, \vx) \frac{1}{\eta_\ell}
-% \biggl( 1 - \frac{1}{	1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) }\biggr)
-\\
-& =
-\frac{1}{\eta_\ell} 
-\underbrace{
-	\left(
-	\prod_{j=1}^d \biggl[
-	1 - \eta \mathfrak{C}(x_j,t_j) \biggr]
-	\right) }_
-{ C_\vtheta(\vt, \vx) }
-\biggl(
-1 - 
-\frac{1}
-{ 1 - \eta_\ell \mathfrak{C}(x_\ell, t_\ell) }
-\biggr) 
-.
-\end{align*}
-\iffalse
-Thus, 
-\begin{align*}
-\frac{\partial}{\partial \eta_\ell} C_\vtheta(\vt, \vx) = \frac{1}{\eta_\ell} 
-{ C_\vtheta(\vt, \vx) }
-\biggl(
-1 - 
-\frac{1}
-{ 1 - \eta_\ell \mathfrak{C}(x_\ell,t_\ell) }
-\biggr).
-\end{align*}
-\fi
-Please note that the above derivatives do not depend on $\mathfrak{C}(x,t)$ and most importantly these computations are applicable to any product kernel of the form \eqref{eqn:prod_kernel}.
-%$ C_\vtheta(\vt, \vx) = \prod_{j=1}^d [ 1 - \eta_j \mathfrak{C}(x_j,t_j) ]$.
-The $\bar{\lambda}_{i(\ell)}$ can be computed now using \eqref{eqn:deriv_eigenval_gram_matrix} with the computed kernel derivative, $\frac{\partial}{\partial \eta_\ell} C_\vtheta$.
-
-
-
-
-
-\subsubsection{Shape parameter search using steepest descent}
-\label{sec:prod-kernel-steep-descent}
-Using the obtained derivative of the eigenvalues, $\bar{\lambda}_{i(\ell)}$, one can easily compute the gradient of the objective function \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full}. This can be further used to implement the steepest descent search as introduced in \secref{grad_descent_MLE} 
-%\eqref{Dong2017a}
-\begin{align*}
-\eta^{(j+1)}_\ell = \eta^{(j)}_\ell - \nu \frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy), \quad j=0,1,\cdots,  \quad \ell = 1, \cdots, d
-\end{align*}
-where $\nu$ is the step size for the gradient descent, $j$ is the iteration index, and $\frac{\partial}{\partial \eta_\ell} \mathcal{L}(\vtheta | \vy)$ is either \eqref{eqn:deriv_obj_func_MLE} or \eqref{eqn:deriv_obj_func_full} depending on the choice of the hyperparameter search method. The parameter $\eta_\ell$ is usually searched in the whole $\reals$ by using the simple domain transformation as explained below. % in Section~\ref{sec:kernel_param_search}.
-
-
-If $\mV$ does not depend on $\vtheta$ then one can fast compute the derivative of Gram matrix $\mC$. Starting from the definition \eqref{eqn:ftk_factor} and taking derivative w.r.t. $\theta_\ell$, 
-\begin{align}
-\nonumber
-\displaystyle \frac{\partial \mC}{\partial \theta_\ell} 
-& = \frac 1n \mV \frac{\partial {\mLambda}}{\partial \theta_\ell} \mV^H
-= \frac 1n \mV \bar{\mLambda}_{(\ell)} \mV^H,
-\\
-\nonumber
-& \text{where} \quad \bar{\mLambda}_{(\ell)} = \diag(\bar{\vlambda}_{(\ell)}), \quad \text{and}
-\\
-\label{eqn:deriv_eigenval_gram_matrix}
-&  \quad \bar{\vlambda}_{(\ell)} = \frac{\partial \vlambda}{\partial \theta_\ell} = \left( \frac{\partial \lambda_i}{\partial \theta_\ell} \right)_{i=1}^n 
-= \left( \frac{\partial }{\partial \theta_\ell} \mV^H {\vC_1} \right)
-= \mV^H \left( \frac{\partial }{\partial \theta_\ell} {C_\vtheta(\vx_1,\vx_i)} \right)_{i=1}^n,
-\end{align}
-where we used the fast Bayesian transform property $\vlambda 
-= \mV^H \vC_1$. % \eqref{eqn:fast_transform_to_eigvalues}.
-We use the notation $\bar{\vlambda}_{(\ell)} = \mV^H \bar{\vC_1}_{(\ell)}$ to denote the derivative of the eigenvalue ${\vlambda}_{(\ell)}$,  where $\bar{\vC}_{1(\ell)}$ denotes the first row of the gram matrix after taking the derivative in the $\ell$th variable, i.e.
-\begin{align*}
-\bar{\vC}_{1{(\ell)}} = \left(\frac{\partial }{\partial{\theta}_\ell} C_\vtheta(\vx_1,\vx_i) \right)_{i=1}^n.
-\end{align*}
-
-
-
-
-
-
-
-
-\subsection{Continuous Valued Kernel Order}
+Next we turn to the formula for $\bar{\mC}_{\vtheta}$, which depends on the form of the covariance kernel, $C_\vtheta$.  In practice we often use kernels of product form, i.e., 
+\begin{equation}
+	\label{eqn:prod_kernel}
+	C_\vtheta(\vt, \vx) = 
+	\prod_{l=1}^d \biggl[ 1 + \eta_l  \mathfrak{C}(x_l,t_l) \biggr],
+\end{equation}
+where $\mathfrak{C}$ is given and the $\eta_l$ are (some of the) components of the hyperparameter $\vtheta$.  When $\eta_1=\cdots=\eta_d=\eta$, then by differentiating the logarithm of $C_\vtheta(\vt, \vx)$ we obtain
+\begin{equation*}
+	\frac{\partial C_\vtheta(\vt, \vx) }{\partial \eta} 
+	= C_\vtheta(\vt, \vx) \sum_{l=1}^d \frac {1}{\eta + 1/\mathfrak{C}(x_l,t_l)}.
+\end{equation*}
+When the $\eta_l$ are all distinct, then 
+\begin{equation*}
+	\frac{\partial C_\vtheta(\vt, \vx) }{\partial \eta_l}
+=  \frac {C_\vtheta(\vt, \vx)}{\eta + 1/\mathfrak{C}(x_l,t_l)}.
+\end{equation*}
+These formulae can be used to construct the matrix  $\bar{\mC}_{\vtheta}$, and then the gradient, $	\bbcl^T (\vtheta)$, via \eqref{eqn:gradient_chain_rule}.
+
+
+
+\section{Continuous Kernel Order}
 \label{sec:non_integer_kernel_order}
 
 \JRNote{Need better and more convincing motivation}
