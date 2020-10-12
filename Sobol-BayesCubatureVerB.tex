@@ -144,6 +144,12 @@
 \newcommand{\tf}{\tilde{f}}
 \newcommand{\vPsi}{\boldsymbol{\Psi}}
 
+\newcommand{\fC}{\mathfrak{C}}
+\newcommand{\hfC}{\hat{\fC}}
+\newcommand{\hbfC}{\hat{\boldsymbol{\fC}}}
+\newcommand{\fc}{\mathfrak{c}}
+\newcommand{\bfc}{\boldsymbol{\mathfrak{c}}}
+
 \newcommand{\tvv}{\tilde{\vv}}
 \newcommand{\tvz}{\tilde{\vz}}
 
@@ -647,377 +653,60 @@ These formulae can be used to construct the matrix  $\bar{\mC}_{\vtheta}$, and t
 \section{Continuous Kernel Order}
 \label{sec:non_integer_kernel_order}
 
-\JRNote{Need better and more convincing motivation}
+\cite{RatHic19a} worked with shift-invariant kernels of product form \eqref{eqn:prod_kernel}, where $\fC$ took the form
+\begin{subequations} \label{eqn:contorderkernel}
+\begin{equation}
+	\fC_{r}(t,x) = \sum_{0 \ne k \in \mathbb{Z} } \frac{\exp(2 \pi\sqrt{-1} k (t-x))}{\abs{k}^r}.
+\end{equation}
+For even positive integer $r$, this infinite series can be expressed in terms of a Bernoulli polynomial of degree $r$ \citep[Chapter 23]{AbrSte64}.  The parameter $r$ is also an indication of the smoothness of $\fC$, which should reflect the smoothness of the integrand.  It is not always possible to know the best $r$ a priori, so we may wan to include $r$ in the $\vtheta$ to be optimized.  Since the simplest optimization schemes assume that $\vtheta$ is continuous, we would like to extend the use of $\fC_r$ to all $r > 1$.
 
-In the \cite{JagHic19a}% previous sections
-, it was assumed that the shift-invariant kernel's order is an even valued integer and also fixed. It requires the practitioner to be aware of the integrand's smoothness to precisely handpick the kernel order to match the integrand's smoothness. However, it is not possible to know the integrand's smoothness in most of the practical applications. The constraint to have an integer-valued kernel order also limits the ability to continuously vary the kernel's smoothness to match the integrand like the shape parameter is varied to match. 
-
-The integer kernel order is not suitable to optimally search by standard optimization algorithm.
-As a consequence, one usually ends up choosing a higher kernel order when the integrand is not  smooth or lower kernel order when the integrand is very smooth.
-Often it leads to longer computation time or poor accuracy in the numerical integration.
-Here we explore two alternative forms of the kernel which allow the kernel order to be positive continuous value greater than one or a continuous value in the range $(0,1)$. Let us recall the infinite series expression that was used to construct the kernel \cite{JagHic19a}: % \eqref{the_kernel_eqn_bernoulli}:
-\begin{align*}
-C_\vtheta(\vx, \vt) := &  \sum_{\vk \in \mathbb{Z}^d} \alpha_{\vk,\vtheta}  e^{2 \pi\sqrt{-1} \vk^T\vx}
-e^{-2 \pi\sqrt{-1} \vk^T\vt}, \quad \text{where} \; 
-\alpha_{\vk,\vtheta} = \prod_{\ell=1}^d \frac{\eta_\ell}{{|k_\ell|}^r} 
-\end{align*}
-and $\vtheta = (r, \veta)$.  This form is convenient for analytical derivations.
-To make the derivations easier to follow, we fix the dimension $d=1$,
-\begin{align*}
-C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
-e^{ 2 \pi\sqrt{-1} k x}
-e^{-2 \pi\sqrt{-1} k t}.
-\end{align*}
-
-
-
-
-
-
-
-
-
-
-\subsubsection{Truncated series kernel}
-\label{sec:trunc_series_kernel}
-The following variation to the infinite series kernel \eqref{the_kernel_eqn_bernoulli} has the kernel order in the interval $(1, \infty)$. This kernel provides algebraic decay but it is more robust in the hyperparameter search.
-We reuse the original definition of the infinite kernel \eqref{the_kernel_eqn_bernoulli} but truncate to a finite length. This allows the kernel order $r$ continuous valued so that it does not have to be an even integer,  which was a constraint previously. 
-For $d=1$,
-\begin{align*}
-C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } \frac{1}{\abs{k}^r} 
-e^{ 2 \pi\sqrt{-1} k (x-t)},
-\end{align*}
-where $\theta = (r, \eta)$. 
-Since the infinite sum cannot be used directly, we truncate to length $n$,
-\begin{align*}
-C_{\vtheta, n}(x, t) = & 1 + \eta \sum_{k = - n/2 }^{n/2 - 1} \frac{1}{\abs{k}^r} 
-e^{ 2 \pi\sqrt{-1} k (x-t)}.
-\end{align*}
-The Gram matrix is written as 
-\begin{align*}
-\mC_{\vtheta, n} = & \biggl( C_{\vtheta, n}(\vx_i, \vx_j) \biggr)_{i,j=1}^n,
-\end{align*}
-where $n$ is the number of samples. 
-The reason for having the truncation length and the number of samples equal will be obvious as we proceed further.
-The first column of the Gram matrix is
-\begin{align*}
-\vC_{\vtheta, n} &= \biggl( C_{\vtheta, n}(\vx_i, \vx_1) \biggr)_{i=1}^n
-\\
-&= \left( \prod_{\ell=1}^d \left[ 1 + \eta_\ell \sum_{k = - n/2, k \neq 0 }^{n/2 - 1} \frac{1}{\abs{k_l}^r} 
-e^{ 2 \pi\sqrt{-1} k_l (x_{i\ell}-x_{1\ell})}\right] \right)_{i=1}^n, 
-\end{align*}
-where $d$ is the number of dimensions. 
-However the direct computation involves $n^2$ computations since we have chosen the truncation length to $n$. We can reduce the computations to $\Order(n\log n)$ using the FFT.
-Define
-\begin{align*}
-\mathfrak{C}_r(t) &:= \sum_{k = - n/2, k \neq 0 }^{n/2 -1} \frac{1}{\abs{k}^r} 
-e^{ 2 \pi\sqrt{-1} k\, t}.
-\end{align*}
-Using the $\mathfrak{C}_r$, rewrite
+The values of $\fC_{r}(t,x)$ required to carry out Algorithm \ref{algorithm1} are only those required to obtain the eigenvalues of the Gram matrix via \eqref{eqn:fast_transform_to_eigvalues}, namely,
+\begin{equation*}
+	\fC_{r}(x_{il}, \vx_{i1})  = \sum_{0 \ne k \in \mathbb{Z} } \frac{\exp(2 \pi\sqrt{-1} k (x_{il} - x_{i1}))}{\abs{k}^r}, \qquad \forall i = 1, \ldots, n, \ l =1, \ldots, d,
+\end{equation*}
+where the nodes, $\vx_1, \ldots, \vx_n$, are shifts of an integration lattice.  These nodes have the property that 
+\[
+x_{il} - x_{i1} \bmod 1 \in \{0, 1/n, \ldots 1-1/n\} \qquad \forall i = 1, \ldots, n, \ l =1, \ldots, d.
+\]
+So all that we really need to compute is 
 \begin{align}
-\label{eqn:trunc_series_kernel}
-\vC_{\vtheta, n}
-&= \left( \prod_{l=1}^d \left[ 1 + \eta \mathfrak{C}_r( \abs{x_{il} - x_{1l}})\right] \right)_{i=1}^n.
+	\hat{\fC}_{r,i}  & : =  \sum_{0 \ne k \in \mathbb{Z} } \frac{\exp(2 \pi\sqrt{-1} k i/n)}{\abs{k}^r} \\
+	& =  \sum_{k = 0 }^{n-1}  \fc_{r,k} \exp(2 \pi\sqrt{-1} k i/n), \quad i = 0, \ldots, n-1, \\
+	\intertext{where}
+	\fc_{r,0} & =  2 \sum_{m = 1}^{\infty} \frac{1}{(mn)^r} = \frac{2 \zeta(r)}{n^r}, \\
+	\nonumber
+	\fc_{r,k} & =  \sum_{m = 1}^{\infty} \frac{1}{(mn - k)^r} + \sum_{m =0}^{\infty} \frac{1}{(k + mn)^r} = \frac{\zeta(1-k/n,r) + \zeta(k/n,r)}{n^r} \\
+	& \qquad \qquad \text{for } k=1, \ldots, n-1, \\
+	\nonumber
+	\zeta(k,r) &: = \sum_{m=0}^\infty \frac{1}{(k+m)^r} \qquad \text{is the Hurwitz zeta function}.
 \end{align}
-One can observe
-$\abs{x_{i\ell}-x_{1\ell}} \in \lbrace 0, \frac 1n, \frac 2n, \dots \frac{n-1}{n}  \rbrace$ by using the definition of lattice points from \cite{JagThesis19a}. % \eqref{eqn:lattice_def}. 
-This can be used to rewrite $\mathfrak{C}_r$ in a much simpler form,
+\end{subequations}
+
+In principle, one only need evaluate the vector $\bfc_r = (\fc_{r,0}, \ldots, \fc_{r,n-1})^T$ and take its FFT to obtain the vector $\hbfC = (\hfC_{r,0}, \ldots, \hfC_{r,n-1})^T$.  Then 
+\begin{equation} \label{eqn:vC1_cont}
+	\vC_{\vtheta,1} = \left( \prod_{l=1}^d \biggl[ 1 + \eta_l  \hat{\fC}_{r,n(x_{il} - x_{i1} \bmod 1)} \biggr] \right)_{i=1}^n
+\end{equation}
+and the calculation of the eigenvalues can proceed as in  \eqref{eqn:fast_transform_to_eigvalues}.
+
+A computational challenge is finding an efficient approximation $\zeta(k,r)$.  Thus, an alternative is to approximate $\zeta(k,r)$ by its first term, $k^{-r}$, which corresponds to an $n$-dependent kernel:
+\begin{subequations}\label{eqn:n_dep_kernel}
+\begin{gather}
+	\fc_{rn,0}  =  \frac{2}{n^r}, \qquad
+	\fc_{rn,k}   = \frac{1}{(n -k)^r} +  \frac{1}{k^r} 
+	\quad \text{for } k=1, \ldots, n-1, \\
+	\hat{\fC}_{rn,i}   =  \sum_{k = 0 }^{n-1}  \fc_{nr,k} \exp(2 \pi\sqrt{-1} k i/n), \quad i = 0, \ldots, n-1, \\
+	\fC_{rn}(t,x) = \sum_{\substack{k = -n\\ k \ne 0}}^n \frac{\exp(2 \pi\sqrt{-1} k (t-x))}{\abs{k}^r}.		
+\end{gather}
+\end{subequations}
+An analogous computation as in \eqref{eqn:vC1_cont} then applies.  The terms that this $n$-dependent kernel ignores are $\Order(n^{-r+1})$.
+
+A gradient descent search for the order $r$ can be incorporated into the search for the other components of $\vtheta$ by noting that 
 \begin{align*}
-\mathfrak{C}_r \left(\frac jn \right) &= \sum_{k = - n/2, k \neq 0 }^{n/2 - 1} \frac{1}{\abs{k}^r} 
-e^{ 2 \pi\sqrt{-1} k (\frac jn)}, \quad \text{where} \;  j=0,1,\dots n-1.
+	\frac{\partial \fc_{r,k}}{\partial r} &= -r \fc_{r-1,k}, \quad k=0, \ldots, n-1, \\
+	\frac{\partial \hfC_{r,i}}{\partial r} &= -r \hfC_{r-1,i}, \quad i=0, \ldots, n-1, \\
+	\frac{\partial \vC_{\vtheta,1}}{\partial r}  &= \vC_{\vtheta,1} \sum_{l=1}^d \frac{ -\eta_l  r \hfC_{r-1,n(x_{il} - x_{i1} \bmod 1)}}{1 + \eta_l  \hat{\fC}_{r,n(x_{il} - x_{i1} \bmod 1)} }.
 \end{align*}
-This notation is very convenient to show that $\widetilde{\mathfrak{C}}_r$,  the discrete Fourier transform of $\mathfrak{C}_r$, can be computed analytically
-\begin{align*}
-\widetilde{\mathfrak{C}}_r(m) &= \sum_{j=0}^{n-1} \mathfrak{C}_r (j/n) e^{- 2 \pi\sqrt{-1} jm/n} 
-\\
-% &= \sum_{k = - n/2, k \neq 0 }^{n/2-1} 
-% \sum_{j=0}^{n-1} \frac{1}{\abs{k}^r} 
-% e^{ 2 \pi\sqrt{-1} k  j/n} e^{- 2 \pi\sqrt{-1} jm/n} 
-% \\
-&= \sum_{k = - n/2, k \neq 0 }^{n/2-1} 
-\sum_{j=0}^{n-1} \frac{1}{\abs{k}^r} e^{ 2 \pi\sqrt{-1} (k-m)  j/n} , \quad \text{by \eqref{eqn:dft_delta_fact}}
-\\
-&= \sum_{k = - n/2, k \neq 0  }^{n/2-1} \frac{n}{\abs{k}^r} \; \delta_{k-m \bmod n, 0} \; .
-\end{align*}
-This is the reason we have chosen the truncation length to $n$. 
-Based on the above result, it is evident that $\widetilde{\mathfrak{C}}_r$ can be computed analytically,
-\begin{align} \label{dft_of_g}
-\widetilde{\bm{\mathfrak{C}}}_r := \left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}, \quad
-\text{where} \quad
-\widetilde{\mathfrak{C}}_r(m) = 
-\begin{cases}
-0, & \text{for} \quad m=0 \\
-\frac{n}{\abs{m}^r}, & \text{for} \quad m=1,\dots,n/2-1 \\
-\frac{n}{\abs{n-m}^r}, & \text{for} \quad m=n/2,\dots,n-1
-\end{cases}
-\end{align}
-where we used the fact,
-\begin{align}
-\label{eqn:dft_delta_fact}
-\sum_{i=0}^{n-1} e^{2 \pi \sqrt{-1} i j /n} = 
-\begin{cases}
-\frac{1 - e^{2\pi \sqrt{-1} j n /n}}{1 - e^{2\pi \sqrt{-1} j /n}} = 0, &j \ne 0 \bmod n
-\\
-n, & j = 0 \bmod n.
-\end{cases}
-\end{align}
-Having these results, we can easily back-compute $\mathfrak{C}$ using inverse discrete Fourier transform. It can be shown that inverse DFT of $\widetilde{\mathfrak{C}}_{r}$ returns $\mathfrak{C}$,
-\begin{align*}
-\frac{1}{n} &\sum_{m=0}^{n-1} \widetilde{\mathfrak{C}}_{r} (m) e^{2 \pi\sqrt{-1} lm/n} \\
-& = \frac{1}{n} \sum_{m=0}^{n-1} 
-\sum_{j=0}^{n-1} \mathfrak{C}_{r} (j/n) e^{- 2 \pi\sqrt{-1} jm/n}
-e^{2 \pi\sqrt{-1} lm/n}, \quad \text{by \eqref{eqn:dft_delta_fact}}  \\
-% & = \frac{1}{n} \sum_{j=0}^{n-1} \mathfrak{C}_{r} (j/n) \sum_{m=0}^{n-1} e^{2 \pi\sqrt{-1} (l-j)m/n} \\
-& = \frac{1}{n}  \sum_{j=0}^{n-1} \mathfrak{C}_{r} (j/n) n \delta_{(l-j) \bmod n, 0} \\
-& = \mathfrak{C}_{r} (l/n), \quad \text{for} \quad l=0,\dots,n-1
-\end{align*}
-This implies that to compute $n$ values of $\biggl( C_{\vtheta, n}(\vx_i, \vx_1) \biggr)_{i=1}^n$, we need to have the number of samples and the truncation length the same. 
-The above results are summarized as an algorithm to compute $\mathfrak{C}$ using FFT in Algorithm~\ref{algorithm-cont-val-kernel-order}.
-\begin{algorithm}
-	\caption{The kernel with continuous valued order}\label{algorithm-cont-val-kernel-order}
-	\begin{algorithmic}[1]
-		
-		\Require
-		Number of points to use, $n$; 
-		
-		\State Analytically compute $ \widetilde{\bm{\mathfrak{C}}}_r $ in \eqref{eqn:trunc_series_kernel}, the discrete Fourier transform of ${\bm{\mathfrak{C}}}_r$ using \eqref{dft_of_g}
-		\State Take the inverse FFT of $\widetilde{\bm{\mathfrak{C}}}_r$ to get ${\bm{\mathfrak{C}}}_r$
-		
-		\State Using ${\bm{\mathfrak{C}}}_r$ compute the truncated series of kernel of truncation length $n$ using \eqref{eqn:trunc_series_kernel}
-		
-		%\State Analytically compute $ \widetilde{\bm{\mathfrak{C}}}_r = \left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}$, the discrete Fourier transform of $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$ using \eqref{dft_of_g}
-		% \State Take the inverse FFT of $\left(\widetilde{\mathfrak{C}}_{r}(m)\right)_{m=0}^{n-1}$ to get $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$
-	\end{algorithmic}
-	
-\end{algorithm}
-
-In Algorithm \ref{algorithm-cont-val-kernel-order}, the computational cost of  computing ${\bm{\mathfrak{C}}}_r$ % $\left(\mathfrak{C}_r(j/n)\right)_{j=0}^{n-1}$ 
-is $\Order(n \log n)$ instead of $\Order(n^2)$. Plugging-in the values of ${\bm{\mathfrak{C}}}_r$ in \eqref{eqn:trunc_series_kernel} gives the kernel. Another major benefit is that the FFT approach in Algorithm \ref{algorithm-cont-val-kernel-order} is the computations are numerically more stable than the direct sum approach. Please note that these kernels evolve with the truncation length $n$. The larger $n$ value the closer the kernel resembles the original infinite series kernel. One disadvantage is, the truncated series kernels obtain algebraic order decay at best. The infinite series kernel with little modification can be enhanced to obtain exponential decay as shown next.
-
-
-
-
-
-
-
-
-
-\subsubsection{Exponentially decaying kernel}
-\label{sec:exp_decay_kernel}
-We propose the following alternative form of the kernel. This kernel can provide exponential decay,
-\begin{align*}
-C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } q^{\abs{k}}  
-e^{ 2 \pi\sqrt{-1} k (x-t)}, \quad \text{with} \quad 0 < q < 1
-\end{align*}
-where $q$ is used to denote the kernel order to distinguish it from the notation in \eqref{eqn:trunc_series_kernel}. This can be rewritten as
-\begin{align*}
-C_\vtheta(x, t) = & 1 + \eta \sum_{k \in \mathbb{Z}, k \neq 0 } 
-e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
-\\
-% =& 1 + \eta 
-% \left(
-% \sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
-% +
-% \sum_{k=\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
-% \right)
-% \\
-% =& 1 + \eta 
-% \left(
-% \sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} 
-% +
-% \sum_{k=-\infty}^{-1} e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
-% \right)
-% \\
-=& 1 + \eta 
-\left(
-\underbrace{
-	\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} }_{*}
-+
-\sum_{k=1}^{\infty} e^{ -2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)}
-\right).
-\end{align*}
-Let us focus on the first term $(*)$ within the parenthesis in the previous equation,
-\begin{align*}
-\sum_{k=1}^\infty e^{ 2 \pi\sqrt{-1} k (x-t) + \abs{k} \log(q)} & =
-\sum_{k=1}^\infty \left[e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)} \right]^k
-\\
-& = \frac{e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)}}{1- e^{ 2 \pi\sqrt{-1} (x-t) +  \log(q)}}
-= \frac{1}{ e^{- 2 \pi\sqrt{-1} (x-t) -  \log(q)} -1 }
-\\
-& =\frac{1}{ q^{-1} e^{- 2 \pi\sqrt{-1} (x-t)} -1 }
-\end{align*}
-Using this result
-\begin{align*}
-C_\vtheta(x, t) &= 
-1 + \eta 
-\left(
-\frac{1}{ q^{-1} e^{- 2 \pi\sqrt{-1} (x-t)} -1 }
-+
-\frac{1}{ q^{-1} e^{ 2 \pi\sqrt{-1} (x-t)} -1 }
-\right)
-\\
-% &= 
-% 1 + \eta 
-% \left(
-% \frac{q^{-1} \left(e^{2 \pi\sqrt{-1} (x-t) }+ e^{ -2 \pi\sqrt{-1} (x-t)}\right) -2 }
-% {q^{-2} - q^{-1} \left(e^{ 2 \pi\sqrt{-1} (x-t)} + e^{ -2 \pi\sqrt{-1} (x-t)}\right) + 1 }
-% \right)
-% \\
-% &= 
-% 1 + \eta 
-% \left(
-% \frac{2 q^{-1} \cos({2 \pi\sqrt{-1} (x-t) }) -2 }
-% {q^{-2} - 2 q^{-1} \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
-% \right)
-% \\
-&= 
-1 + 2 \eta q
-\left(
-\frac{ \cos({2 \pi\sqrt{-1} (x-t) }) - q }
-{q^{2} - 2 q \cos({ 2 \pi\sqrt{-1} (x-t)})  + 1 }
-\right).
-\end{align*}
-Using the fact $\cos^2(t) + \sin^2(t) = 1$,
-\begin{align*}
-C_\vtheta(x, t) &= 
-1 + 2 \eta q
-\left(
-\frac{ \cos({2 \pi\sqrt{-1} (x-t) }) - q }
-{ \left[\cos({ 2 \pi\sqrt{-1} (x-t)})-q\right]^2 + \sin^2({ 2 \pi\sqrt{-1} (x-t)}) }
-\right),
-\end{align*}
-which shows that the kernel order $q$ can be continuously varied while searching for the optimal value. 
-The hyperparameters need to be $\eta > 0$ and $ 0 < q < 1$ while searching for the optimum value, so we use the transformations demonstrated in Section~\ref{sec:kernel_param_search} to map the values to or from $\reals$, where the search is usually done.
-% \begin{align*}
-% q: & \quad \frac{1}{1 + e^{-t}} & :(-\infty, \infty) \to (0, 1)
-% \\
-% \eta: & \quad e^{t} & :(-\infty, \infty) \to (0, \infty).
-% \end{align*}
-One disadvantage of this kernel is that it is very sensitive to the changes in kernel order $q \in (0,1)$, for even small values, which might cause the hyperparameter search to miss the global minima.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-\subsection{Kernel Hyperparameters Search}
-\label{sec:kernel_param_search}
-
-\JRNote{Explain the transformation used to make the search range positive, $> 0$ , etc.}
-
-The various hyperparameters introduced and used by our algorithms need to be optimally chosen. % We have not discussed how that will be done. 
-The parameter search can be done in two major ways. 
-Bounded minima search, if the search interval is known, else unbounded search.  Most of the scenarios, the search interval is unknown. So the natural choice is to use unbounded search over the unbound domain such as \code{fminsearch} provided by MATLAB.
-% line in -- that is semi-bounded.
-However hyperparameters need to live in a domain that is bounded or semi-bounded. 
-There are some simple domain transformations available to achieve this.
-
-\subsubsection{Positive kernel shape parameter}
-The following parameter map is used to ensure that the shape parameter values are positive real numbers. For $\eta > 0$ as introduced in Section \ref{sec:deriv_of_kernel}, let
-% We need to have $\eta > 0$ and $ 0 < b < 1$ while searching for the optimum value, so we use the following transformations
-\begin{align*}
-\eta{(t_1)} = & \quad e^{t_1}, & \eta : (-\infty, \infty) \to (0, \infty).
-\end{align*}
-Instead of searching for $\eta \in (0, \infty)$, we may search for the optimal $t_1 = \log(\eta)$ over the whole real line $\reals$. 
-% After the successful completion the minima 
-The optimal value $t_{1, \textup{opt}}$ can be transformed back to the $(0, \infty)$ interval using 
-% the inverse of the transform $\log(t_0 )$ where $t_0$ is the minima.
-\begin{align*}
-\eta_{\textup{opt}} = e^{t_{1,\textup{opt}}}.
-\end{align*}
-
-
-
-\subsubsection{Kernel order $1 < r < \infty$}
-The following map is used to ensure that the kernel order values are positive real number and greater than one, i.e., in the $(1, \infty)$ interval as required in \secref{sec:trunc_series_kernel},
-\begin{align*}
-r(t_2) = & \quad {1 + e^{t_2}}, & r:  (-\infty, \infty) \to (1,\infty).
-\end{align*}
-So one may search for the optimal $t_2 = -\log(r-1)$ in the whole real line $\reals$.
-The optimal value $t_{2, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ using 
-\begin{align*}
-r_{\textup{opt}} = 1+ e^{t_{2, \textup{opt}}}.
-\end{align*}
-
-
-
-
-
-\subsubsection{Kernel order $0 < q < 1$}
-The following multivariate map is used to ensure that the kernel order values are positive real and less than one, i.e., in the $(0,1)$ interval to use with exponentially decaying kernel, as introduced in \secref{sec:exp_decay_kernel},
-\begin{align*}
-q(t_3) = & \quad \frac{1}{1 + e^{t_3}}, & q: (-\infty, \infty) \to (0, 1).
-\end{align*}
-So one may search for the optimal $t_3 = \log(q^{-1}-1)$ in the whole real line $\reals$.
-The optimal value $t_{3, \textup{opt}}$ can be transformed back to the desired interval $(0,1)$ by using
-\begin{align*}
-q_{\textup{opt}} = \frac{1}{1 + e^{t_{3, \textup{opt}}}}.
-\end{align*}
-
-
-
-
-\subsubsection{Combined searching of kernel order $r$ and shape parameter $\veta$}
-Instead of searching $\veta$ and $r$ separately one would prefer to search them together so that the most optimal values can be obtained, where $\veta = (\eta_1, \cdots, \eta_d)$ such that $\eta_l \ne \eta_k$,  for $l \ne k$.
-We can combine the parameter maps used above to ensure that the kernel order values in $(1, \infty)$ and shape parameter $\veta$ in $(0,\infty)^d$ as required in \secref{sec:trunc_series_kernel},
-\begin{align*}
-\vtheta(\vt) = 
-\begin{pmatrix}
-r(t_{1}) \\ \eta(t_2) \\ \vdots \\ \eta(t_{d+1}) 
-\end{pmatrix} =
-\begin{pmatrix}
-1 + e^{t_1} \\ e^{t_2} \\ \vdots \\ e^{t_{d+1}}
-\end{pmatrix}, 
-\quad
-\vtheta: \reals^{d+1} \to (1,\infty) \times (0,\infty)^d .
-\end{align*}
-So instead of searching for $\vtheta_{\textup{opt}}$ in $(1,\infty) \times (0,\infty)^d$, one may search for the optimal 
-$$
-\vt = \vt^{-1} (\vtheta) = 
-\begin{pmatrix}
-\log(r-1) \\ \log(\eta_1) \\ \vdots \\ \log(\eta_d)
-\end{pmatrix}
-$$ in the whole real line $\reals^{d+1}$.
-The optimal value $\vt_{\textup{opt}}$ can be transformed back to the desired interval $(1,\infty) \times (0,\infty)^d$ using 
-\begin{align*}
-\vtheta_{\textup{opt}} = 
-\begin{pmatrix}
-1 + e^{t_{1, \textup{opt}}} \\
-e^{t_{2, \textup{opt}}} \\
-\vdots \\
-e^{t_{d+1, \textup{opt}}} \\
-\end{pmatrix}.
-\end{align*}
-Similarly one can map the kernel order $q \in (0,1)$ \secref{sec:exp_decay_kernel}, and $\veta$ in to a multivariate hyperparameter search.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+An analogous formula applies for the $n$-dependent kernel. 
 
 
 
