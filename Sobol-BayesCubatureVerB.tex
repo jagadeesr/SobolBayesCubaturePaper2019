@@ -145,8 +145,8 @@
 \newcommand{\vPsi}{\boldsymbol{\Psi}}
 
 \newcommand{\fC}{\mathfrak{C}}
-\newcommand{\hfC}{\hat{\fC}}
-\newcommand{\hbfC}{\hat{\boldsymbol{\fC}}}
+\newcommand{\hfC}{\mathring{\fC}}
+\newcommand{\hbfC}{\mathring{\boldsymbol{\fC}}}
 \newcommand{\fc}{\mathfrak{c}}
 \newcommand{\bfc}{\boldsymbol{\mathfrak{c}}}
 
@@ -662,17 +662,18 @@ For even positive integer $r$, this infinite series can be expressed in terms of
 
 The values of $\fC_{r}(t,x)$ required to carry out Algorithm \ref{algorithm1} are only those required to obtain the eigenvalues of the Gram matrix via \eqref{eqn:fast_transform_to_eigvalues}, namely,
 \begin{equation*}
-	\fC_{r}(x_{il}, \vx_{i1})  = \sum_{0 \ne k \in \mathbb{Z} } \frac{\exp(2 \pi\sqrt{-1} k (x_{il} - x_{i1}))}{\abs{k}^r}, \qquad \forall i = 1, \ldots, n, \ l =1, \ldots, d,
+	\fC_{r}(x_{il}, x_{i1})  = \sum_{0 \ne k \in \mathbb{Z} } \frac{\exp(2 \pi\sqrt{-1} k (x_{il} - x_{i1}))}{\abs{k}^r}, \qquad \forall i = 1, \ldots, n, \ l =1, \ldots, d,
 \end{equation*}
 where the nodes, $\vx_1, \ldots, \vx_n$, are shifts of an integration lattice.  These nodes have the property that 
 \[
 x_{il} - x_{i1} \bmod 1 \in \{0, 1/n, \ldots 1-1/n\} \qquad \forall i = 1, \ldots, n, \ l =1, \ldots, d.
 \]
-So all that we really need to compute is 
+So all that we really need to compute is $\hbfC_r = (\hfC_{r,0}, \ldots, \hfC_{r,n-1})^T$, where 
 \begin{align}
-	\hat{\fC}_{r,i}  & : =  \sum_{0 \ne k \in \mathbb{Z} } \frac{\exp(2 \pi\sqrt{-1} k i/n)}{\abs{k}^r} \\
+\nonumber
+	\hfC_{r,i}  & : =  \sum_{0 \ne k \in \mathbb{Z} } \frac{\exp(2 \pi\sqrt{-1} k i/n)}{\abs{k}^r} \\
 	& =  \sum_{k = 0 }^{n-1}  \fc_{r,k} \exp(2 \pi\sqrt{-1} k i/n), \quad i = 0, \ldots, n-1, \\
-	\intertext{where}
+	\intertext{where $\bfc_r = (\fc_{r,0}, \ldots, \fc_{r,n-1})^T$, and }
 	\fc_{r,0} & =  2 \sum_{m = 1}^{\infty} \frac{1}{(mn)^r} = \frac{2 \zeta(r)}{n^r}, \\
 	\nonumber
 	\fc_{r,k} & =  \sum_{m = 1}^{\infty} \frac{1}{(mn - k)^r} + \sum_{m =0}^{\infty} \frac{1}{(k + mn)^r} = \frac{\zeta(1-k/n,r) + \zeta(k/n,r)}{n^r} \\
@@ -682,20 +683,20 @@ So all that we really need to compute is
 \end{align}
 \end{subequations}
 
-In principle, one only need evaluate the vector $\bfc_r = (\fc_{r,0}, \ldots, \fc_{r,n-1})^T$ and take its FFT to obtain the vector $\hbfC = (\hfC_{r,0}, \ldots, \hfC_{r,n-1})^T$.  Then 
+In principle, one only need evaluate $\bfc_r$ and take its FFT to obtain $\hbfC_r$.  Then 
 \begin{equation} \label{eqn:vC1_cont}
-	\vC_{\vtheta,1} = \left( \prod_{l=1}^d \biggl[ 1 + \eta_l  \hat{\fC}_{r,n(x_{il} - x_{i1} \bmod 1)} \biggr] \right)_{i=1}^n
+	\vC_{\vtheta,1} = \left( \prod_{l=1}^d \biggl[ 1 + \eta_l  \hfC_{r,n(x_{il} - x_{i1} \bmod 1)} \biggr] \right)_{i=1}^n
 \end{equation}
 and the calculation of the eigenvalues can proceed as in  \eqref{eqn:fast_transform_to_eigvalues}.
 
 A computational challenge is finding an efficient approximation $\zeta(k,r)$.  Thus, an alternative is to approximate $\zeta(k,r)$ by its first term, $k^{-r}$, which corresponds to an $n$-dependent kernel:
 \begin{subequations}\label{eqn:n_dep_kernel}
 \begin{gather}
-	\fc_{rn,0}  =  \frac{2}{n^r}, \qquad
-	\fc_{rn,k}   = \frac{1}{(n -k)^r} +  \frac{1}{k^r} 
+	\fc_{nr,0}  =  \frac{2}{n^r}, \qquad
+	\fc_{nr,k}   = \frac{1}{(n -k)^r} +  \frac{1}{k^r} 
 	\quad \text{for } k=1, \ldots, n-1, \\
-	\hat{\fC}_{rn,i}   =  \sum_{k = 0 }^{n-1}  \fc_{nr,k} \exp(2 \pi\sqrt{-1} k i/n), \quad i = 0, \ldots, n-1, \\
-	\fC_{rn}(t,x) = \sum_{\substack{k = -n\\ k \ne 0}}^n \frac{\exp(2 \pi\sqrt{-1} k (t-x))}{\abs{k}^r}.		
+	\hfC_{nr,i}   =  \sum_{k = 0 }^{n-1}  \fc_{nr,k} \exp(2 \pi\sqrt{-1} k i/n), \quad i = 0, \ldots, n-1, \\
+	\fC_{nr}(t,x) = \sum_{\substack{k = -n\\ k \ne 0}}^n \frac{\exp(2 \pi\sqrt{-1} k (t-x))}{\abs{k}^r}.		
 \end{gather}
 \end{subequations}
 An analogous computation as in \eqref{eqn:vC1_cont} then applies.  The terms that this $n$-dependent kernel ignores are $\Order(n^{-r+1})$.
@@ -704,7 +705,7 @@ A gradient descent search for the order $r$ can be incorporated into the search 
 \begin{align*}
 	\frac{\partial \fc_{r,k}}{\partial r} &= -r \fc_{r-1,k}, \quad k=0, \ldots, n-1, \\
 	\frac{\partial \hfC_{r,i}}{\partial r} &= -r \hfC_{r-1,i}, \quad i=0, \ldots, n-1, \\
-	\frac{\partial \vC_{\vtheta,1}}{\partial r}  &= \vC_{\vtheta,1} \sum_{l=1}^d \frac{ -\eta_l  r \hfC_{r-1,n(x_{il} - x_{i1} \bmod 1)}}{1 + \eta_l  \hat{\fC}_{r,n(x_{il} - x_{i1} \bmod 1)} }.
+	\frac{\partial \vC_{\vtheta,1}}{\partial r}  &= \vC_{\vtheta,1} \sum_{l=1}^d \frac{ -\eta_l  r \hfC_{r-1,n(x_{il} - x_{i1} \bmod 1)}}{1 + \eta_l  \hfC_{r,n(x_{il} - x_{i1} \bmod 1)} }.
 \end{align*}
 An analogous formula applies for the $n$-dependent kernel. 
 
