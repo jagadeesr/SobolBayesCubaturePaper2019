@@ -158,8 +158,8 @@
 
 \newcommand{\hatvy}{\hat{\bm{y}}}
 \newcommand{\haty}{\hat{y}}
-\newcommand{\tvy}{\tilde{\bm{y}}}
-\newcommand{\ty}{\tilde{y}}
+\newcommand{\tvy}{\widetilde{\bm{y}}}
+\newcommand{\ty}{\widetilde{y}}
 \newcommand{\vzero}{\bm{0}}
 \newcommand{\vone}{\bm{1}}
 \newcommand{\tvone}{\tilde{\bm{1}}}
@@ -620,12 +620,12 @@ The formulas for $\hbcl_{\MLE}(\vlambda_\vtheta)$ and $\hbcl_{\GCV}(\vlambda_\vt
 	\label{eqn:deriv_obj_func_MLE}
 	\frac{\partial \mathcal{L}_{\MLE}}{\partial \lambda_{\vtheta,i}} 
 	= &  
-   - \frac{\bbone_{{[2,n]}}(i) \abs{\tvy_i}^2}{\lambda_{\vtheta,i}^2} 
-   \left( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}}\right)^{-1}
+   - \frac{\bbone_{{[2,n]}}(i) \abs{\ty_i}^2}{\lambda_{\vtheta,i}^2} 
+   \left( \sum_{i'=2}^n \frac{\abs{\widetilde{y}_{i'}}^2}{\lambda_{\vtheta, i'}}\right)^{-1}
    + \frac{1}{n\lambda_{\vtheta,i}}, \\
   	\frac{\partial \mathcal{L}_{\GCV}}{\partial \lambda_{\vtheta,i}} 
     \label{eqn:deriv_obj_func_full}
-   &= -  \frac{2\bbone_{{[2,n]}}(i) \abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}^3}\left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta, i}^2} 
+   &= -  \frac{2\bbone_{{[2,n]}}(i) \abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}^3}\left ( \sum_{i'=2}^n \frac{\abs{\widetilde{y}_{i'}}^2}{\lambda_{\vtheta, i'}^2} 
    \right)^{-1}
    +  \frac{2}{\lambda_i} \left( \sum_{i=1}^n \frac{1}{\lambda_{\vtheta, i}} \right)^{-1}.
 \end{align}
@@ -644,7 +644,7 @@ where $\mathfrak{C}$ is given and the $\eta_l$ are (some of the) components of t
 When the $\eta_l$ are all distinct, then 
 \begin{equation*}
 	\frac{\partial C_\vtheta(\vt, \vx) }{\partial \eta_l}
-=  \frac {C_\vtheta(\vt, \vx)}{\eta + 1/\mathfrak{C}(x_l,t_l)}.
+=  \frac {C_\vtheta(\vt, \vx)}{\eta_l + 1/\mathfrak{C}(x_l,t_l)}.
 \end{equation*}
 These formulae can be used to construct the matrix  $\bar{\mC}_{\vtheta}$, and then the gradient, $	\bbcl^T (\vtheta)$, via \eqref{eqn:gradient_chain_rule}.
 
