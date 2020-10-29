@@ -662,11 +662,11 @@ For even positive integer $r$, this infinite series can be expressed in terms of
 
 The values of $\fC_{r}(t,x)$ required to carry out Algorithm \ref{algorithm1} are only those required to obtain the eigenvalues of the Gram matrix via \eqref{eqn:fast_transform_to_eigvalues}, namely,
 \begin{equation*}
-	\fC_{r}(x_{il}, x_{i1})  = \sum_{0 \ne k \in \mathbb{Z} } \frac{\exp(2 \pi\sqrt{-1} k (x_{il} - x_{i1}))}{\abs{k}^r}, \qquad \forall i = 1, \ldots, n, \ l =1, \ldots, d,
+	\fC_{r}(x_{il}, x_{1l})  = \sum_{0 \ne k \in \mathbb{Z} } \frac{\exp(2 \pi\sqrt{-1} k (x_{il} - x_{1l}))}{\abs{k}^r}, \qquad \forall i = 1, \ldots, n, \ l =1, \ldots, d,
 \end{equation*}
 where the nodes, $\vx_1, \ldots, \vx_n$, are shifts of an integration lattice.  These nodes have the property that 
 \[
-x_{il} - x_{i1} \bmod 1 \in \{0, 1/n, \ldots 1-1/n\} \qquad \forall i = 1, \ldots, n, \ l =1, \ldots, d.
+x_{il} - x_{1l} \bmod 1 \in \{0, 1/n, \ldots 1-1/n\} \qquad \forall i = 1, \ldots, n, \ l =1, \ldots, d.
 \]
 So all that we really need to compute is $\hbfC_r = (\hfC_{r,0}, \ldots, \hfC_{r,n-1})^T$, where 
 \begin{align}
@@ -685,7 +685,7 @@ So all that we really need to compute is $\hbfC_r = (\hfC_{r,0}, \ldots, \hfC_{r
 
 In principle, one only need evaluate $\bfc_r$ and take its FFT to obtain $\hbfC_r$.  Then 
 \begin{equation} \label{eqn:vC1_cont}
-	\vC_{\vtheta,1} = \left( \prod_{l=1}^d \biggl[ 1 + \eta_l  \hfC_{r,n(x_{il} - x_{i1} \bmod 1)} \biggr] \right)_{i=1}^n
+	\vC_{\vtheta,1} = \left( \prod_{l=1}^d \biggl[ 1 + \eta_l  \hfC_{r,n(x_{il} - x_{1l} \bmod 1)} \biggr] \right)_{i=1}^n
 \end{equation}
 and the calculation of the eigenvalues can proceed as in  \eqref{eqn:fast_transform_to_eigvalues}.
 
