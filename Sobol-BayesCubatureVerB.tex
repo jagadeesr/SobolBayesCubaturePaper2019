@@ -660,7 +660,7 @@ These formulae can be used to construct the matrix  $\bar{\mC}_{\vtheta}$, and t
 \end{equation}
 For even positive integer $r$, this infinite series can be expressed in terms of a Bernoulli polynomial of degree $r$ \citep[Chapter 23]{AbrSte64}.  The parameter $r$ is also an indication of the smoothness of $\fC$, which should reflect the smoothness of the integrand.  It is not always possible to know the best $r$ a priori, so we may wan to include $r$ in the $\vtheta$ to be optimized.  Since the simplest optimization schemes assume that $\vtheta$ is continuous, we would like to extend the use of $\fC_r$ to all $r > 1$.
 
-The values of $\fC_{r}(t,x)$ required to carry out Algorithm \ref{algorithm1} are only those required to obtain the eigenvalues of the Gram matrix via \eqref{eqn:fast_transform_to_eigvalues}, namely,
+The values of $\fC_{r}(t,x)$ required to carry out Algorithm \ref{algorithm1} are only those required to obtain the eigenvalues of the Gram matrix via \eqref{eqn:fast_transform_to_eigvalues}, namely those required for $\vC_{\vtheta,1}$, which are
 \begin{equation*}
 	\fC_{r}(x_{il}, x_{1l})  = \sum_{0 \ne k \in \mathbb{Z} } \frac{\exp(2 \pi\sqrt{-1} k (x_{il} - x_{1l}))}{\abs{k}^r}, \qquad \forall i = 1, \ldots, n, \ l =1, \ldots, d,
 \end{equation*}
