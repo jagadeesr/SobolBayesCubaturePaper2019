@@ -558,7 +558,7 @@ The credible intervals used in our automatic algorithm are homogeneous with resp
 
 The integrands for which our automatic algorithm fail are those that are outliers with respect to the hypothesized Gaussian process.  We illustrate this with an example where the nodes come from an integration lattice.  Choose a smooth and periodic integrand, $f_{\TRUE}$, and define a peaky one, $f_{\PEAKY}$,  as follows:
 \begin{gather*}
-	f_{\TRUE}(\vx) = \exp\biggl(\sum_{\ell=1}^{d} \cos(2\pi x_\ell) \biggr), \\  
+	f_{\TRUE}(\vx) = \exp\biggl(\sum_{l=1}^{d} \cos(2\pi x_\ell) \biggr), \\  
 	 f_{\PEAKY}(\vx) = f_{\TRUE}(\vx) + 2 (1 - \exp(2\pi \sqrt{-1} \vzeta^T (\vx-\vx_1) )),
 \end{gather*} 
 where the integer vector $\vzeta \in \reals^d$  belongs to the dual lattice, which means that $\vx_i^T \vzeta$ is constant for $i = 1, \ldots, n$. Let  $f_{\NICE}$ be the Gaussian process interpolant for $f_{\TRUE}$ using a shift invariant kernel from \cite{RatHic19a}.  Note that $f_{\NICE}$ is also the interpolant for $f_{\PEAKY}$ since $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$.
@@ -692,11 +692,11 @@ and the calculation of the eigenvalues can proceed as in  \eqref{eqn:fast_transf
 A computational challenge is finding an efficient approximation $\zeta(k,r)$.  Thus, an alternative is to approximate $\zeta(k,r)$ by its first term, $k^{-r}$, which corresponds to an $n$-dependent kernel:
 \begin{subequations}\label{eqn:n_dep_kernel}
 \begin{gather}
-	\fc_{nr,0}  =  \frac{2}{n^r}, \qquad
-	\fc_{nr,k}   = \frac{1}{(n -k)^r} +  \frac{1}{k^r} 
+	\fc_{n,r,0}  =  \frac{2}{n^r}, \qquad
+	\fc_{n,r,k}   = \frac{1}{(n -k)^r} +  \frac{1}{k^r} 
 	\quad \text{for } k=1, \ldots, n-1, \\
-	\hfC_{nr,i}   =  \sum_{k = 0 }^{n-1}  \fc_{nr,k} \exp(2 \pi\sqrt{-1} k i/n), \quad i = 0, \ldots, n-1, \\
-	\fC_{nr}(t,x) = \sum_{\substack{k = -n\\ k \ne 0}}^n \frac{\exp(2 \pi\sqrt{-1} k (t-x))}{\abs{k}^r}.		
+	\hfC_{n,r,i}   =  \sum_{k = 0 }^{n-1}  \fc_{n,r,k} \exp(2 \pi\sqrt{-1} k i/n), \quad i = 0, \ldots, n-1, \\
+	\fC_{n,r}(t,x) = \sum_{\substack{k = -n\\ k \ne 0}}^n \frac{\exp(2 \pi\sqrt{-1} k (t-x))}{\abs{k}^r}.		
 \end{gather}
 \end{subequations}
 An analogous computation as in \eqref{eqn:vC1_cont} then applies.  The terms that this $n$-dependent kernel ignores are $\Order(n^{-r+1})$.
