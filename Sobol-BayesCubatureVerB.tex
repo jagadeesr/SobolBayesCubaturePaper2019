@@ -258,7 +258,7 @@
 \setlength\abovedisplayskip{1pt}
 \setlength{\belowdisplayskip}{1pt}
 
-\title{Fast Automatic Bayesian Cubature Using Sobol Sampling
+\title{Fast Automatic Bayesian Cubature Using Sobol' Sampling
 %\thanks{}
 }
 % Grants or other notes about the article that should go on the front
@@ -563,7 +563,8 @@ The integrands for which our automatic algorithm fail are those that are outlier
 \end{gather*} 
 where the integer vector $\vzeta \in \reals^d$  belongs to the dual lattice, which means that $\vx_i^T \vzeta$ is constant for $i = 1, \ldots, n$. Let  $f_{\NICE}$ be the Gaussian process interpolant for $f_{\TRUE}$ using a shift invariant kernel from \cite{RatHic19a}.  Note that $f_{\NICE}$ is also the interpolant for $f_{\PEAKY}$ since $f_{\PEAKY}(\vx_i) = f_{\NICE}(\vx_i) = f_{\TRUE}(\vx_i) $ for $i=1, \cdots, n$.
 
-\FJHNote{I modified DemoCone.m.  It seems that you were using different kernels for the interpolant and for the credible interval.  That does not seem right.}
+% \FJHNote{I modified DemoCone.m.  It seems that you were using different kernels for the interpolant and for the credible interval.  That does not seem right.}
+% \JRNote{Fixed it. Keeping it here for the future memory}
 
 
 \begin{figure}[ht]
@@ -603,7 +604,10 @@ Then the gradient descent method for selecting the $L$-vector $\vtheta$ proceeds
 	\label{eqn:deep_descent}
 	\vtheta^{(j+1)} = \vtheta^{(j)} - \nu^{(j)} \bar{\cl}(\vtheta^{(j)}), \quad j=0,1,\cdots, \qquad \text{where } \bbcl : = \left (\frac{\partial\mathcal{L}}{\partial \theta_\ell} \right)_{\ell = 1}^L,
 \end{equation}
-and $\nu^{(j)}$ is the step size.  \FJHNote{You had the step-size depending on $\ell$, but that does not seem right.}
+and $\nu^{(j)}$ is the step size.  
+
+% \FJHNote{You had the step-size depending on $\ell$, but that does not seem right.}
+% \JRNote{Fixed it. Keeping the note here for future memory}
  
 The loss functions depend on $\vtheta$ via the eigenvalues $\vlambda_\vtheta = (\lambda_{\vtheta, 1}, \ldots, \lambda_{\vtheta, n})^T$, and the eigenvalues are the fast Bayesian transform of the first column of the Gram matrix (see \eqref{eqn:fast_transform_to_eigvalues}).  Thus, the needed gradient can be obtained via the chain rule:
 \begin{subequations}
@@ -627,8 +631,9 @@ The formulas for $\hbcl_{\MLE}(\vlambda_\vtheta)$ and $\hbcl_{\GCV}(\vlambda_\vt
     \label{eqn:deriv_obj_func_full}
    &= -  \frac{2\bbone_{{[2,n]}}(i) \abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}^3}\left ( \sum_{i'=2}^n \frac{\abs{\widetilde{y}_{i'}}^2}{\lambda_{\vtheta, i'}^2} 
    \right)^{-1}
-   +  \frac{2}{\lambda_i} \left( \sum_{i=1}^n \frac{1}{\lambda_{\vtheta, i}} \right)^{-1}.
+   +  \frac{2}{\lambda_i} \left( \sum_{i'=1}^n \frac{1}{\lambda_{\vtheta, i'}} \right)^{-1}.
 \end{align}
+where we used some of the ideas from \cite{Dong2017a}.
 
 Next we turn to the formula for $\bar{\mC}_{\vtheta}$, which depends on the form of the covariance kernel, $C_\vtheta$.  In practice we often use kernels of product form, i.e., 
 \begin{equation}
@@ -2080,7 +2085,7 @@ f(\vx) = \sum_{j=1}^d \upsilon_j \sin(2 \pi x_j^2)
 \end{align} 
 which has known integral
 \begin{align*}
-\int_{[0,1)^d} f(\vx)  = \frac{1}{2} \; \code{fresnels}(d) \sum_{j=1}^{d} \upsilon_j
+\int_{[0,1)^d} f(\vx)  = \frac{1}{2} \; \code{fresnels}(2) \sum_{j=1}^{d} \upsilon_j
 \end{align*}
 where \code{fresnels} is the Fresnel Sine integral,
 \begin{align*}
