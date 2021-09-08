@@ -8,7 +8,11 @@
 % your journal as needed.
 %
 %
-\documentclass{svjour3}                     % onecolumn (standard format)
+\documentclass[graybox,footinfo]{svmult}
+
+
+
+% \documentclass{svjour3}                     % onecolumn (standard format)
 %\documentclass[smallcondensed]{svjour3}     % onecolumn (ditto)
 %\documentclass[smallextended]{svjour3}       % onecolumn (second format)
 %\documentclass[twocolumn]{svjour3}          % twocolumn
@@ -51,10 +55,11 @@
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
+\usepackage{caption}
 %\usepackage[caption=false]{subfig}
 %\usepackage{subcaption}
 \usepackage{booktabs, mathtools}
-\usepackage[dvipsnames]{xcolor}
+%\usepackage[dvipsnames]{xcolor}
 \usepackage{url}
 \usepackage[titletoc,title]{appendix}
 %\usepackage{refcheck}  % points out unused labels, refs ...
@@ -75,7 +80,7 @@
 \newcommand{\mB}{\mathsf{B}}
 \newcommand{\smallocite}[1]{{\small\ocite{#1}}}
 \newcommand{\dif}[1]{\text{d}{#1}}
-\newcommand{\D}[1]{\text{d}{#1}}
+% \newcommand{\D}[1]{\text{d}{#1}}
 \newcommand{\trace}[1]{\textup{trace}{#1}}
 
 \newcommand{\naturals}{\mathbb{N}}
@@ -246,7 +251,7 @@
 
 %
 % Insert the name of "your journal" with
-\journalname{Automatic Bayesian Cubature}
+% \journalname{Automatic Bayesian Cubature}
 %
 
 \newcommand{\FJHNote}[1]{{\textcolor{blue}{FJH: #1}}}
@@ -312,7 +317,7 @@
 	Our algorithm is  implemented in the Guaranteed Automatic Integration Library (GAIL).
 	
 	
-	\keywords{Bayesian cubature \and Fast automatic cubature \and GAIL \and Probabilistic numeric methods }
+	% \keywords{Bayesian cubature \and Fast automatic cubature \and GAIL \and  Probabilistic numeric methods }
 	% \PACS{PACS code1 \and PACS code2 \and more}
 	% \subclass{MSC code1 \and MSC code2 \and more}
 \end{abstract}
@@ -343,10 +348,12 @@ with high probability.
 
 Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmussen and Ghahramani~\cite{RasGha03a}, \cite{BriEtal18a}, and others, we assume that our integrand is an instance of a Gaussian process and use a credible interval for $\mu$ to construct $\hmu$.  The integrand is sampled until the credible interval becomes small enough to satisfy \label{eqn:err_crit}  with high probability.  See \cite{RatHic19a} for the details of our approach.  Our earlier work focused on lattice nodes and shift-invariant kernels.
 
-The primary contributions of this article are several. 
+The primary contributions of this 
+% article are several. 
 % We show that tuning the hyperparameters via gradient descent can be done expedited using the fast Bayesian transform in Section \ref{grad_descent_MLE}.  
 % We introduce a continuous kernel order for our covariance kernels in Section \ref{sec:non_integer_kernel_order}. Diagnostics testing our assumption that $f$ arises from a Gaussian process are introduced in Section \ref{sec:gauss-diagnostics}. 
-In Section \ref{sec:sobol_walsh} we extend fast Bayesian cubature to digital nets and Walsh kernels.  Section \ref{sec:NumExp} is devoted to numerical experiments that illustrate these new ideas.  The next section introduces some notation and results from \cite{RatHic19a}.
+%  we 
+is to extend fast Bayesian cubature to digital nets and Walsh kernels in Section \ref{sec:sobol_walsh}.  Section \ref{sec:NumExp} is devoted to numerical experiments that illustrate these ideas.  The next section introduces some notation and results from \cite{RatHic19a}.
 
 
 
