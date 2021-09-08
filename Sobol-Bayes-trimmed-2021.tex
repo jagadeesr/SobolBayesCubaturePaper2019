@@ -347,7 +347,10 @@ with high probability.
 
 Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmussen and Ghahramani~\cite{RasGha03a}, \cite{BriEtal18a}, and others, we assume that our integrand is an instance of a Gaussian process and use a credible interval for $\mu$ to construct $\hmu$.  The integrand is sampled until the credible interval becomes small enough to satisfy \label{eqn:err_crit}  with high probability.  See \cite{RatHic19a} for the details of our approach.  Our earlier work focused on lattice nodes and shift-invariant kernels.
 
-The primary contributions of this article are several. We show that tuning the hyperparameters via gradient descent can be done expedited using the fast Bayesian transform in Section \ref{grad_descent_MLE}.  We introduce a continuous kernel order for our covariance kernels in Section \ref{sec:non_integer_kernel_order}. Diagnostics testing our assumption that $f$ arises from a Gaussian process are introduced in Section \ref{sec:gauss-diagnostics}. In Section \ref{sec:sobol_walsh} we extend fast Bayesian cubature to digital nets and Walsh kernels.  Section \ref{sec:NumExp} is devoted to numerical experiments that illustrate these new ideas.  The next section introduces some notation and results from \cite{RatHic19a}.
+The primary contributions of this article are several. 
+% We show that tuning the hyperparameters via gradient descent can be done expedited using the fast Bayesian transform in Section \ref{grad_descent_MLE}.  
+% We introduce a continuous kernel order for our covariance kernels in Section \ref{sec:non_integer_kernel_order}. Diagnostics testing our assumption that $f$ arises from a Gaussian process are introduced in Section \ref{sec:gauss-diagnostics}. 
+In Section \ref{sec:sobol_walsh} we extend fast Bayesian cubature to digital nets and Walsh kernels.  Section \ref{sec:NumExp} is devoted to numerical experiments that illustrate these new ideas.  The next section introduces some notation and results from \cite{RatHic19a}.
 
 
 
