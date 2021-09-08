@@ -289,7 +289,7 @@
            Center for Interdisciplinary Scientific Computation and \\
            Department of Applied Mathematics \\
            Illinois Institute of Technology \\
-           10 W. 32nd St., Room 208, 
+           10 W. 32nd St., Room 220, 
            Chicago IL 60616
            \\
            \email{hickernell@iit.edu} 
@@ -301,14 +301,8 @@
 \maketitle
 
 \begin{abstract}
-	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern, but one can automatically determine the sample size, $n$, given a reasonable, fixed sampling pattern. This approach is pursued in \cite{RatHic19a}, where a Bayesian perspective was used to construct credible intervals for the integral, and the computation was terminated when the half-widths of these intervals are no greater than the required error tolerances.  In \cite{RatHic19a} integration lattice sampling is done as 
+	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern, but one can automatically determine the sample size, $n$, given a reasonable, fixed sampling pattern. This approach is pursued in \cite{RatHic19a}, where a Bayesian perspective is used to construct a credible interval for the integral, and the computation is terminated when the half-widths of the interval is no greater than the required error tolerance.  In \cite{RatHic19a} integration lattice sampling is employed and the computations are expedited by the use of a fast Fourier transform because the covariance kernels for the Gaussian process prior on the integrand are chosen to be shift-invariant.  In this chapter, we extend our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.
 	
-	
-	We take this approach here using a Bayesian perspective. 
-	In \cite{RatHic19a}, faster Bayesian cubature was introduced and demonstrated using rank-1 lattice points. However it requires the integrands to be periodic, here we propose an extension to overcome that limitation using digital nets and digitally shift invariant kernels.
-	As the Gaussian assumption is fundamental to our work, We also validate the  assumption using a simple diagnostics. 
-	Another constraint imposed in \cite{RatHic19a} was the necessity to have kernel order integer valued, here we provide an alternative to have the kernel order continuous valued.
-	We also demonstrate the hyperparameters can be searched using gradient descent instead of heuristic search.
 	
 	% We postulate that the integrand is an instance of a Gaussian stochastic process parameterized by a constant mean and a covariance kernel defined by a scale parameter times a parameterized function specifying how the integrand values at two different points in the domain are related.
 	% These hyperparameters are inferred or integrated out using integrand values via one of three techniques:  empirical Bayes, full Bayes, or generalized cross-validation. The sample size, $n$, is increased until the half-width of the credible interval for the Bayesian posterior mean is no greater than the error tolerance. 
