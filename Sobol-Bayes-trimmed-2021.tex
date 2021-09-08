@@ -301,7 +301,9 @@
 \maketitle
 
 \begin{abstract}
-	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern, but one can automatically determine the sample size, $n$, given a reasonable, fixed sampling pattern. 
+	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern, but one can automatically determine the sample size, $n$, given a reasonable, fixed sampling pattern. This approach is pursued in \cite{RatHic19a}, where a Bayesian perspective was used to construct credible intervals for the integral, and the computation was terminated when the half-widths of these intervals are no greater than the required error tolerances.  In \cite{RatHic19a} integration lattice sampling is done as 
+	
+	
 	We take this approach here using a Bayesian perspective. 
 	In \cite{RatHic19a}, faster Bayesian cubature was introduced and demonstrated using rank-1 lattice points. However it requires the integrands to be periodic, here we propose an extension to overcome that limitation using digital nets and digitally shift invariant kernels.
 	As the Gaussian assumption is fundamental to our work, We also validate the  assumption using a simple diagnostics. 
