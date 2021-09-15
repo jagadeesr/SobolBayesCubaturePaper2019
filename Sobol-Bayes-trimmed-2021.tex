@@ -10,7 +10,17 @@
 %
 \documentclass[graybox,footinfo]{svmult}
 
-
+\smartqed
+% \usepackage{mathptmx}       % selects Times Roman as basic font
+\usepackage{helvet}         % selects Helvetica as sans-serif font
+\usepackage{courier}        % selects Courier as typewriter font
+\usepackage{type1cm}        % activate if the above 3 fonts are
+% not available on your system
+\usepackage{graphicx}       % standard LaTeX graphics tool
+% when including figure files
+%\usepackage{newtxtext}
+%\usepackage{newtxmath}
+%\usepackage{txfonts}
 
 % \documentclass{svjour3}                     % onecolumn (standard format)
 %\documentclass[smallcondensed]{svjour3}     % onecolumn (ditto)
@@ -36,12 +46,13 @@
 \usepackage{amssymb}
 % \usepackage{amsthm}
 
-\usepackage{natbib}
+% \usepackage{natbib}
 \usepackage{xspace}
 \usepackage{mathrsfs}  
 \usepackage{hhline}
 \usepackage{siunitx}
 \usepackage{bbm}
+
 
 %
 % insert here the call for the packages your document requires
@@ -55,7 +66,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
-\usepackage{caption}
+%\usepackage[style=base]{caption}
 %\usepackage[caption=false]{subfig}
 %\usepackage{subcaption}
 \usepackage{booktabs, mathtools}
@@ -285,7 +296,7 @@
 \institute{R. Jagadeeswaran \at
               Department of Applied Mathematics, \\
               Illinois Institute of Technology \\
-              10 W. 32nd St., Room 208,
+              10 W. 32nd St., Room 220,
               Chicago IL 60616\\
               \email{jrathin1@iit.edu}           %  \\
 %             \emph{Present address:} of F. Author  %  if needed
@@ -305,22 +316,10 @@
 
 \maketitle
 
-\begin{abstract}
+\abstract{
 	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern, but one can automatically determine the sample size, $n$, given a reasonable, fixed sampling pattern. This approach is pursued in \cite{RatHic19a}, where a Bayesian perspective is used to construct a credible interval for the integral, and the computation is terminated when the half-widths of the interval is no greater than the required error tolerance.  In \cite{RatHic19a} integration lattice sampling is employed and the computations are expedited by the use of a fast Fourier transform because the covariance kernels for the Gaussian process prior on the integrand are chosen to be shift-invariant.  In this chapter, we extend our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.
-	
-	
-	% We postulate that the integrand is an instance of a Gaussian stochastic process parameterized by a constant mean and a covariance kernel defined by a scale parameter times a parameterized function specifying how the integrand values at two different points in the domain are related.
-	% These hyperparameters are inferred or integrated out using integrand values via one of three techniques:  empirical Bayes, full Bayes, or generalized cross-validation. The sample size, $n$, is increased until the half-width of the credible interval for the Bayesian posterior mean is no greater than the error tolerance. 
-	
-	% The process outlined above typically requires a computational cost of $O(N_{\text{opt}}n^3)$, where $N_{\text{opt}}$ is the number of optimization steps required to identify the hyperparameters. Our innovation is to pair low discrepancy nodes with matching covariance kernels to lower the  computational cost to $O(N_{\text{opt}} n \log n)$.   This approach is demonstrated explicitly with rank-1 lattice sequences and shift-invariant kernels.  
-	
-	Our algorithm is  implemented in the Guaranteed Automatic Integration Library (GAIL).
-	
-	
-	% \keywords{Bayesian cubature \and Fast automatic cubature \and GAIL \and  Probabilistic numeric methods }
-	% \PACS{PACS code1 \and PACS code2 \and more}
-	% \subclass{MSC code1 \and MSC code2 \and more}
-\end{abstract}
+	Our algorithm is implemented in the Guaranteed Automatic Integration Library (GAIL).
+}
 
 
 
@@ -346,7 +345,7 @@ where $f:[0,1]^d \to \reals$ is the integrand, and $\boldsymbol{X} \sim \mathcal
 \end{equation}
 with high probability.
 
-Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmussen and Ghahramani~\cite{RasGha03a}, \cite{BriEtal18a}, and others, we assume that our integrand is an instance of a Gaussian process and use a credible interval for $\mu$ to construct $\hmu$.  The integrand is sampled until the credible interval becomes small enough to satisfy \label{eqn:err_crit}  with high probability.  See \cite{RatHic19a} for the details of our approach.  Our earlier work focused on lattice nodes and shift-invariant kernels.
+Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmussen and Ghahramani~\cite{RasGha03a}, \cite{BriEtal18a}, and others, we assume that our integrand is an instance of a Gaussian process and use a credible interval for $\mu$ to construct $\hmu$.  The integrand is sampled until the credible interval becomes small enough to satisfy \eqref{eqn:err_crit}  with high probability.  See \cite{RatHic19a} for the details of our approach.  Our earlier work focused on lattice nodes and shift-invariant kernels.
 
 The primary contributions of this 
 % article are several. 
@@ -738,7 +737,7 @@ An example of $64$ Sobol' nets in $d=2$ is given in \figref{fig:sobol-fig}.  The
 \begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.8\linewidth]{figures/SSobolPoints}
-	\caption{Example of a scrambled Sobol' node set  in $d=2$.  This plot can be reproduced using \code{PlotPoints.m}. \label{sobolfig} }
+	\caption{Example of a scrambled Sobol' node set  in $d=2$.  This plot can be reproduced using \code{PlotPoints.m}. }
 	\label{fig:sobol-fig}
 \end{figure}
 
@@ -1576,7 +1575,8 @@ Similar to \code{cubBayesLattice\_g}, it missed meeting the given error threshol
 \paragraph{TBD}
 
 
-\bibliographystyle{abbrvnat}
+% \bibliographystyle{abbrvnat}
+\bibliographystyle{spmpsci.bst}
 \bibliography{FJHown23,FJH23}
 
 \end{document}
