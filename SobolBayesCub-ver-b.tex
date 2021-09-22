@@ -350,7 +350,7 @@ Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmus
 Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes 
 \begin{itemize}
     \item Choosing covariance kernels, $C_\vtheta:[0,1]^d \times [0,1]^d \to \reals$, for which the symmetric, positive definite Gram matrices, $\mC_\vtheta = \left(  C_\vtheta(\vx_i,\vx_j)  \right)_{i,j=1}^n$,
-    have an eigenvalue-eigenvector decomposition, $\mC_\vtheta = \mV \mLambda_\vtheta \mV^H/n$, and for which
+    have an eigenvalue-eigenvector decomposition of the form $\mC_\vtheta = \mV \mLambda_\vtheta \mV^H/n$, where
     \begin{subequations} \label{fastcompAssump}
 	\begin{gather}
 	\label{fastcompAssumpA}
@@ -363,24 +363,17 @@ Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes
 \int_{[0,1]^d} C_\vtheta(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
 	\end{gather}
 \end{subequations}
+and
 \item The hyperparameters of the Gaussian process, $m$, $s$, and $\vtheta$ are tuned to increase the likelihood that $f$ is a typical integrand $f$ and not an outlier.
 \end{itemize}
-Our earlier work, \cite{RatHic19a}, which laid the foundation, focused on lattice nodes and shift-invariant kernels.   This chapter focuses on digital sequences, such as Sobol' sequences \cite{Sob67}, and covariance kernels that are digital shift-invariant
+Our earlier work, \cite{RatHic19a}, which laid the foundation for this approach, focused on lattice nodes and shift-invariant kernels. In that context the computation of $\mV^H \vb$ is a one-dimensional fast Fourier transform.  This chapter focuses on digital sequences, such as Sobol' sequences \cite{Sob67}, and covariance kernels that are digital shift-invariant.  In this case the computation of $\mV^H \vb$ is a fast Walsh-Hadamard transform. 
 
 
+\iffalse 
 We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  The covariance kernels used in practice also may satisfy an additional assumption:
-\begin{equation} \label{addAssump}
-\int_{[0,1]^d} C_\vtheta(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
-\end{equation}
-for which $\mV$ is known explicitly and for which $\mV that can be computed in   $\Order(n \log(n))$
+\fi
 
-The primary contributions of this 
-% article are several. 
-% We show that tuning the hyperparameters via gradient descent can be done expedited using the fast Bayesian transform in Section \ref{grad_descent_MLE}.  
-% We introduce a continuous kernel order for our covariance kernels in Section \ref{sec:non_integer_kernel_order}. Diagnostics testing our assumption that $f$ arises from a Gaussian process are introduced in Section \ref{sec:gauss-diagnostics}. 
-%  we 
-is to extend fast Bayesian cubature to digital nets and Walsh kernels in Section \ref{sec:sobol_walsh}.  Section \ref{sec:NumExp} is devoted to numerical experiments that illustrate these ideas.  The next section introduces some notation and results from \cite{RatHic19a}.
-
+The next section summarizes the key formulae from \cite{RatHic19a}.  Section \ref{sec:sobol_walsh} extends fast Bayesian cubature to digital nets and digital-shift invariant kernels defined in terms of Walsh functions.  Section \ref{sec:NumExp} presents numerical experiments that illustrate these ideas.  
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -393,7 +386,7 @@ is to extend fast Bayesian cubature to digital nets and Walsh kernels in Section
 \subsection{Bayesian Posterior Error}
 \label{sec:BayesPostErr}
 
-We assume the integrand, $f$, is an instance of a stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a real-valued random function with constant mean $m$ and covariance function $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite function and, parameterized by $\vtheta$:
+We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a random function with constant mean $m$ and covariance kernel $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite function and, parameterized by $\vtheta$:
 \begin{multline} \label{FJH:eq:CondPosDef}
 \mC_\vtheta^T = \mC_\vtheta,  \quad \va^T \mC_\vtheta \va > 0, \quad \text{where }  \mC_\vtheta = \left(  C_\vtheta(\vx_i,\vx_j)  \right)_{i,j=1}^n,\\
 \text{for all } \va \ne 0, \;
