@@ -610,6 +610,8 @@ We introduce the necessary concepts and prove this theorem in the remaining of t
 % i,j - point sequence index
 
 Nets were developed to provide deterministic sample points for quasi-Monte Carlo rules \cite{Nie05a}. Nets are defined geometrically using elementary intervals, which are subintervals of the unit cube $[0,1)^d$.
+
+\iffalse
 The $(t,m, d)$-nets in base $b$, introduced by Niederreiter, 
 %are point sets consisting of $n=b^m$ points in $[0, 1)^d$, 
 whose quality is governed by $t$. Lower values of $t$ correspond to $(t,m, d)$-nets of higher quality \cite{Bald10a}.
@@ -630,6 +632,7 @@ Digital $(t,m, d)$-nets are a special case of $(t,m, d)$-nets, constructed using
 %A $(t,m,d)$-net in base $b$ is a set of $z_i, \; i=0,1,\dots,$ of $b^m$ points of $[0,1)^d$  with the property that every elementary interval in base $b$ of volume $b^{t-m}$ contains precisely $b^t$ points from $z_i$. Here $d \ge 1$, $b\ge 2$ and $0 \le t \le m$. 
 % \end{defn}
 
+\fi
 
 \begin{defn}
 	For any non-negative integer $i = \dots i_3 i_2 i_1(\textup{base} \, b)$, define the $\infty \times 1$ vector $\vec{\imath}$ as the vector of its digits, that is, $ \vec{\imath} = (i_1, i_2, \dots)^T$. 
@@ -1576,7 +1579,7 @@ Similar to \code{cubBayesLattice\_g}, it missed meeting the given error threshol
 
 
 % \bibliographystyle{abbrvnat}
-\bibliographystyle{spmpsci.bst}
-\bibliography{FJHown23,FJH23}
+\bibliographystyle{spmpsci}
+\bibliography{FJHown23,FJH23,additional}
 
 \end{document}
