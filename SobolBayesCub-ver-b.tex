@@ -352,16 +352,16 @@ Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes
     \item Choosing covariance kernels, $C_\vtheta:[0,1]^d \times [0,1]^d \to \reals$, for which the symmetric, positive definite Gram matrices, $\mC_\vtheta = \left(  C_\vtheta(\vx_i,\vx_j)  \right)_{i,j=1}^n$,
     have an eigenvalue-eigenvector decomposition of the form $\mC_\vtheta = \mV \mLambda_\vtheta \mV^H/n$, where
     \begin{subequations} \label{fastcompAssump}
-	\begin{gather}
+	\begin{align}
 	\label{fastcompAssumpA}
-	\mV \text{ may be identified analytically}, \\
+	& \mV \text{ may be identified analytically}, \\
 	\label{fastcompAssumpB}
-	\vv_1 = \vV_1 = \vone, \\
+	& \text{the first row and column of $\mV$ are } \vone, \\
 	\label{fastcompAssumpC}
-	\text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb, \\
+	& \text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb, \\
 	\label{addAssump}
-\int_{[0,1]^d} C_\vtheta(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
-	\end{gather}
+    & \int_{[0,1]^d} C_\vtheta(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
+	\end{align}
 \end{subequations}
 and
 \item The hyperparameters of the Gaussian process, $m$, $s$, and $\vtheta$ are tuned to increase the likelihood that $f$ is a typical integrand $f$ and not an outlier.
@@ -383,17 +383,9 @@ The next section summarizes the key formulae from \cite{RatHic19a}.  Section \re
 \section{Bayesian Cubature}
 \label{sec:BC} 
 
-\subsection{Bayesian Posterior Error}
-\label{sec:BayesPostErr}
+% \subsection{Bayesian Posterior Error} \label{sec:BayesPostErr}
 
-We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a random function with constant mean $m$ and covariance kernel $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite function and, parameterized by $\vtheta$:
-\begin{multline} \label{FJH:eq:CondPosDef}
-\mC_\vtheta^T = \mC_\vtheta,  \quad \va^T \mC_\vtheta \va > 0, \quad \text{where }  \mC_\vtheta = \left(  C_\vtheta(\vx_i,\vx_j)  \right)_{i,j=1}^n,\\
-\text{for all } \va \ne 0, \;
-n\in \mathbb{N}, \; \text{distinct} \; \vx_1, \ldots, \vx_n \in [0,1]^d.
-\end{multline}
-
-As shown in \cite{RatHic19a}, a credible interval for the integral is given in terms of the nodes, $\{\vx_i\}_{i=1}^n$, and the covariance kernel, $C_\vtheta$,  by 
+We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a random function with constant mean $m$ and covariance kernel $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\vtheta$.  As shown in \cite{RatHic19a}, a credible interval for the integral is given in terms of the nodes, $\{\vx_i\}_{i=1}^n$, and the covariance kernel, $C_\vtheta$,  by 
 \begin{subequations} \label{eqn_prob_confidence_interval}
 	\begin{gather}
 	\mathbb{P}_f \left[

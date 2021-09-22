@@ -732,9 +732,10 @@ x_{i{\ell}j} = \pi_{z_{i{\ell} 1}, z_{i{\ell}2}, \dots, z_{i{\ell}j-1}} ( z_{i{\
 where the $\pi_{a_1a_2 \dots}$ are random permutations of the elements in $\{0,\dots,b-1\}$ chosen uniformly and mutually independent. 
 \fi
 Scrambling helps to eliminate bias while retaining the low-discrepancy properties.
-A proof that a scrambled net preserves the property of $(t, m, d)$-net almost surely can be found in Owen \cite{Owe95}. The scrambling method proposed by Matou\v{s}ek \cite{Mat98} is preferred since it is more efficient than the Owen's scrambling.
+% A proof that a scrambled net preserves the property of $(t, m, d)$-net almost surely can be found in Owen \cite{Owe95}. 
+The scrambling method proposed by Matou\v{s}ek \cite{Mat98} is preferred since it is more efficient than the Owen's scrambling.
 
-Sobol' nets \cite{Sob76} are a special case of $(t,m, d)$-nets when base $b=2$. 
+% Sobol' nets \cite{Sob76} are a special case of $(t,m, d)$-nets when base $b=2$. 
 An example of $64$ Sobol' nets in $d=2$ is given in \figref{fig:sobol-fig}.  The even coverage of the unit cube is ensured by a well chosen generating matrix.  The choice of generating vector is typically done offline by computer search.  See \cite{KuoNuyens2016} and \cite{NuySoft} for more on generating matrices. We use randomly scrambled and digitally shifted Sobol' sequences in this research \cite{HonHic00a}. 
 
 \begin{figure}[htp]
