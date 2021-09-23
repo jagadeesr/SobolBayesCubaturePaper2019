@@ -536,7 +536,7 @@ This section defines digital sequences, digital shift-invariant kernels, and the
 
 The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and his Sobol' sequences are the most popular.  These were later generalized.  In this chapter we specialize to the case of base $2$, which includes Sobol' sequences.  Here is a definition of a digital sequence in base $2$.
 
-\begin{definition}
+\begin{definition} \label{def:digitalseq}
 	For any non-negative integer $i = \dots i_3 i_2 i_1(\textup{base }  2)$, define the $\infty \times 1$ vector $\ai$ as the vector of its digits, that is, $\ai = (i_1, i_2, \dots)^T$. 
 	For any point $z = 0.z_1 z_2 \dots (\textup{base } 2) \in [0, 1)$, define the $\infty \times 1$ vector of the digits of $z$, that is, $\az = (z_1, z_2, \dots)^T$. 
 	Let $ \mathsf{G}_1, \dots , \mathsf{G}_d$ denote predetermined $\infty \times \infty$ generator matrices. 
@@ -548,69 +548,23 @@ The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and
 
 It is common to index digital sequences starting with $0$, whereas our data sites and matrices in the earlier section are indexed starting with $1$.  To keep our notation consistent, we define $\vz_{i+1}$ in terms of $\ai$.
 
+Digital sequences have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$ and which also corresponds to an exclusive or. The following lemma summarizes some important properties of digital sequences. 
 
-
-
-The first $2^m$ points of a digital sequence have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$.  In base $2$, digitwise, element-by-element subtraction modulo the base, denoted $\ominus$, is the same as $\oplus$, which also corresponds to non-exclusive or. Here we use both so that our results may be easily extended to bases other than $2$.  We also use $\oplus$ and $\ominus$ to denote the digitwise, element-by-element addition and subtraction modulo the base for integer vectors.  The following lemma summarizes the group structure of the  
-
-
-, but we will use  which is a very useful property exploited in our algorithm, especially to develop a fast Bayesian transform that speedups computations.
-Digitwise addition, $\oplus$, and subtraction $\ominus$, are defined in terms of $b$-ary expansions of points in $[0, 1)^d$,
-\begin{align*}
-\vz \oplus \vy = \left( \sum_{j=1}^\infty [z_{\ell j} + y_{\ell j} \bmod b] b^{-j} \bmod 1 \right)_{\ell=1}^d,
-\\
-\vz \ominus \vy = \left( \sum_{j=1}^\infty [z_{\ell j} - y_{\ell j} \bmod b] b^{-j} \bmod 1 \right)_{\ell=1}^d,
-\end{align*}
-where
-\begin{align*}
-\vz = \left( \sum_{j=1}^{\infty} z_{\ell j}b^{-j}\right)_{\ell=1}^d, \quad
-\vy = \left( \sum_{j=1}^{\infty} y_{\ell j}b^{-j}\right)_{\ell=1}^d, \quad
-z_{\ell j}, y_{\ell j} \in \{0,\cdots,b-1\}.
-\end{align*}
-
-
-
-Similarly for integer values in $\naturals_0^d$, the digitwise addition, $\oplus$, and subtraction $\ominus$, are defined in terms of their $b$-ary expansions,
-\begin{align*}
-\vk \oplus \vl = \left( \sum_{j=0}^\infty [k_{\ell j} + l_{\ell j} \bmod b] b^{j} \bmod 1 \right)_{\ell=1}^d,
-\\
-\vk \ominus \vl = \left( \sum_{j=0}^\infty [k_{\ell j} - l_{\ell j} \bmod b] b^{j} \bmod 1 \right)_{\ell=1}^d,
-\end{align*}
-where
-\begin{align*}
-\vk = \left( \sum_{j=0}^{\infty} k_{\ell j}b^{j}\right)_{\ell=1}^d, \quad
-\vl = \left( \sum_{j=0}^{\infty} l_{\ell j}b^{j}\right)_{\ell=1}^d, \quad
-\vk_{\ell j}, \vl_{\ell j} \in \{0,\cdots,b-1\}.
-\end{align*}
-
-Let $\{\vz_i\}_{i=0}^{b^m-1}$ be a digital net. Then
-\begin{align*}
-\forall i_1, i_2 \in \{0,\cdots,b^m-1\}, \quad \vz_{j_1} \oplus \vz_{i_2} = \vz_{i_3}, \quad \text{for some} \; i_3 \in \{0,\cdots,b^m-1\}.
-\end{align*}
-
-The following very useful result, which will be further used to obtain the fast Bayesian transform, arises from the fundamental property of digital nets.
 
 \begin{lemma}
 	\label{lemma:digital_net_prop}
-	Let $\{\vz_i\}_{i=0}^{b^{m}-1}$ be the digital-net and the corresponding digitally shifted net be $\{\vx_i\}_{i=0}^{b^{m}-1}$, i.e.,
-	\begin{align*}
-	\vx_{i \ell} = \vec{z}_{i \ell} + \vec{\Delta}_l \bmod 1,
-	\end{align*}
-	where $\vec{x}_{i \ell}$ is the $\ell$th component of $i$th digital net and $\vec{\Delta}_{\ell}$ is the digital shift for the $\ell$th component. 
-	% Let $\vx_i, \vx_j$ be digitally shifted digital nets and $\vz_i, \vz_j$ be the corresponding un-shifted digital nets, 
-	Then,
-	\begin{align}
+	Let $\{\vz_i\}_{i=1}^{\infty}$ be a digital sequence in base $2$ as defined in Definition \ref{def:digitalseq}.  Choose any digital shift $\vDelta \in [0,1)^d$, and define $\{\vx_i\}_{i=1}^{\infty}$ by digitwise addition, $\vx_{i} = \vz_{i} \oplus \vDelta$.
+	Then for all $i,j \in \naturals_0$,
+	\begin{gather}
+		\label{eqn:digital_net_symmetric_prop}
+	\vx_i \oplus \vx_i = \boldsymbol{ 0}, \qquad 
+	\vx_{i+1} \oplus \vx_{j+1} = \vx_{j+1} \oplus \vx_{i+1} \\
 	\label{eqn:digital_shift_prop}
-	\vx_i \ominus \vx_j = \vz_i \ominus \vz_j = \vz_{i \ominus j}, \quad \forall i,j \in \naturals_0. 
-	\end{align}
-	Also the digital subtraction is symmetric,
-	\begin{align}
-	\label{eqn:digital_net_symmetric_prop}
-	\vx_i \ominus \vx_i = \boldsymbol{ 0}, \qquad 
-	\vx_i \ominus \vx_j = \vx_j \ominus \vx_i, \quad \forall i,j \in \naturals_0.
-	\end{align}
+	\vx_{i+1} \oplus \vx_{j+1} = \vz_{i+1} \oplus \vz_{j+1} = \vz_{(i \oplus j) + 1 }.
+	\end{gather}
+	Therefore, $\{\vz_i\}_{i=1}^{\infty}$ is a group.  Moreover, $\{\vz_i\}_{i=1}^{2^m}$ is a subgroup for $m \in \natzero$.
 \end{lemma}
-A simple proof can be found in \cite{JagThesis19a}.
+The proof follows straightforwardly from Definition \ref{def:digitalseq} can be found in \cite{JagThesis19a}.
 
 \iffalse
 \begin{proof}
