@@ -537,9 +537,9 @@ This section defines digital sequences, digital shift-invariant kernels, and the
 The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and his Sobol' sequences are the most popular.  These were later generalized.  In this chapter we specialize to the case of base $2$, which includes Sobol' sequences.  Here is a definition of a digital sequence in base $2$.
 
 \begin{definition} \label{def:digitalseq}
-	For any non-negative integer $i = \dots i_3 i_2 i_1(\textup{base }  2)$, define the $\infty \times 1$ vector $\ai$ as the vector of its digits, that is, $\ai = (i_1, i_2, \dots)^T$. 
-	For any point $z = 0.z_1 z_2 \dots (\textup{base } 2) \in [0, 1)$, define the $\infty \times 1$ vector of the digits of $z$, that is, $\az = (z_1, z_2, \dots)^T$. 
-	Let $ \mathsf{G}_1, \dots , \mathsf{G}_d$ denote predetermined $\infty \times \infty$ generator matrices. 
+	For any non-negative integer $i = (\dots i_3 i_2 i_1)_2$, define $\ai = (i_1, i_2, \dots)^T$ as the $\infty \times 1$ vector $\ai$ of its binary digits. 
+	For any point $z = {}_20.z_1 z_2 \dots \in [0, 1)$, define $\az = (z_1, z_2, \dots)^T$ as the $\infty \times 1$ vector of its binary digits. 
+	Let $ \mathsf{G}_1, \dots , \mathsf{G}_d$ denote predetermined $\infty \times \infty$ generator matrices whose elements are zeros and ones. 
 	A digital sequence in base $2$ is $\{\vz_1, \vz_2, \vz_3, \dots\}$, where each $\vz_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
 	\begin{align*}
 	\az_{i+1,\ell} = \mathsf{G}_{\ell} \, \ai \pmod 2,  \quad \ell = 1, \dots, d, \quad i = 0, 1, \dots \;.
