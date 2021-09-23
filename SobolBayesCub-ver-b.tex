@@ -83,8 +83,8 @@
 
 % please place your own definitions here and don't use \def but
 % \newcommand{}{}
-\newtheorem{prop}{Proposition}
-\newtheorem{defn}{Definition}
+%\newtheorem{prop}{Proposition}
+%\newtheorem{defn}{Definition}
 \providecommand{\HickernellFJ}{Hickernell\xspace}
 \newcommand{\bm}[1]{\boldsymbol{#1}}
 \newcommand{\mSigma}{\mathsf{\Sigma}}
@@ -159,6 +159,9 @@
 \newcommand{\dvz}{\dif{\bm{z}}}
 \newcommand{\tf}{\tilde{f}}
 \newcommand{\vPsi}{\boldsymbol{\Psi}}
+\newcommand{\vi}{\boldsymbol{i}}
+\newcommand{\ai}{\overrightarrow{\imath}}
+\newcommand{\az}{\overrightarrow{z}}
 
 \newcommand{\fC}{\mathfrak{C}}
 \newcommand{\hfC}{\mathring{\fC}}
@@ -349,7 +352,10 @@ Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmus
 
 Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes 
 \begin{itemize}
-    \item Choosing covariance kernels, $C_\vtheta:[0,1]^d \times [0,1]^d \to \reals$, for which the symmetric, positive definite Gram matrices, $\mC_\vtheta = \left(  C_\vtheta(\vx_i,\vx_j)  \right)_{i,j=1}^n$,
+    \item Choosing covariance kernels, $C_\vtheta:[0,1]^d \times [0,1]^d \to \reals$, for which the symmetric, positive definite Gram matrices, 
+    \begin{equation} \label{eq:Gram}
+        \mC_\vtheta = \left(  C_\vtheta(\vx_i,\vx_j)  \right)_{i,j=1}^n,
+    \end{equation}
     have an eigenvalue-eigenvector decomposition of the form $\mC_\vtheta = \mV \mLambda_\vtheta \mV^H/n$, where
     \begin{subequations} \label{fastcompAssump}
 	\begin{align}
@@ -364,9 +370,9 @@ Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes
 	\end{align}
 \end{subequations}
 and
-\item The hyperparameters of the Gaussian process, $m$, $s$, and $\vtheta$ are tuned to increase the likelihood that $f$ is a typical integrand $f$ and not an outlier.
+\item The hyperparameters of the Gaussian process, $m$, $s$, and $\vtheta$ are tuned to increase the likelihood that $f$ is a typical integrand and not an outlier.
 \end{itemize}
-Our earlier work, \cite{RatHic19a}, which laid the foundation for this approach, focused on lattice nodes and shift-invariant kernels. In that context the computation of $\mV^H \vb$ is a one-dimensional fast Fourier transform.  This chapter focuses on digital sequences, such as Sobol' sequences \cite{Sob67}, and covariance kernels that are digital shift-invariant.  In this case the computation of $\mV^H \vb$ is a fast Walsh-Hadamard transform. 
+We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform}. Our earlier work, \cite{RatHic19a}, which laid the foundation for our approach to fast Bayesian cubature, focused on lattice nodes and shift-invariant kernels. In that context the computation of $\mV^H \vb$ is a one-dimensional fast Fourier transform.  This chapter focuses on digital sequences, such as Sobol' sequences \cite{Sob67}, and covariance kernels that are digital shift-invariant.  In this case the computation of $\mV^H \vb$ is a fast Walsh-Hadamard transform. 
 
 
 \iffalse 
@@ -385,89 +391,37 @@ The next section summarizes the key formulae from \cite{RatHic19a}.  Section \re
 
 % \subsection{Bayesian Posterior Error} \label{sec:BayesPostErr}
 
-We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a random function with constant mean $m$ and covariance kernel $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\vtheta$.  As shown in \cite{RatHic19a}, a credible interval for the integral is given in terms of the nodes, $\{\vx_i\}_{i=1}^n$, and the covariance kernel, $C_\vtheta$,  by 
+We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a random function with constant mean $m$ and covariance kernel $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\vtheta$.  The parameter $\vtheta$ may affect the shape or smoothness of $C_\vtheta$. As shown in \cite[Give eq numbers]{RatHic19a}, under assumptions \eqref{fastcompAssump} a credible interval for the integral is given in terms of the nodes, $\{\vx_i\}_{i=1}^n$, the function data, $\vy = \bigl (f (\vx_i) \bigr)_{i=1}^n$, the scale parameter, $s$, and the kernel, $C_\vtheta$,  by 
 \begin{subequations} \label{eqn_prob_confidence_interval}
 	\begin{gather}
 	\mathbb{P}_f \left[
 	|\mu-\hmu| \leq \err_{\CI}
 	\right] = 99\%, \\
-	\err_{\CI} = 2.58 s \sqrt{c_{0,\vtheta} - \vc_\vtheta^T\mC_\vtheta^{-1}\vc_\vtheta}.
+	\intertext{where}
+	\label{muhatGCV-FB-MLE-Simple}
+	\hmu = \frac 1n \sum_{i=1}^n y_i, \\
+	\label{eqn:errcifast}
+	\err_{\CI} = 2.58 s \sqrt{1 - n/\lambda_{\vtheta,1} }.
 	\end{gather}
 \end{subequations}
-where
-\begin{subequations} \label{eqn:fGaussDist}
-\begin{gather}
-\label{eqn:fGaussDist_c0}
-	c_{0,\vtheta} := \int_{[0,1]^{d} \times [0,1]^{d}} C_\vtheta(\vx,\vt) \, \dif{\vx} \, \dif{\vt}, \\
-	\label{eqn:fGaussDist_vc}
- \vc_\vtheta := \left(  \int_{[0,1]^d} C_\vtheta(\vt,\vx_i) \, \D \vt \right)_{i=1}^n.
-	\end{gather}
-\end{subequations}
-Naturally, $2.58$ and $99\%$ can be replaced by other quantiles and credible levels.  The formula for $\hmu$ in terms of the function values at the nodes is given below in Section \ref{sec:hyperparameters}.
-
-The credible interval in \eqref{eqn_prob_confidence_interval} suggests how our automatic Bayesian cubature proceeds.  Integrand data is accumulated until the width of the credible interval, $\err_{\CI}$, is no greater than the error tolerance.  As $n$ increases, one expects $c_{0,\vtheta} - \vc_\vtheta^T\mC_\vtheta^{-1}\vc_\vtheta$ to decrease for well-chosen nodes, $\{\vx_i\}_{i=1}^n$. 
-
-
-
-\subsection{Fast Bayesian Transform Kernel}
-\label{sec:fast_BC}
-
-Normally, computing $\err_{\CI}$ in  \eqref{eqn_prob_confidence_interval} would require $\Order\bigl( n^3 \bigr)$ operations to perform the equivalent of a matrix inversion.  However, for a certain class of kernels, $C$, termed fast Bayesian transform kernels in \cite{RatHic19a}, this cost can be drastically reduced.  The key is for the covariance kernel to match the nodes.
-
-Let the eigenvector-eigenvalue decomposition of the Gram matrix be expressed as follows:
-\begin{align}
-\nonumber
-\mC = \mCtheta &= \Big(C_\vtheta(\vx_i,\vx_j)\Big)_{i,j=1}^n  = (\vC_{\vtheta,1},...,\vC_{\vtheta,n}) 
-\\
-\label{eqn:ftk_factor}
-&= \frac 1n \mV \mLambda_\vtheta \mV^H , 
-\quad \quad \mV^H = n \mV^{-1}, \\
-\nonumber
-\mV &= (\vv_1,...,\vv_n)^T = (\vV_1,...,\vV_n),
-\end{align}
-where $\mV^H$ is the Hermitian of $\mV$.
-The columns of matrix $\mV$ are eigenvectors of $\mC_\vtheta$, and $\mLambda$ is a diagonal matrix of eigenvalues of $\mC_\vtheta$. The normalization of $\mV$ assumed in \eqref{eqn:ftk_factor} allows the first eigenvector, $\vV_1$, to be the vector of ones in \eqref{fastcompAssumpB} below.
-
-We make three assumptions that allow the fast computation of $\widetilde{\vb} := \mV^H \vb$:
-\begin{subequations} \label{fastcompAssump}
-	\begin{gather}
-	\label{fastcompAssumpA}
-	\mV \text{ may be identified analytically}, \\
-	\label{fastcompAssumpB}
-	\vv_1 = \vV_1 = \vone, \\
-	\label{fastcompAssumpC}
-	\text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb.
-	\end{gather}
-\end{subequations}
-We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  The covariance kernels used in practice also may satisfy an additional assumption:
-\begin{equation} \label{addAssump}
-\int_{[0,1]^d} C_\vtheta(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
-\end{equation}
-which implies that $c_{0,\vtheta} = 1$ \eqref{eqn:fGaussDist_c0} and $\vc_{\vtheta} = \vone$ 	\eqref{eqn:fGaussDist_vc}.  This additional assumption is not needed to speed up computations, but it does simplify the resulting formulae.  \cite{RatHic19a} showed that shift invariant kernels and lattice nodes satisfy the above assumptions, and the fast Bayesian transform corresponds to the fast Fourier transform.
-
-Under the above assumptions, for fast Bayesian transform kernels, the eigenvalues of $\mC_\vtheta$ can be computed via the fast Bayesisan transform.
+Moreover, $\lambda_{\vtheta,1}$ represents the first eigenvalue of the Gram matrix, $\mC_\vtheta$, defined in \eqref{eq:Gram}.  All eigenvalues can be computed by the which is computed by taking the fast Bayesian transform of the first column of the Gram matrix, denoted $\vC_{\vtheta,1}$ \cite[Equation number]{RatHic19a}:
 \begin{equation} 
 	\vlambda_\vtheta
 	= \begin{pmatrix}
 		\lambda_{\vtheta,1} \\ \vdots \\ \lambda _{\vtheta,n}
-	\end{pmatrix} = \mLambda \vone  
-	= \mV^H \vC_{\vtheta,1} =  \widetilde{\vC}_{\vtheta,1}.
+	\end{pmatrix} = \diag(\mLambda) = \mLambda \vone 
+	= \mV^H \vC_{\vtheta,1}.
 	\label{eqn:fast_transform_to_eigvalues}
 \end{equation}
-Likewise, the half-width of the credible interval in \eqref{eqn_prob_confidence_interval} can now be computed in terms of the $\Order(n \log(n))$ fast transform:
-\begin{equation} \label{eqn:errcifast}
-	\err_{\CI} = 2.58 s \sqrt{1 - n/\lambda_{\vtheta,1} }.
-\end{equation}
 
+%\subsection{Resolving Hyperparameters} \label{sec:hyperparameters}
+In \eqref{eqn_prob_confidence_interval} the hyperparameter $m$ has already been tuned, but $s$ and $\vtheta$ have not yet been.  We use the function data 
+This formula for the credible interval depends essentially on $s$ and $\vtheta$.  Resolving these dependencies should also involve the integrand data,  $\vy$, since larger integrand data should tend to imply a larger credible interval. The data should also be used to identify the covariance kernel for which the integrand is a typical draw from the assumed Gaussian process. This is the motivation behind resolving the hyperparameters from function data. 
 
-\subsection{Resolving Hyperparameters} \label{sec:hyperparameters}
-
-This formula for the credible interval depends essentially on $s$ and $\vtheta$.  Resolving these dependencies should also involve the function data,  $\vy = \bigl (f (\vx_i) \bigr)_{i=1}^n$, since larger function data should tend to imply a larger credible interval. 
-
-Since a credible interval makes a statement about a typical function---not an outlier---one must try to ensure that the integrand is a typical draw from the assumed Gaussian process.  This is the motivation behind resolving the hyperparameters from function data. \cite{RatHic19a} introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{fastcompAssump} and \eqref{addAssump}, we have the following \cite[Theorem 2]{RatHic19a}:
-
-	\begin{subequations}
-		\begin{align}
+In \cite{RatHic19a} we introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{fastcompAssump}, we have the estimates for the hyperparameters \cite[Theorem 2]{RatHic19a}:
+		\begin{align*}
+		\nonumber 
+		\widetilde{\vy} &:= \mV^H \vy, \\
 %		\nonumber
 %		m_\MLE &=  m_{\full} = m_{\GCV} =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
 %		\\
@@ -480,8 +434,7 @@ Since a credible interval makes a statement about a typical function---not an ou
 		s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_{\vtheta,i}} \right]^{-1}, \\
 		\nonumber
 		\widehat{\sigma}^2_{\textup{full}} &= \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}}  \left(\frac{\lambda_{\vtheta,1}}{n}  - 1  \right), 
-		\end{align}
-	\end{subequations}
+		\end{align*}
 	\begin{subequations}
 		\label{eqn:fastTheta}
 		\begin{align}
@@ -503,35 +456,16 @@ Since a credible interval makes a statement about a typical function---not an ou
 		\right].
 		\end{align}
 	\end{subequations}
-Then, the resulting credible intervals are then
-	\begin{equation}
-	\label{eqn_prob_CI}
-	\mathbb{P}_f \left[
-	|\mu-\hmu_{\mathsf{x}}| \leq \err_{\mathsf{x}} \right]  = 99\%, \qquad \mathsf{x} \in \{\MLE, \full, \GCV\}.
-	\end{equation}
-where 
 \begin{subequations}
 	\label{errSimple}
 	\begin{align}
 		\label{eqn:err_MLEGCV}
-		\err_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{1 - \frac{n}{\lambda_{\vtheta,1}} }, \qquad \mathsf{x} \in \{\MLE, \GCV\},  \\ 
-		\err_{\textup{full}} 
+		\err_{\CI,\mathsf{x}} = \err_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{1 - \frac{n}{\lambda_{\vtheta,1}} }, \qquad \mathsf{x} \in \{\MLE, \GCV\},  \\ 
+		\err_{\CI,\textup{full}} 
 		& = t_{n-1,0.995} \hsigma_{\textup{full}} > \err_\MLE. \label{FJH:eq:errFull}
 	\end{align}
 \end{subequations}
-In the formulas for the credible interval half-widths, $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.  Under all three methods of resolving the hyperparameters, $\hmu$ corresponds to the sample mean:
-	\begin{equation}
-	\label{muhatGCV-FB-MLE-Simple}
-	\hmu_\MLE  = \hmu_{\full} = \hmu_{\GCV} =
-	\frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i.
-	\end{equation}
-
-
-
-\subsection{The Fast Automatic Bayesian Cubature Algorithm} 
-\label{sec:fast_bayes}
-
-
+In the formulas for the credible interval half-widths, $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
 
 Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size; these steps are detailed in Algorithm~\ref{algorithm1}.
 
@@ -551,13 +485,12 @@ Our  Bayesian cubature algorithm increases the sample size until the width of th
 		$\varepsilon>0$; the positive initial sample size, $n_0$;
 		the maximum sample size $n_{\textup{max}}$
 		
-		\State $n \gets n_0, \; n' \gets 0, \; \err \gets \infty$
+		\State $n \gets n_0, \; n' \gets 0, \; \err_\CI \gets \infty$
 		
-		\While{$\err > \varepsilon$ and $n \le n_{\textup{max}}$}
-		
-		\State\label{LoopStart}Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$
+		\While{$\err_\CI > \varepsilon$ and $n \le n_{\textup{max}}$}
+		\State Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$
 		\State Compute $\vtheta$ by \eqref{eqn:fastThetaMLE} or \eqref{eqn:fastThetaGCV}
-		\State Compute $\err$  according to \eqref{eqn:err_MLEGCV} or \eqref{FJH:eq:errFull}
+		\State Compute $\err_\CI$  according to \eqref{eqn:err_MLEGCV} or \eqref{FJH:eq:errFull}
 		
 		\State	$n' \gets n, \; n \gets 2n'$
 		
@@ -565,7 +498,7 @@ Our  Bayesian cubature algorithm increases the sample size until the width of th
 		
 		\State Sample size to compute $\hmu$, $n \gets n'$
 		\State Compute $\hmu$, the approximate integral, according to \eqref{muhatGCV-FB-MLE-Simple}
-		\State \Return $\hmu, \; n$  and $\err$
+		\State \Return $\hmu, \; n$  and $\err_\CI$
 	\end{algorithmic}
 \end{algorithm}
 
@@ -573,91 +506,55 @@ We recognize that multiple applications of our credible intervals in one run of 
 
 The credible intervals used in our automatic algorithm are homogeneous with respect to the function data.  If they are valid for some integrand, $f$, they are also valid for the integrand $a f$ for any constant $a$.  
 
-
-
-This concludes a review of the key ideas of our fast Bayesian cubature algorithm from \cite{RatHic19a}.  The following sections present some enhancements.
-
-
-
-
-
-
-
-\pagebreak
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
-
- 
-
-\section{Sobol' Nets and Walsh Kernels}
+\section{Digital Nets and Walsh Kernels}
 \label{sec:sobol_walsh}
 
 
-
-The previous section showed an automatic Bayesian cubature algorithm without mentioning any specific nodes or kernels. 
-In this chapter, we demonstrate another approach to formulate fast Bayesian transform using matching kernels and point sets. 
-\cite{RatHic19a} demonstrated Bayesian cubature using rank-1 lattice points and shift-invariant kernels.
-Scrambled Sobol' nets and Walsh kernels are paired to achieve $\Order(n^{-1 + \epsilon})$ order error convergence where $n$ is the sample size. 
-Sobol' nets \cite{Sob67} are low discrepancy points, used extensively in numerical integration, simulation, and optimization. 
-%Higher order digital nets with matching smoother kernels could be combined to provide higher order error convergence $\Order(N^{-\alpha + \epsilon})$ for $\alpha \ge 1$ and $\epsilon > 0$ but it is not covered in this work.
-The results of this chapter can be summarized as a theorem,
+The previous section does not mention which sequences of data sites and  kernels satisfy assumptions \eqref{fastcompAssump}.  We demonstrated in \cite{RatHic19a} that rank-1 lattice points and shift-invariant kernels do so.  In this section, we give another example, namely 
+digital sequences nets and Walsh kernels
+The results of this chapter can be summarized as follows:
 
 % \Section{Summary}
 
 
 \begin{theorem}
-	Any symmetric, positive definite, digital shift-invariant covariance kernel of the form \eqref{eqn:walsh_kernel} scaled to satisfy \eqref{addAssump}, when matched with digital net data-sites, satisfies assumptions \eqref{fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} (FWHT) can be used to expedite the estimates of $\vtheta$ in \eqref{eqn:fastTheta} and the credible interval widths \eqref{errSimple} in $\Order(n \log n)$ operations. The cubature, $\hmu$, is just the sample mean.
+	Any symmetric, positive definite, digital shift-invariant kernel of the form \eqref{eqn:walsh_kernel} scaled to satisfy \eqref{addAssump}, when matched with digital sequence data sites, satisfies assumptions \eqref{fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} performs the fast Bayesian transform,  $\vb \mapsto \mV^H \vb$ , in $\Order(n \log n)$ operations.
 \end{theorem}
-We introduce the necessary concepts and prove this theorem in the remaining of this chapter.
+This section defines digital sequences, digital shift-invariant kernels, and the fast Walsh-Hadamard transform.
 
-\subsection{Sobol' Nets}
+\subsection{Digital Sequences}
 
 % Notations
 % \ell - dimesnion
 % i,j - point sequence index
 
-Nets were developed to provide deterministic sample points for quasi-Monte Carlo rules \cite{Nie05a}. Nets are defined geometrically using elementary intervals, which are subintervals of the unit cube $[0,1)^d$.
-The $(t,m, d)$-nets in base $b$, introduced by Niederreiter, 
-%are point sets consisting of $n=b^m$ points in $[0, 1)^d$, 
-whose quality is governed by $t$. Lower values of $t$ correspond to $(t,m, d)$-nets of higher quality \cite{Bald10a}.
+The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and his Sobol' sequences are the most popular.  These were later generalized.  In this chapter we specialize to the case of base $2$, which includes Sobol' sequences.  Here is a definition of a digital sequence in base $2$.
 
-\begin{defn}
-	\label{defn:tmd_net}
-	Let $\mathcal{A}$ be the set of all elementary intervals $\mathcal{A} \subset [0, 1)^d$ where
-	$\mathcal{A} = \prod_{\ell=1}^d [\alpha_\ell b^{-\gamma_\ell} , (\alpha_\ell + 1) b^{-\gamma_\ell})$, 
-	% with integers $d \ge 1, b \ge 2, \gamma_\ell \ge 0$,
-	with $d,b,\gamma_\ell \in \naturals, b \ge 2$ 
-	and $b^{\gamma_\ell}
-	> \alpha_\ell \ge 0$. For $m,t \in \naturals, m \ge t \ge 0$, the point set $\mathcal{P}_m \in [0, 1)^d$ with $n = b^m$ points is a $(t, m, d)$ -- net in base $b$ if every $\mathcal{A}$ with volume $b^{t-m}$ contains $b^t$ points of $\mathcal{P}_m$.
-\end{defn}
-
-Digital $(t,m, d)$-nets are a special case of $(t,m, d)$-nets, constructed using matrix-vector multiplications over finite fields. Digital sequences are infinite length digital nets, i.e., the first $n=b^m$ points of a digital sequence comprise a digital net for all integer $m \in \naturals_0$.
-% \JRNote{Higher order nets details serves no purpose}
-% \begin{defn}
-%A $(t,m,d)$-net in base $b$ is a set of $z_i, \; i=0,1,\dots,$ of $b^m$ points of $[0,1)^d$  with the property that every elementary interval in base $b$ of volume $b^{t-m}$ contains precisely $b^t$ points from $z_i$. Here $d \ge 1$, $b\ge 2$ and $0 \le t \le m$. 
-% \end{defn}
-
-
-\begin{defn}
-	For any non-negative integer $i = \dots i_3 i_2 i_1(\textup{base} \, b)$, define the $\infty \times 1$ vector $\vec{\imath}$ as the vector of its digits, that is, $ \vec{\imath} = (i_1, i_2, \dots)^T$. 
-	For any point $z = 0.z_1 z_2 \dots (\textup{base}\, b) \in [0, 1)$, define the $\infty \times 1$ vector of the digits of $z$, that is, $\vec{z} = (z_1, z_2, \dots)^T$. 
+\begin{definition}
+	For any non-negative integer $i = \dots i_3 i_2 i_1(\textup{base }  2)$, define the $\infty \times 1$ vector $\ai$ as the vector of its digits, that is, $\ai = (i_1, i_2, \dots)^T$. 
+	For any point $z = 0.z_1 z_2 \dots (\textup{base } 2) \in [0, 1)$, define the $\infty \times 1$ vector of the digits of $z$, that is, $\az = (z_1, z_2, \dots)^T$. 
 	Let $ \mathsf{G}_1, \dots , \mathsf{G}_d$ denote predetermined $\infty \times \infty$ generator matrices. 
-	The digital sequence in \textup{base} $b$ is $\{\vz_0, \vz_1, \vz_2, \dots\}$, where each $\vz_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
+	A digital sequence in base $2$ is $\{\vz_1, \vz_2, \vz_3, \dots\}$, where each $\vz_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
 	\begin{align*}
-	\vec{z}_{i\ell} = \mathsf{G}_{\ell} \, \vec{\imath}, \quad \ell = 1, \dots, d, \quad i = 0, 1, \dots \;.
+	\az_{i+1,\ell} = \mathsf{G}_{\ell} \, \ai \pmod 2,  \quad \ell = 1, \dots, d, \quad i = 0, 1, \dots \;.
 	\end{align*}
-	The value of $t$ as mentioned in Definition \ref{defn:tmd_net} depends on the choice of $\mathsf{G}_{\ell}$.
-\end{defn}
+\end{definition}
+
+It is common to index digital sequences starting with $0$, whereas our data sites and matrices in the earlier section are indexed starting with $1$.  To keep our notation consistent, we define $\vz_{i+1}$ in terms of $\ai$.
 
 
 
-% Digital sequences are defined using digitwise operations. 
-Digital nets have a group structure under digitwise addition, which is a very useful property exploited in our algorithm, especially to develop a fast Bayesian transform that speedups computations.
+
+The first $2^m$ points of a digital sequence have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$.  In base $2$, digitwise, element-by-element subtraction modulo the base, denoted $\ominus$, is the same as $\oplus$, which also corresponds to non-exclusive or. Here we use both so that our results may be easily extended to bases other than $2$.  We also use $\oplus$ and $\ominus$ to denote the digitwise, element-by-element addition and subtraction modulo the base for integer vectors.  The following lemma summarizes the group structure of the  
+
+
+, but we will use  which is a very useful property exploited in our algorithm, especially to develop a fast Bayesian transform that speedups computations.
 Digitwise addition, $\oplus$, and subtraction $\ominus$, are defined in terms of $b$-ary expansions of points in $[0, 1)^d$,
 \begin{align*}
 \vz \oplus \vy = \left( \sum_{j=1}^\infty [z_{\ell j} + y_{\ell j} \bmod b] b^{-j} \bmod 1 \right)_{\ell=1}^d,
@@ -697,7 +594,7 @@ The following very useful result, which will be further used to obtain the fast 
 	\label{lemma:digital_net_prop}
 	Let $\{\vz_i\}_{i=0}^{b^{m}-1}$ be the digital-net and the corresponding digitally shifted net be $\{\vx_i\}_{i=0}^{b^{m}-1}$, i.e.,
 	\begin{align*}
-	\vec{x}_{i \ell} = \vec{z}_{i \ell} + \vec{\Delta}_l \bmod 1,
+	\vx_{i \ell} = \vec{z}_{i \ell} + \vec{\Delta}_l \bmod 1,
 	\end{align*}
 	where $\vec{x}_{i \ell}$ is the $\ell$th component of $i$th digital net and $\vec{\Delta}_{\ell}$ is the digital shift for the $\ell$th component. 
 	% Let $\vx_i, \vx_j$ be digitally shifted digital nets and $\vz_i, \vz_j$ be the corresponding un-shifted digital nets, 
