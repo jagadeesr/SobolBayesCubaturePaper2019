@@ -128,6 +128,7 @@
 \newcommand{\va}{\bm{a}}
 \newcommand{\vA}{\bm{A}}
 \newcommand{\vb}{\bm{b}}
+\newcommand{\tvb}{\widetilde{\vb}}
 \newcommand{\vc}{\bm{c}}
 \newcommand{\vC}{\bm{C}}
 \newcommand{\tvc}{\tilde{\bm{c}}}
@@ -161,7 +162,12 @@
 \newcommand{\vPsi}{\boldsymbol{\Psi}}
 \newcommand{\vi}{\boldsymbol{i}}
 \newcommand{\ai}{\overrightarrow{\imath}}
+\newcommand{\aj}{\overrightarrow{\jmath}}
 \newcommand{\az}{\overrightarrow{z}}
+\newcommand{\ak}{\overrightarrow{k}}
+\newcommand{\ax}{\overrightarrow{x}}
+\newcommand{\abk}{\overrightarrow{\vk}}
+\newcommand{\abx}{\overrightarrow{\vx}}
 
 \newcommand{\fC}{\mathfrak{C}}
 \newcommand{\hfC}{\mathring{\fC}}
@@ -357,13 +363,13 @@ Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes
         \mC_\vtheta = \left(  C_\vtheta(\vx_i,\vx_j)  \right)_{i,j=1}^n,
     \end{equation}
     have an eigenvalue-eigenvector decomposition of the form $\mC_\vtheta = \mV \mLambda_\vtheta \mV^H/n$, where
-    \begin{subequations} \label{fastcompAssump}
+    \begin{subequations} \label{eq:fastcompAssump}
 	\begin{align}
-	\label{fastcompAssumpA}
+	\label{eq:fastcompAssumpA}
 	& \mV \text{ may be identified analytically}, \\
-	\label{fastcompAssumpB}
+	\label{eq:fastcompAssumpB}
 	& \text{the first row and column of $\mV$ are } \vone, \\
-	\label{fastcompAssumpC}
+	\label{eq:fastcompAssumpC}
 	& \text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb, \\
 	\label{addAssump}
     & \int_{[0,1]^d} C_\vtheta(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
@@ -391,7 +397,7 @@ The next section summarizes the key formulae from \cite{RatHic19a}.  Section \re
 
 % \subsection{Bayesian Posterior Error} \label{sec:BayesPostErr}
 
-We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a random function with constant mean $m$ and covariance kernel $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\vtheta$.  The parameter $\vtheta$ may affect the shape or smoothness of $C_\vtheta$. As shown in \cite[Give eq numbers]{RatHic19a}, under assumptions \eqref{fastcompAssump} a credible interval for the integral is given in terms of the nodes, $\{\vx_i\}_{i=1}^n$, the function data, $\vy = \bigl (f (\vx_i) \bigr)_{i=1}^n$, the scale parameter, $s$, and the kernel, $C_\vtheta$,  by 
+We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a random function with constant mean $m$ and covariance kernel $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\vtheta$.  The parameter $\vtheta$ may affect the shape or smoothness of $C_\vtheta$. As shown in \cite[Give eq numbers]{RatHic19a}, under assumptions \eqref{eq:fastcompAssump} a credible interval for the integral is given in terms of the nodes, $\{\vx_i\}_{i=1}^n$, the function data, $\vy = \bigl (f (\vx_i) \bigr)_{i=1}^n$, the scale parameter, $s$, and the kernel, $C_\vtheta$,  by 
 \begin{subequations} \label{eqn_prob_confidence_interval}
 	\begin{gather}
 	\mathbb{P}_f \left[
@@ -418,7 +424,7 @@ Moreover, $\lambda_{\vtheta,1}$ represents the first eigenvalue of the Gram matr
 In \eqref{eqn_prob_confidence_interval} the hyperparameter $m$ has already been tuned, but $s$ and $\vtheta$ have not yet been.  We use the function data 
 This formula for the credible interval depends essentially on $s$ and $\vtheta$.  Resolving these dependencies should also involve the integrand data,  $\vy$, since larger integrand data should tend to imply a larger credible interval. The data should also be used to identify the covariance kernel for which the integrand is a typical draw from the assumed Gaussian process. This is the motivation behind resolving the hyperparameters from function data. 
 
-In \cite{RatHic19a} we introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{fastcompAssump}, we have the estimates for the hyperparameters \cite[Theorem 2]{RatHic19a}:
+In \cite{RatHic19a} we introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{eq:fastcompAssump}, we have the estimates for the hyperparameters \cite[Theorem 2]{RatHic19a}:
 		\begin{align*}
 		\nonumber 
 		\widetilde{\vy} &:= \mV^H \vy, \\
@@ -516,7 +522,7 @@ The credible intervals used in our automatic algorithm are homogeneous with resp
 \label{sec:sobol_walsh}
 
 
-The previous section does not mention which sequences of data sites and  kernels satisfy assumptions \eqref{fastcompAssump}.  We demonstrated in \cite{RatHic19a} that rank-1 lattice points and shift-invariant kernels do so.  In this section, we give another example, namely 
+The previous section does not mention which sequences of data sites and  kernels satisfy assumptions \eqref{eq:fastcompAssump}.  We demonstrated in \cite{RatHic19a} that rank-1 lattice points and shift-invariant kernels do so.  In this section, we give another example, namely 
 digital sequences nets and Walsh kernels
 The results of this chapter can be summarized as follows:
 
@@ -524,12 +530,11 @@ The results of this chapter can be summarized as follows:
 
 
 \begin{theorem}
-	Any symmetric, positive definite, digital shift-invariant kernel of the form \eqref{eqn:walsh_kernel} scaled to satisfy \eqref{addAssump}, when matched with digital sequence data sites, satisfies assumptions \eqref{fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} performs the fast Bayesian transform,  $\vb \mapsto \mV^H \vb$ , in $\Order(n \log n)$ operations.
+	Any symmetric, positive definite, digital shift-invariant kernel of the form \eqref{eqn:walsh_kernel} scaled to satisfy \eqref{addAssump}, when matched with digital sequence data sites, satisfies assumptions \eqref{eq:fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} performs the fast Bayesian transform,  $\vb \mapsto \mV^H \vb$ , in $\Order(n \log n)$ operations.
 \end{theorem}
 This section defines digital sequences, digital shift-invariant kernels, and the fast Walsh-Hadamard transform.
 
-\subsection{Digital Sequences}
-
+\subsection{Digital Sequences} \label{sec:sobol}
 % Notations
 % \ell - dimesnion
 % i,j - point sequence index
@@ -548,7 +553,7 @@ The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and
 
 It is common to index digital sequences starting with $0$, whereas our data sites and matrices in the earlier section are indexed starting with $1$.  To keep our notation consistent, we define $\vz_{i+1}$ in terms of $\ai$.
 
-Digital sequences have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$ and which also corresponds to an exclusive or. The following lemma summarizes some important properties of digital sequences. 
+Digital sequences have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$ and which also corresponds to an exclusive-or. Here and in what follows we ignore the cases of measure zero for which the $\oplus$ operation leads to a binary represntation ending in an infinite string of ones.  The following lemma summarizes some important properties of digital sequences. 
 
 
 \begin{lemma}
@@ -566,110 +571,42 @@ Digital sequences have a group structure under digitwise, element-by-element add
 \end{lemma}
 The proof follows straightforwardly from Definition \ref{def:digitalseq} can be found in \cite{JagThesis19a}.
 
-\iffalse
-\begin{proof}
-	
-	The proof can be obtained from the definition of digital nets which stated that the digital nets are obtained using generator matrices, $\vec{z}_{i \ell} = \mG_{\ell} \, \vec{\imath} \bmod b$. Rewriting the subtraction using the generating matrix provides the result,
-	\begin{align*}
-	\vec{z}_{i \ell} - \vec{z}_{j\ell} \bmod b & = (\mG_{\ell} \vec{\imath} \bmod b) - (\mG_{\ell} \vec{\jmath} \bmod b) \\
-	& = (\mG_{\ell} \vec{\imath} - \mG_{\ell} \vec{\jmath} ) \bmod b 
-	  = \mG_{\ell} (\vec{\imath} - \vec{\jmath} ) \bmod b 
-	  = \mG_{\ell} (\overrightarrow{i \ominus j} ) \bmod b \\
-	& = \vec{z}_{i \ominus j \; {\ell}}.
-	\end{align*}
-	The rest of the lemma is obvious from the definition of digital nets.
-\end{proof}
-\fi
-
-% \JRNote{Define and explain scrambling}
-We chose digitally shifted and scrambled nets \cite{HicYue00} for our Bayesian cubature algorithm. Digital shifts help to avoid having nodes at the origin, similar to the random shift used with lattice nodes.
-\iffalse
-Let $\{\vx_0, \vx_1, \vx_2, ...\}$ denote the randomly scrambled version of the original sequence $\{\vz_0, \vz_1, \vz_2, \dots \}$. Let $x_{i{\ell}j}$ denote the $j$\textup{th} digit of the $\ell$\textup{th} component of $\vx_i$, and similarly for $z_{i{\ell}j}$. Then
-\begin{align*}
-x_{i{\ell}1} = \pi_{\ell}( z_{i{\ell}1}), \quad x_{i{\ell}2} = \pi_{z_{i{\ell}1}} ( z_{i{\ell}2}), \quad x_{i{\ell}3} = \pi_{z_{i{\ell}1}, z_{i{\ell}2}} ( z_{i{\ell}3}), \quad \dots , \\
-x_{i{\ell}j} = \pi_{z_{i{\ell} 1}, z_{i{\ell}2}, \dots, z_{i{\ell}j-1}} ( z_{i{\ell}j}), \quad \dots , \qquad \qquad \qquad
-\end{align*}
-where the $\pi_{a_1a_2 \dots}$ are random permutations of the elements in $\{0,\dots,b-1\}$ chosen uniformly and mutually independent. 
-\fi
-Scrambling helps to eliminate bias while retaining the low-discrepancy properties.
-A proof that a scrambled net preserves the property of $(t, m, d)$-net almost surely can be found in Owen \cite{Owe95}. The scrambling method proposed by Matou\v{s}ek \cite{Mat98} is preferred since it is more efficient than the Owen's scrambling.
-
-Sobol' nets \cite{Sob76} are a special case of $(t,m, d)$-nets when base $b=2$. 
-An example of $64$ Sobol' nets in $d=2$ is given in \figref{fig:sobol-fig}.  The even coverage of the unit cube is ensured by a well chosen generating matrix.  The choice of generating vector is typically done offline by computer search.  See \cite{KuoNuyens2016} and \cite{NuySoft} for more on generating matrices. We use randomly scrambled and digitally shifted Sobol' sequences in this research \cite{HonHic00a}. 
-
-\begin{figure}[htp]
-	\centering
-	\includegraphics[width=0.8\linewidth]{figures/SSobolPoints}
-	\caption{Example of a scrambled Sobol' node set  in $d=2$.  This plot can be reproduced using \code{PlotPoints.m}. }
-	\label{fig:sobol-fig}
-\end{figure}
+Digital sequence generators can be chosen by number theory, as in the case of Sobol' \cite{Sob67} and Niederreiter-Xing sequences \cite{NieXin01a} (see also \cite[Chapter 8]{DicPil10a} or they can be chosen by computer search \cite[Chapter 10]{DicPil10a}.  The original generator matrices may be scrambled using linear matrix scrambling \cite{Mat98}.
 
 
-\subsection{Walsh Kernels}
+\subsection{Covariance Kernels Constructed via Walsh Functions} \label{sec:Walsh_kernels}
 
-Walsh kernels are product kernels based on the Walsh functions. We introduce the necessary concepts in this section.
-
-\subsubsection{Walsh functions}
-Like the Fourier transform used with lattice points (\cite{RatHic19a}), the Walsh-Hadamard transform, which we will simply call Walsh transform, is used for the digital nets. The Walsh transform is defined using Walsh functions. Recall $\naturals_0 := \lbrace 0,1,2,\cdots \rbrace$.
-The one-dimensional Walsh functions in base $b$ are defined as
+The digital shift invariant kernels required for fast Bayesian cubature using digital nets are constructed via Walsh functions, again specializing to base $2$. 
+The one-dimensional Walsh functions in base $2$ are defined as
 \begin{align}
-\label{eqn:walsh_func}
-\textup{wal}_{b,k}(x) := e^{2\pi \sqrt{-1} (x_1 k_0 + x_2 k_1 + \cdots)/b} 
-=
-e^{2\pi \sqrt{-1} {\vec{k}}^T{\vec{x}}/b},
+    \label{eqn:walsh_func}
+\textup{wal}_{k}(x) & := (-1)^{k_0 x_1 + k_1 x_2 + \cdots} = (-1)^{\langle \ak, \ax \rangle},  \qquad k \in \natzero, \ x \in [0,1), \\
+\nonumber
+\langle \ak, \ax \rangle & : = k_{0} x_{1} + k_{1} x_{2} + \cdots .
 \end{align}
-for $x \in [0,1)$ and $k \in \naturals_0$ and the unique base $b$ expansions 
-$x = \sum_{j \ge 1} x_j b^{-i} = (0.x_1 x_2 \cdots)_b$, $\vec{x} =  (x_1,x_2,\cdots )^T$
-$k = \sum_{j \ge 0} k_j b^{j} = ( \cdots k_1 k_0)_b$, $\vec{k} =  (k_0,k_1,\cdots )^T$, and ${\vec{k}}^T{\vec{x}} = x_1 k_0 + x_2 k_1 + \cdots$
-where the number of digits used in \eqref{eqn:walsh_func} are limited to the length required to represent $x$ or $k$, i.e., $\max \left( {\ceil{ -\log_b{x}}, \ceil{\log_b{k}}  } \right)$.
-% with $n$ at least as large as the number of digits to represent $x$ or $k$.
-Multivariate Walsh functions are defined as the product of the one-dimensional Walsh functions,
-\begin{align*}
-\textup{wal}_{b,\vk} (\vx) := \prod_{\ell=1}^d \textup{wal}_{b,k_\ell} (x_\ell
-)
-\end{align*}
-As shown in \eqref{eqn:walsh_func}, for the case of $b=2$, the Walsh functions only take the values in $\{1, -1\}$, i.e., $\textup{wal}_{b,\vk} : [0,1)^d \to {\{-1, 1\}} , \; k \in \naturals_0^d$. Walsh functions form an orthonormal basis of the Hilbert space $L^2[0,1)^d$,
-\begin{align*}
-\int_{[0,1)^d}
-\textup{wal}_{b,\vl} (\vx) \textup{wal}_{b,\vk}(\vx) \dx = \delta_{\vl, \vk}, \quad \forall \vl, \vk \in \naturals_0^d
-\end{align*}
-Digital nets are designed to integrate certain Walsh functions without error.
-Thus our Bayesian cubature algorithm integrates linear combinations of % these ideal integrands
-certain Walsh functions without error. Functions that are well approximated by such linear combinations are then integrated with small errors.
+where again $\ak$ is a vector containing the binary digits of $k$, and $\ax$ is a vector containing the binary digits of $x$.  Note that by this definition, $\textup{wal}_{k}(x \oplus t) =  \textup{wal}_{k}(x) \textup{wal}_{k}(t)$.  
 
-% \JRNote{separate paragraph}
-In this research we use Sobol' nodes which are digital nets with base $b=2$. So here afterwards base $b=2$ is assumed. % if not specified or the notation is dropped.  
-In this case, the Walsh function is simply $$\textup{wal}_{2,\vk} (\vx) = (-1)^{\vec{\vk}^T \vec{\vx}}.$$
-
-\subsubsection{Walsh kernels}
-Consider the covariance kernels of the form,
-\begin{align}
-\label{eqn:digital_shift_in_kernel}
-C_{\vtheta}(\vx, \vt) = K_{\vtheta} (\vx \ominus \vt) 
-\end{align}
-where $\ominus$ is bitwise subtraction.
-This is called a \emph{digitally shift invariant kernel} because shifting both arguments of the covariance function by the same amount leaves the value unchanged. By a proper scaling of the function $K_{\vtheta}$, it follows that assumption \eqref{addAssump} is satisfied. The function $K_{\vtheta}$ must be of the form that ensures that $C_{\vtheta}$ is symmetric and positive definite, as assumed in \eqref{FJH:eq:CondPosDef}. We drop the ${\vtheta}$ sometimes to make the notation simpler.
-The Walsh kernels are of the form,
-\begin{align}
-\label{eqn:walsh_kernel}
-K_{\vtheta} (\vx \ominus \vt) =  
-\prod_{\ell=1}^d  1 + \eta_\ell \omega_{r} (x_\ell \ominus t_\ell), \quad \veta = (\eta_1, \cdots, \eta_d), \quad \vtheta = (r, \veta)
-\end{align}
-where $r$ is the kernel order, $\veta$ is the kernel shape parameter, and
+These Walsh functions can be used to construct a covariance kernel for univariate integrands as follows
 \begin{align*}
-\omega_r(x) = \sum_{k=1}^\infty 
-\frac{\textup{wal}_{2,k}(x) }{2^{2r \lfloor \log_2 k \rfloor}}.
+    C_\vtheta (x,t) & = K_\vtheta(x \oplus t), \qquad K_\vtheta(x) : = 1 + \eta \omega_{r} (x), \qquad \vtheta = (r,\eta), \\
+    \omega_r(x) & := \sum_{k=1}^\infty \frac{\textup{wal}_{k}(x) }{2^{2r \lfloor \log_2 k \rfloor}} \\
+    \omega_{r} (x_\ell \oplus t_\ell) & = \sum_{k=1}^\infty \frac{\textup{wal}_{k}(x) \textup{wal}_{k}(t)  }{2^{2r \lfloor \log_2 k \rfloor}}.
 \end{align*}
-Explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \cite{Nuyens2013}, % and Hilbert space setup,
-\begin{align}
+The symmetric, positive definite property of $ C_\vtheta (x,t)$ follows from its definition.  This kernel is digital shift invariant because 
+\[
+C_\vtheta (x \oplus \Delta ,t \oplus \Delta ) = K_\vtheta(x \oplus \Delta \oplus t \oplus \Delta) = K_\vtheta(x \oplus t) =  C_\vtheta (x,t).
+\]
+This follows because $\Delta \oplus \Delta = 0$.
+
+An explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \cite{Nuyens2013}:
+\begin{equation}
 \label{eqn:omega1}
 \omega_1(x) 
 % &= \prod_{l=1}^d \sum_{k=1}^\infty 
 % \frac{\textup{wal}_{b,k}(x_l) }{b^{2 \lfloor \log_b k \rfloor}} 
-= 6\left( \frac 16 - 2^{\lfloor \log_2 x \rfloor -1 }\right).
-\end{align}
-
-
+= 1  - 6 \times 2^{\lfloor \log_2 x \rfloor -1 }.
+\end{equation}
+\figref{fig:walshkernel-dim1} shows $C_\vtheta (x,t)$ for order $r=1$ and various values of $\eta$ in the interval $[0,1)$. Smaller $\eta_\ell$ implies lesser variation in the amplitude of the kernel.  Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. 
 
 \begin{figure}
 	\centering
@@ -679,525 +616,159 @@ Explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \ci
 	\label{fig:walshkernel-dim1}
 \end{figure}
 
-The \figref{fig:walshkernel-dim1} shows the Walsh kernel \eqref{eqn:walsh_kernel} of order $r=1$ in the interval $[0,1)$. Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. Smaller $\eta_\ell$ implies lesser variation in the amplitude of the kernel. Also, the Walsh kernels are digitally shift invariant but not periodic.
+Covariance kernels for multivariate integrands defined on $[0,1)^d$ are constructed as tensor products:
+\begin{align}
+\label{eqn:digital_shift_in_kernel}
+C_{\vtheta}(\vx, \vt) &= K_{\vtheta} (\vx \oplus \vt), \\
+\label{eqn:walsh_kernel}
+K_{\vtheta} (\vx) & =  
+\prod_{\ell=1}^d  1 + \eta_\ell \omega_{r} (x_\ell), \quad \veta = (\eta_1, \cdots, \eta_d), \quad \vtheta = (r, \veta).
+\end{align}
+The parameter vector $\vtheta$ may now be of dimension $d+1$.
 
-\subsection{Eigenvectors}
+\subsection{Eigenvector-Eigenvalue Decomposition of the Gram Matrix}
 
-We show the eigenvectors $\mV$ in \eqref{eqn:ftk_factor} of the Gram matrix formed by the covariance kernel \eqref{eqn:walsh_kernel} and Sobol' nets are the columns of the Walsh-Hadamard matrix. First we introduce the necessary concepts.
-
-\subsubsection{Walsh transform}
-% \JRNote{add subsection for walsh transform, define and explain.}
-The Walsh-Hadamard transform (WHT) is a generalized class of discrete Fourier transform (DFT) and is much simpler to compute than the DFT. The WHT matrices are comprised of only $\pm 1$ values, so the computation usually involves only ordinary additions and subtractions. Hence, the WHT is also sometimes called the integer transform. In comparison, the DFT that was used with lattice nodes,  uses complex exponential functions and the computation involves complex, non-integer multiplications. 
-
-The WHT involves multiplications by $2^m \times 2^m$ Walsh-Hadamard matrices, which is constructed recursively, starting with $\mH^{(0)} = 1$,
+For fast Bayesian cubature to succeed, the digital net data sites (\secref{sec:sobol}) and the covariance kernels (\secref{sec:Walsh_kernels}) must match in a way that conditions \eqref{eq:fastcompAssump} are satisfied.  To do this, we identify the eigenvectors of the Gram matrix defined in \eqref{eq:Gram}.  These are actually the Walsh-Hadamard matrices
 \begin{align}
 \nonumber
-\arraycolsep=1.4pt\def\arraystretch{0.9}
+%\arraycolsep=1.4pt\def\arraystretch{0.9}
 \mH^{(1)} &=
 \begin{pmatrix}
 1 & 1 \\ 1 & -1
-\end{pmatrix}, \\
-\nonumber
-\mH^{(2)} &= 
+\end{pmatrix}, \qquad
+\mH^{(2)} = \mH^{(1)} \bigotimes \mH^{(1)} = 
 \begin{pmatrix}
 1 & 1 & 1 & 1 \\ 
 1 & -1 & 1 & -1 \\
 1 & 1 & -1 & -1 \\ 
 1 & -1 & -1 & 1 \\
-\end{pmatrix}, \\
-\nonumber
-& \qquad \vdots
+\end{pmatrix}, \cdots
 \\
 \label{eqn:hadamard_matrix}
-\mH^{(m)} &= 
+\mH^{(m)} &= \mH^{(m-1)} \mH^{(1)} =
 \begin{pmatrix}
 \mH^{(m-1)} & \mH^{(m-1)} \\ \mH^{(m-1)} & -\mH^{(m-1)}
 \end{pmatrix} 
-= \underbrace{\mH^{(1)} \bigotimes \cdots \bigotimes \mH^{(1)}}_{m \ \text{times}} 
-= \mH^{(1)} \bigotimes \mH^{(m-1)}
+= \mH^{(1)} \underbrace{\bigotimes \cdots \bigotimes}_{m \ \text{times}}  \mH^{(1)} \\
+\nonumber
+& = \Big((-1)^{\ai^T \aj)} \Big)_{i,j=0}^{2^m-1}.
 \end{align}
-where $\bigotimes$ is Kronecker product. Alternatively for base $b=2$, these matrices can be  directly obtained by,
-\begin{align*}
-\mH^{(m)} % = \bigg(\exp(\pi \sqrt{-1} \vec{\imath}_m^T\vec {\jmath}_m) \bigg)_{i,j=0}^{n-1}  
-= \bigg((-1)^{(\vec{\imath}^T \vec{\jmath})} \bigg)_{i,j=0}^{2^m-1},
-\end{align*}
-where the notation $\vec{\imath}^T \vec{\jmath}$ indicates the bitwise dot product. 
+where $\bigotimes$ is Kronecker product, and $\ai^T \aj = i_0 j_0 + i_1 j_1 +\cdots$. Note that the Walsh-Hadamard matrices are symmetric.
 
-\iffalse
-An example of Walsh matrix of length $n=8$ is given in Table~\ref{tab:hadamard_matrix}. 
-\begin{table} % 
-	% \centering
-	\arraycolsep=1pt\def\arraystretch{0.8}
-	\[
-	%\arraycolsep=1.4pt\def\arraystretch{0.9}
-	\begin{array}{c|@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r@{\quad}r}
-	\hhline{=========}
-	%\vspace{-1.5ex}
-	\text{Zero crossings} & \multicolumn{8}{l}{\text{Walsh function values}} \\
-	\hline
-	0&	1&  1&  1&  1&  1&  1&  1&  1 \\
-	4&	1& -1& -1&  1&  1& -1& -1&  1 \\
-	6&	1& -1&  1& -1& -1&  1& -1&  1 \\
-	2&	1&  1& -1& -1& -1& -1&  1&  1 \\
-	3&	1&  1& -1& -1&  1&  1& -1& -1 \\
-	7&	1& -1&  1& -1&  1& -1&  1& -1 \\
-	5&	1& -1& -1&  1& -1&  1&  1& -1 \\
-	1&	1&  1&  1&  1& -1& -1& -1& -1
-	\end{array}
-	\]
-	\vspace{-5ex}
-	\caption{Walsh transform matrix of for $n=8$, in Hadamard order  \label{tab:hadamard_matrix}}	   
-\end{table}
-\fi
+\begin{lemma} \label{lemma:eig}
+    Let $\left(\vx_i\right)_{i=1}^{2^m}$ be digitally shifted Sobol' nodes and let the covariance kernel take the form of \eqref{eqn:digital_shift_in_kernel}. Then, for $m = 1, 2, \ldots$ the Gram matrix, $
+	\mCtheta^{(m)} = \bigl(C_\vtheta(\vx_i, \vx_j)\bigr)_{i,j=1}^{2^m} = \bigl(K(\vx_i \oplus \vx_j)\bigr)_{i,j=1}^{2^m}$ is a $2\times 2$ block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks, etc.\ are also $2\times 2$ block-Toeplitz. Moreover, $\mCtheta^{(m)} = \mH^{(m)} \mLambda^{(m)}\mH^{(m)}$, where $\mLambda^{(m)}$ is the diagonal matrix of eigenvalues of $\mCtheta^{(m)}$.
+\end{lemma}
 
-
-\subsubsection{Eigenvectors of $\mC$ are columns of Walsh-Hadamard matrix}
-\label{sec:eigenvector_hadamard}
-The Gram matrix $\mCtheta$ formed by Walsh kernels and Sobol' nodes have a special structure called  block-Toeplitz, which can be used to construct the fast Bayesian transform. 
-A Toeplitz matrix is a diagonal-constant matrix in which each descending diagonal from left to right is constant. A block Toeplitz matrix is a special block matrix, which contains blocks that are repeated down the diagonals of the matrix.
-%, as a Toeplitz matrix has elements repeated down the diagonal. 
-We prove that the eigenvectors of $\mCtheta$ are columns of a Walsh-Hadamard matrix in two theorems. 
-
-\begin{theorem}
-	\label{thrm:block-toeplitz}
-	Let $\left(\vx_i\right)_{i=0}^{n-1}$ be digitally shifted Sobol' nodes and $K$ be any function,
-	% positive definite kernel function such as \eqref{eqn:omega1} which matches Sobol' nodes.
-	then the Gram matrix,
-	\begin{align*}
-	\mCtheta = \bigl(C(\vx_i, \vx_j)\bigr)_{i,j=0}^{n-1} &= \bigl(K(\vx_i \ominus \vx_j)\bigr)_{i,j=0}^{n-1},   \\ & \text{where} \quad \quad n=2^m, \quad C(\vx, \vt) = K(\vx \ominus \vt), \quad  \vx, \vt \in [0,1)^d, \qquad
-	\end{align*}
-	is a $2\times 2$ block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks, etc. are also $2\times 2$ block-Toeplitz. 
-\end{theorem}
-
-
-\iffalse
-%\Subsubsection
 \begin{proof}
-	
-	
-	%\textbf{Proof of Theorem \ref{thrm:block-toeplitz}}: 
-	We prove this theorem by induction. Let $\mC_{\vtheta}^{(m)}$ denote the Gram matrix of size $2^m \times 2^m$.
-	The relation between sub-block matrices can be deciphered using the properties of digital nets.
-	To help with the proof of block-Toeplitz structure, consider the digital net properties \eqref{eqn:digital_shift_prop},  \eqref{eqn:digital_net_symmetric_prop},
-	%\begin{align*}
-	%\bigl(K(\vz_i \ominus \vz_j)\bigr)_{i,j=0}^{n-1}.
-	%\end{align*}
-	% Now we can prove the block-Toeplitz structure using these properties and facts \JRNote{add refs to properties}.
-	and notations,
-	\begin{align*}
-	\mK^{(m)} &:= 
-	\begin{pmatrix}
-	K({\vz_{i} \ominus \vz_{j}})
-	\end{pmatrix}_{i,j=0}^{2^{m}-1}
-	=
-	\begin{pmatrix}
-	K({\vz_{i \ominus j}})
-	\end{pmatrix}_{i,j=0}^{2^{m}-1}, \quad m=1,2,\cdots,
-	\\
-	\mK^{(m,q)} &:= 
-	\begin{pmatrix}
-	K({\vz_{i \ominus j + q 2^m}})
-	\end{pmatrix}_{i,j=0}^{2^{m}-1},
-	\quad 
-	q = 0,1,\cdots .
-	\end{align*} 
-	These two notations are related by $\mK^{(m)} = \mK^{(m,0)}$. 
-	Please note that $\mC_{\vtheta}^{(m)} = \mK^{(m,0)}$.
-	% Since the digitally shift invariant kernel are used in this research. %, it is sufficient to prove $\mK^{(m,q)}$ as a $2\times 2$ block-Toeplitz. 
-	We will prove $\mK^{(m,q)}$ is a $2\times 2$ block-toeplitz matrix for all $m \in \naturals, q \in \naturals$.
-	
-	% This notation is convenient for the proof as shown below.
-	
-	\iffalse
-	As the first step, we verify the property holds for $m=0$,
-	\begin{align*}
-	\mK^{(0,q)} &= \begin{pmatrix}
-	K(\vz_{0 \ominus 0 + q 2^0})  
-	\end{pmatrix} = 
-	\begin{pmatrix}
-	K(\vz_{q})
-	\end{pmatrix}, \quad \text{by \eqref{eqn:digital_shift_prop}},
-	\end{align*} thus by definition $\mK^{(0,q)}$ is a block-Toeplitz.
-	\fi 
-	
-	\iftrue
-	As the first step, we verify the property holds for $m=1$,
-	\begin{align*}
-	\mK^{(1, q)} &= \begin{pmatrix}
-	K(\vz_{0 \ominus 0 + q 2^1}) & K(\vz_{1 \ominus 0 + q 2^1})  \\
-	K(\vz_{0 \ominus 1 + q 2^1}) & K(\vz_{1 \ominus 1 + q 2^1})  
-	\end{pmatrix} = 
-	\begin{pmatrix}
-	K(\vz_{2q}) & K(\vz_{1 + 2q}) \\ K(\vz_{1 + 2q}) & K(\vz_{2q})
-	\end{pmatrix}, \quad \text{by \eqref{eqn:digital_shift_prop}}
-	\end{align*} has diagonal elements repeated. Thus by definition, it is a $2\times 2$ block-Toeplitz.
-	\fi 
-	
-	\iffalse
-	Similarly, the property can be verified for $\mC^{(2)}$, 
-	\begin{align*}
-	\mC^{(2)} &= 
-	\begin{pmatrix}
-	K_{z_{(i \ominus j )}}
-	\end{pmatrix}_{i,j=0}^{2^2-1}
-	=
-	\begin{pmatrix}
-	K(\vz_{0 \ominus 0}) & K(\vz_{1 \ominus 0}) & K(\vz_{2 \ominus 0}) & K(\vz_{3 \ominus 0}) \\
-	K(\vz_{0 \ominus 1}) & K(\vz_{1 \ominus 1}) & K(\vz_{2 \ominus 1}) & K(\vz_{3 \ominus 1}) \\
-	K(\vz_{0 \ominus 2}) & K(\vz_{1 \ominus 2}) & K(\vz_{2 \ominus 2}) & K(\vz_{3 \ominus 2}) \\
-	K(\vz_{0 \ominus 3}) & K(\vz_{1 \ominus 3}) & K(\vz_{2 \ominus 3}) & K(\vz_{3 \ominus 3}) 
-	\end{pmatrix} \\
-	& = 
-	\begin{pmatrix}
-	\begin{pmatrix}
-	K(\vz_{0}) & K(\vz_{1}) \\
-	K(\vz_{1}) & K(\vz_{0})
-	\end{pmatrix} &
-	\begin{pmatrix}
-	K(\vz_{2}) & K(\vz_{3}) \\
-	K(\vz_{3}) & K(\vz_{2}) 
-	\end{pmatrix} \\
-	\begin{pmatrix}
-	K(\vz_{2}) & K(\vz_{3}) \\
-	K(\vz_{3}) & K(\vz_{2}) 
-	\end{pmatrix} &
-	\begin{pmatrix}
-	K(\vz_{0}) & K(\vz_{1}) \\
-	K(\vz_{1}) & K(\vz_{0})
-	\end{pmatrix} 
-	\end{pmatrix}, \quad \text{by \eqref{eqn:digital_shift_prop}, \eqref{eqn:digital_net_symmetric_prop}}
-	\\
-	& =
-	\begin{pmatrix}
-	\mC^{(1)} & \mC^{(1,1)} \\
-	\mC^{(1,1)} & \mC^{(1)}
-	\end{pmatrix},
-	\end{align*}
-	is a block-Toeplitz as it is obvious from the block structure depicted. 
-	\fi
-	% Here we used the notation $\mC^{(1,1)}$ to indicate the additional operation involved in the matrix.
-	% Where the matrix $\mC^{(1,1)}$ is obtained using the following shift operation.
-	
-	Now assume that $\mK^{(m,q)}$ is block-Toeplitz.
-	% Please note if $\mK^{(m,0)}$ is block-Toeplitz then $\mK^{(m,q)}$ is also a block-Toeplitz for all $q \in \naturals_0$. 
-	% This is due to the fact that $i \oplus 2^m \ominus j = i \ominus j \ominus 2^m = i \ominus j \oplus 2^m $ for $i,j=0,\cdots,2^{m-1}$ since $i \ominus j < 2^{m-1}$.
-	% Assuming $\mK^{(m, q)}$ is a block-Toeplitz, 
-	We need to prove $\mK^{(m+1, q)}$ is also a $2\times 2$ block-Toeplitz. Let $n=2^m$,
-	\begin{align*}
-	\mK^{(m+1)} &= 
-	\begin{pmatrix}
-	K(\vz_{0    \ominus 0}) & \hdots & K(\vz_{0    \ominus n-1}) & K(\vz_{0    \ominus n}) & \hdots & K(\vz_{0    \ominus 2n-1}) \\
-	\vdots             & \vdots &             \vdots          &           \vdots      & \vdots &             \vdots         \\
-	K(\vz_{n-1  \ominus 0}) & \hdots & K(\vz_{n-1  \ominus n-1}) & K(\vz_{n-1  \ominus n}) & \hdots & K(\vz_{n-1  \ominus 2n-1}) \\
-	K(\vz_{n    \ominus 0}) & \hdots & K(\vz_{n    \ominus n-1}) & K(\vz_{n    \ominus n}) & \hdots & K(\vz_{n    \ominus 2n-1}) \\
-	\vdots      & \vdots &             \vdots        &             \vdots      & \vdots &             \vdots         \\
-	K(\vz_{2n-1 \ominus 0}) & \hdots & K(\vz_{2n-1 \ominus n-1}) & K(\vz_{2n-1 \ominus n}) & \hdots & K(\vz_{2n-1 \ominus 2n-1}) 
-	\end{pmatrix} 
-	\\
-	& = 
-	\begin{pmatrix}
-	\begin{pmatrix}
-	K(\vz_{  0   }) & \hdots & K(\vz_{ n-1}) \\
-	\vdots          & \vdots &    \vdots     \\
-	K(\vz_{ n-1  }) & \hdots & K(\vz_{ 0 })
-	\end{pmatrix}
-	& 
-	\begin{pmatrix}
-	K(\vz_{ n})     & \hdots & K(\vz_{ 2n-1}) \\
-	\vdots          & \vdots &     \vdots     \\
-	K(\vz_{ 2n-1 }) & \hdots & K(\vz_{ n })   
-	\end{pmatrix}
-	\\
-	\begin{pmatrix}
-	K(\vz_{ n})     & \hdots & K(\vz_{ 2n-1}) \\
-	\vdots          & \vdots &     \vdots     \\
-	K(\vz_{ 2n-1 }) & \hdots & K(\vz_{ n })   
-	\end{pmatrix}
-	&
-	\begin{pmatrix}
-	K(\vz_{  0   }) & \hdots & K(\vz_{ n-1}) \\
-	\vdots          & \vdots &    \vdots     \\
-	K(\vz_{ n-1  }) & \hdots & K(\vz_{ 0 })
-	\end{pmatrix}
-	\end{pmatrix} 
-	\\
-	& =
-	\begin{pmatrix}
-	\mK^{(m)} & \mK^{(m,1)} \\ \mK^{(m,1)} & \mK^{(m)}
-	\end{pmatrix}
-	\end{align*}
-	is a $2\times 2$ block-Toeplitz, where we used the properties  \eqref{eqn:digital_shift_prop}, \eqref{eqn:digital_net_symmetric_prop} and facts $2n-1 \ominus n = n-1$, $2n-1 \ominus n-1 = n$, and $n \ominus n-1 = 2n-1$. 
-	Thus $\mK^{(m+1)}$ is a $2\times2$ block-Toeplitz. 
-	Similarly 
-	\begin{align*}
-	\mK^{(m+1,q)} 
-	& =
-	\begin{pmatrix}
-	\mK^{(m,q)} & \mK^{(m,q+1)} \\ \mK^{(m,q+1)} & \mK^{(m,q)}
-	\end{pmatrix}
-	\end{align*}
-	is a $2\times2$ block-Toeplitz. 
-	%\end{itemize}
-	Thus $\mC_{\vtheta}^{(m)}$ of size $2^m\times 2^m$, for $m \in \naturals$, is a $2\times2$ block-Toeplitz and every block and it's sub-blocks of size $2^p, \; p \in \naturals, \; p \le m$ are also $2\times2$ block-Toeplitz.
+    First define the matrices that by Lemma \ref{lemma:digital_net_prop}, 
+    \begin{align*}
+    \mCtheta^{(m,k)} & = \bigl(K(\vx_i \oplus \vx_{j + k2^m} )\bigr)_{i,j=1}^{2^m} \\
+    & = \bigl(K(\vz_{i\oplus j+ k 2^m + 1})\bigr)_{i,j=0}^{2^m-1}, \qquad m,k  = 0, 1, \ldots
+    \end{align*}
+    which means that $\mCtheta^{(m+1,k)}$, has the following block structure
+    \begin{align} \nonumber
+    \MoveEqLeft{\mCtheta^{(m+1,k)}} \\
+    \nonumber
+    & = 
+    \begin{pmatrix} 
+    \bigl(K(\vz_{i\oplus j+ k2^{m+1} + 1})\bigr)_{i,j=0}^{2^m-1} &
+    \bigl(K(\vz_{i\oplus (j+2^m)+ k2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1} \\
+    \bigl(K(\vz_{(i + 2^m) \oplus j + k2^{m+1}+1})\bigr)_{i,j=0}^{2^m-1} &
+    \bigl(K(\vz_{(i + 2^m) \oplus (j+2^m) + k2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1}
+    \end{pmatrix} \\
+    & = \begin{pmatrix} \mCtheta^{(m,2k)} & \mCtheta^{(m,2k+1)} \\
+    \mCtheta^{(m,2k+1)} & \mCtheta^{(m,2k)}
+    \end{pmatrix} , \label{eq:cblock}
+    \end{align}
+    since for $i,j = 0, \ldots, 2^m-1$, it follows that 
+    \begin{gather*}
+        i\oplus (j+2^m) +1 = (i\oplus j) + 2^m +1 = (i + 2^m) \oplus j +1 ,\\
+        (i + 2^m) \oplus (j+2^m) +1 = (i\oplus j) + (2^m \oplus 2^m) +1= (i\oplus j) +1.
+    \end{gather*}
+    
+    The proof follows by induction.  Note that for the case $m=1$ and $k = 0, 1, \ldots$
+    \begin{equation*}
+        \mCtheta^{(1,k)} 
+        =  \begin{pmatrix}
+        K_\vtheta(\vz_{2k+1}) & K_\vtheta(\vz_{2k+2}) \\
+        K_\vtheta(\vz_{2k+2}) & K_\vtheta(\vz_{2k+1}) 
+        \end{pmatrix} ,
+    \end{equation*}
+   which has the desired Toeplitz property. Note also the eigenvectors of $\mCtheta^{(1,k)}$ are the columns of $\mH^{(1)}$ since   
+   \begin{align*}
+        \mCtheta^{(1,k)} \mH^{(1)} & =  \begin{pmatrix}
+        K_\vtheta(\vz_{2k+1}) + K_\vtheta(\vz_{2k+2}) & K_\vtheta(\vz_{2k+1}) - K_\vtheta(\vz_{2k+2})\\
+        K_\vtheta(\vz_{2k+2}{2k+2}) + K_\vtheta(\vz_{2k+1}) &  K_\vtheta(\vz_{2k+2}) - K_\vtheta(\vz_{2k+1}) 
+        \end{pmatrix} \\
+        & = \underbrace{\begin{pmatrix}
+        K_\vtheta(\vz_{2k+1}) + K_\vtheta(\vz_{2k+2}) & 0\\
+        0 &   K_\vtheta(\vz_{2k+1}) - K_\vtheta(\vz_{2k+2})
+        \end{pmatrix}}_{\mLambda^{(1,k)}} \mH^{(1)}.
+    \end{align*}
+
+   Now assume that $\mCtheta^{(m,k)}$ is $2\times 2$ block-Toeplitz matrix with all its sub-blocks and sub-sub-blocks, etc.\ also $2\times 2$ block-Toeplitz for $k = 0, 1, \ldots$.  Then by \eqref{eq:cblock}, the same holds for $\mCtheta^{(m+1,k)}$ for $k = 0, 1, \ldots$.  In particular, the block Toepliz property of $\mCtheta^{(m,0)}$ holds.
+   
+    Moreover, the hypothesized eigenvectors of $\mCtheta^{(m+1,k)}$ can also be verified by direct calculation under the induction hypothesis:
+     \begin{align*}
+        \MoveEqLeft{\mCtheta^{(m+1,k)} \mH^{(m+1)}} \\
+        & =  
+        \begin{pmatrix} \mCtheta^{(m,2k)} & \mCtheta^{(m,2k+1)} \\
+        \mCtheta^{(m,2k+1)} & \mCtheta^{(m,2k)}
+        \end{pmatrix} 
+        \begin{pmatrix}
+        \mH^{(m)} &   \mH^{(m)} \\
+         \mH^{(m)} & - \mH^{(m)}
+        \end{pmatrix}\\
+        & = 
+    \begin{pmatrix}
+        [\mCtheta^{(m,2k)} + \mCtheta^{(m,2k+1)}] \mH^{(m)} & [\mCtheta^{(m,2k)} - \mCtheta^{(m,2k+1)}] \mH^{(m)}\\
+        [\mCtheta^{(m,2k+1)} + \mCtheta^{(m,2k)}] \mH^{(m)} &   [\mCtheta^{(m,2k+1)} - \mCtheta^{(m,2k)}] \mH^{(m)}
+        \end{pmatrix} \\
+        & = \underbrace{\begin{pmatrix}
+        \mLambda_\vtheta^{(m,2k)} + \mLambda_\vtheta^{(m,2k+1)}  & \mathsf{0}\\
+        \mathsf{0} &   \mLambda_\vtheta^{(m,2k)} - \mLambda_\vtheta^{(m,2k+1)}
+        \end{pmatrix}}_{\mLambda_\vtheta^{(m+1,2k)}} 
+        \begin{pmatrix}
+        \mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
+        \end{pmatrix}.
+    \end{align*}
+Noting that $\mC^{(m+1)} = \mC^{(m+1,0)} $ completes the proof.
 \end{proof}
-\fi
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\iffalse
-Some additional properties
-$\bigl( K(z_{i \ominus j})\bigr)_{i=2^{l+1}q, \; j=2^{l+1}s}^{2^{l+1}{(q+1)}, \; 2^{l+1}{(s+1)}} $
-\fi
-
-
-
-\iffalse
-Now we prove every arbitrary sub-block is also block-Toeplitz: 
+Lemma \ref{lemma:eig} establishes that covariance kernels of the form \eqref{eqn:digital_shift_in_kernel} matched with shifted digital net data sites satisfy the fast Bayesian cubature assumptions
 \begin{itemize}
-	\item For $l=1$
-	\begin{align*}
-	\bigl( K(z_{i \ominus j})\bigr)_{i=2q, \; j=2s}^{2q+1, 2s+1}, \quad q,s=0,1,\cdots,
-	\end{align*}
-	is a block-Toeplitz since
-	\begin{align*}
-	\begin{pmatrix}
-	K(z_{2q \ominus 2s}) & K(z_{2q \ominus (2s +1)}) \\
-	K(z_{(2q+1) \ominus 2s}) & K(z_{(2q+1) \ominus (2s +1)}) 
-	\end{pmatrix}
-	=
-	\begin{pmatrix}
-	K(z_{2q \ominus 2s}) & K(z_{1 + (2q \ominus 2s)}) \\
-	K(z_{1 + (2q \ominus 2s)}) & K(z_{ 2q \ominus 2s}) 
-	\end{pmatrix}
-	\end{align*}
-	where we used the facts $(2q+1) \ominus (2s+1) = 2q \ominus 2s$ and $(2q+1) \ominus 2s = 1 + 2q \ominus 2s$.
-	
-	\item \ldots
-	
-	\item Assuming for $2^{l}$ is a block-Toeplitz then need to prove for $2^{l+1}$ 
-	\begin{align*}
-	\bigl( K(z_{i \ominus j})\bigr)_{i=2^{l+1}q, \; j=2^{l+1}s}^{2^{l+1}(q+1)-1, \; 2^{l+1}(s+1)-1}, \quad q,s=0,1,\dots,
-	\end{align*}
-	is a block-Toeplitz.
-	
-	\begin{align*}
-	\mC &=
-	\begin{pmatrix}
-	\bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\ja }^{\ib, \; \jb} & \bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\jc }^{\ib, \; \jd} \\
-	\bigl( K(z_{i \ominus j})\bigr)_{i=\ic, \; j=\ja }^{\id, \; \jb} & \bigl( K(z_{i \ominus j})\bigr)_{i=\ic, \; j=\jc }^{\id, \; \jd}
-	\end{pmatrix} \\
-	& =
-	\begin{pmatrix}
-	\bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\ja }^{\ib, \; \jb} & \bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\jc }^{\ib, \; \jd} \\
-	\bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\jc }^{\ib, \; \jd} & \bigl( K(z_{i \ominus j})\bigr)_{i=\ia, \; j=\ja }^{\ib, \; \jb}
-	\end{pmatrix}
-	\end{align*}
-	is a block-Toeplitz. Where we used the facts
-	\begin{align*}
-	% \ic \ominus \jc 
-	& 2^{l}(2q+1) \ominus 2^{l}(2s+1) = 2^{l}(2q) \ominus 2^{l}(2s) = 2^{l+1}(q) \ominus 2^{l+1}(s) \\
-	% \jd \ominus \ic
-	&2^{l+1}(s+1)-1 \, \ominus 2^{l}(2q + 1) % = 2^{l}(2s+1 + 1)-1 \ominus 2^{l}(2q + 1) 
-	= 2^{l}(2s+1)-1 \ominus 2^{l+1}q.
-	\end{align*}
-	
-	Thus $\mCtheta^{(m)}$ is a block-Toeplitz and every block its and sub-blocks are also block-Toeplitz.
-	
-	
+    \item \eqref{eq:fastcompAssumpA}, since $\mV$ is the Walsh-Hadamard matrix,
+    
+    \item  \eqref{eq:fastcompAssumpB}, since the first column and row of the  Walsh-Hadamard matrix consists of all ones, and
+    
+    \item \eqref{addAssump}, since all Walsh functions but the zeroth integrate to zero.
 \end{itemize}
-\fi
+What remains to be shown is how $\mV^H \vb = \mH \vb$ can be calculated in $\O(n \log(n))$ operations for arbitrary $\vb$.
 
-
-\begin{theorem}
-	\label{thrm:hadamard_eigenvector}
-	The Walsh-Hadamard matrix $\mH^{(m)}$ factorizes $\mC_{\vtheta}^{(m)}$, so that the columns of Walsh-Hadamard matrix are the eigenvectors of $\mC_{\vtheta}^{(m)}$, i.e.,
-	\begin{align*}
-	\mH^{(m)} \mC_{\vtheta}^{(m)}  = \mLambda^{(m)} \mH^{(m)}, \quad m \in \naturals. 
-	\end{align*}
-\end{theorem}
-
-A detailed proof for Theorem \ref{thrm:block-toeplitz} and \ref{thrm:hadamard_eigenvector} can be found in \cite{JagThesis19a}.
-
-\iffalse
-\begin{proof}
-	
-	Again, we use the proof-by-induction technique to show that the Walsh-Hadamard matrix factorizes $\mK^{(m,q)}$.
-	\iffalse
-	We can easily see the Hadamard matrix $\mH^{(0)}$ diagonalizes $\mC^{(0)}$,
-	\begin{align*}
-	\mH^{(0)} \mC^{(0)} &= 
-	\begin{pmatrix}
-	1 
-	\end{pmatrix}
-	\begin{pmatrix}
-	K(\vz_{0}) 
-	\end{pmatrix}
-	\\
-	% & = \begin{pmatrix} K(\vz_{0})+K(\vz_{1}) & K(\vz_{0})+K(\vz_{1}) \\ K(\vz_{0})-K(\vz_{1}) & K(\vz_{1})-K(\vz_{0}) \end{pmatrix} \\ 
-	& = 
-	\begin{pmatrix}
-	K(\vz_{0})
-	\end{pmatrix}
-	\begin{pmatrix}
-	1 
-	\end{pmatrix}
-	\\ 
-	% & = \begin{pmatrix} K(\vz_{0})+K(\vz_{1}) & 0 \\ 0 & K(\vz_{0})-K(\vz_{1}) \end{pmatrix} \mH^{(1)} \\
-	&= \mLambda^{(0)} \mH^{(0)},
-	\end{align*}
-	where $\mLambda^{(0)}$ is a diagonal matrix, thus $\mH^{(0)}$ diagonalizes $\mC^{(0)}$.
-	\fi
-	We can easily see the Hadamard matrix $\mH^{(1)}$ diagonalizes $\mK^{(1,q)}$,
-	\begin{align*}
-	\mH^{(1)} \mK^{(1,q)} &= 
-	\begin{pmatrix}
-	1 &  1 \\ 1 & -1
-	\end{pmatrix}
-	\begin{pmatrix}
-	K(\vz_{0 + q2^1}) & K(\vz_{1 + q2^1}) \\ K(\vz_{1 + q2^1}) & K(\vz_{0 + q2^1})
-	\end{pmatrix}, \quad \text{by Theorem \ref{thrm:block-toeplitz}} 
-	\\
-	& = \begin{pmatrix} K(\vz_{2q})+K(\vz_{2q+1}) & K(\vz_{2q})+K(\vz_{2q+1}) \\ K(\vz_{2q})-K(\vz_{2q+1}) & K(\vz_{2q+1})-K(\vz_{2q}) \end{pmatrix} \\ 
-	& = \begin{pmatrix} K(\vz_{2q})+K(\vz_{2q+1}) & 0 \\ 0 & K(\vz_{2q})-K(\vz_{2q+1}) \end{pmatrix} 
-	\begin{pmatrix}
-	1 &  1 \\ 1 & -1
-	\end{pmatrix} \\
-	&= \mLambda^{(1,q)} \mH^{(1)},
-	\end{align*}
-	where $\mLambda^{(1,q)}$ is a diagonal matrix, thus $\mH^{(1)}$ factorizes $\mK^{(1,q)}$.
-	
-	Now assume $\mH^{(m)}$ factorizes $\mK^{(m,q)}$, so $\mH^{(m)} \mK^{(m,q)} = \mLambda^{(m,q)} \mH^{(m)}$ where $\mLambda^{(m,q)}$ is diagonal. We need to prove $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$,
-	\begin{align*}
-	\mH^{(m+1)} \mK^{(m+1,q)} &= 
-	\begin{pmatrix}
-	\mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
-	\end{pmatrix}
-	\begin{pmatrix}
-	\mK^{(m,q)} & \mK^{(m,q+1)} \\ \mK^{(m,q+1)} & \mK^{(m,q)}
-	\end{pmatrix}, \quad \text{by Theorem \ref{thrm:block-toeplitz}}
-	\\
-	& = \begin{pmatrix}
-	\mH^{(m)} (\mK^{(m,q)}   + \mK^{(m,q+1)}) & 
-	\mH^{(m)} (\mK^{(m,q)}   + \mK^{(m,q+1)}) \\ 
-	\mH^{(m)} (\mK^{(m,q)}   - \mK^{(m,q+1)}) & 
-	\mH^{(m)} (\mK^{(m,q+1)} - \mK^{(m,q)}) 
-	\end{pmatrix} \\ 
-	& = \begin{pmatrix}
-	(\mLambda^{(m,q)}  + \mLambda^{(m,q+1)})  \mH^{(m)} & 
-	(\mLambda^{(m,q)}   + \mLambda^{(m,q+1)}) \mH^{(m)} \\ 
-	(\mLambda^{(m,q)}   - \mLambda^{(m,q+1)}) \mH^{(m)} & 
-	(\mLambda^{(m,q+1)} - \mLambda^{(m,q)})   \mH^{(m)}
-	\end{pmatrix} \\ 
-	& = 
-	\begin{pmatrix}
-	\mLambda^{(m,q)} + \mLambda^{(m,q+1)} & 0 \\ 0 & \mLambda^{(m,q)} - \mLambda^{(m,q+1)}
-	\end{pmatrix}
-	\begin{pmatrix}
-	\mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
-	\end{pmatrix}
-	\\ 
-	% & = \begin{pmatrix} \mC^{(m)} + \mC^{(m,m)} & 0 \\ 0 & \mC^{(m)} - \mC^{(m,m)} \end{pmatrix} \mH^{(m+1)} \\
-	& = \mLambda^{(m+1,q)} \mH^{(m+1)} .
-	\end{align*}
-	Thus, $\mH^{(m+1)}$ factorizes $\mK^{(m+1,q)}$ to a diagonal matrix $\mLambda^{(m+1,q)}$. This implies $\mH^{(p)}$ factorizes $\mC_\vtheta^{(p)}$ for $p \in \naturals$. Please recall $\mC_\vtheta^{(p)} = \mK^{(p,0)}$.  Here we used the fact that both $\mH$ and $\mK$ are symmetric positive definite. 
-\end{proof}
-\fi
-
-\iffalse
-Next, we show the eigenvectors of a block-Toeplitz matrix can be obtained by Kronecker product of its sub-block matrices. If $\mA, \mB$ share same eigenvalues $\mA \mV = \mLambda \mV, \mB \mV = \mV \mSigma$ then
+The computation of $\tvb =\mH \vb$ is done iteratively as follows and claim that it requires $m2^m$ operations for vectors $\vb$ of length $2^m$. For the case $m=0$, $\tvb = \mH^{(m)} \vb = \vb$, which requires no arithmetic operations.  Now, Let $\vb = (\vb_1^{T},  \vb_2^{T})$, where $\vb_1$ and $\vb_2$ are each of length $2^m$, and so $\vb$ is of length $2^{m+1}$.  Let $\tvb = \mH^{(m+1)} \vb$,  $\tvb_1 = \mH^{(m)} \vb_1$, and $\tvb_2 = \mH^{(m)} \vb_2$.  It follows from the definition of the Walsh-Hadamard matrix that 
 \begin{align*}
-\begin{pmatrix}
-\mA & \mB \\ \mB & \mA
-\end{pmatrix}
-\begin{pmatrix}
-\mV & \mV \\ \mV & -\mV
-\end{pmatrix}
-= 
-\begin{pmatrix}
-\mV & \mV \\ \mV & -\mV
-\end{pmatrix}
-\begin{pmatrix}
-\mLambda + \mSigma & 0 \\ 0 & \mLambda - \mSigma 
-\end{pmatrix}
-\end{align*}
-\fi
-
-
-\subsection{Fast Bayesian transform}
-We can easily show that the Walsh-Hadamard matrices satisfy the assumptions of fast Bayesian transform \eqref{fastcompAssump}. As shown in Section~\ref{sec:eigenvector_hadamard} the columns of $\mH^{({m})}$ are the eigenvectors. Since the Gram matrix $\mC$ is symmetric, the columns/rows of Walsh-Hadamard matrices are mutually orthogonal. Thus the Gram matrix can be written as 
-\begin{align}
-\label{eqn:hadamard_fwht}
-\mC^{(m)} = \frac{1}{n} \mH^{(m)} \mLambda^{(m)} \mH^{(m)}, \quad \text{where} \quad \mH^{({m})} = \underbrace{ \mH^{(1)} \bigotimes \cdots \bigotimes \mH^{(1)} }_{m \; \text{times}}.
-\end{align}
-% \JRNote{prove eigenvalues for Sobol case}
-Assumption \eqref{fastcompAssumpB} follows automatically by the fact that Walsh-Hadamard matrices can be constructed analytically. Assumption \eqref{fastcompAssumpA} can also be verified as the first row/column are one vectors. Finally, assumption \eqref{fastcompAssumpC} is satisfied due to the fact that fast Walsh transform can be computed in $\Order({n \log n})$ operations using fast Walsh-Hadamard transform.
-Thus the Walsh-Hadamard transform is a fast Bayesian transform, $\mV := \mH$, as per \eqref{fastcompAssump}.
-
-We have implemented a fast adaptive Bayesian cubature algorithm using the kernel \eqref{eqn:walsh_kernel} with $r=1$ and Sobol' points \cite{BraFox88} in MATLAB as part of the Guaranteed Adaptive Integration Library (GAIL) \cite{ChoEtal17b} as \allowbreak \code{cubBayesNet\_g}. The Sobol' points used in this algorithm are generated using MATLAB's builtin function \code{sobolset} and scrambled using MATLAB function \code{scramble} \cite{HonHic00a}. The fast Walsh-Hadamard transform \eqref{eqn:hadamard_fwht} is computed using MATLAB's builtin function \code{fwht} with \emph{hadamard} ordering. 
-
-\subsection{Iterative Computation of Walsh Transform}
-In every iteration of our algorithm, we double the number of function values. Using the technique described here, we have to only compute the Walsh transform for the newly added function values.
-Similar to the lattice points, Sobol' points are extensible by definition. This property is used in our algorithm to improve the integration accuracy till the required error tolerance is met. Sobol' nodes can be combined with Hadamard matrices as demonstrated here for iterative computation. 
-% Using the same notations as in \secref{sec:iter_fft}, l
-Let $\widetilde{\vy} = \mH^{(m+1)} {\vy}$ for some arbitrary $\vy \in \reals^{2n}$, $n = 2^m$. Define, 
-\begin{gather*}
-\vy = \begin{pmatrix} y_1 \\ \vdots \\ y_{2n} \end{pmatrix}, \quad 
-\vy^{(1)} = \begin{pmatrix} y_1 \\ \vdots \\ y_{n} \end{pmatrix}, \quad 
-\vy^{(2)}  = \begin{pmatrix} y_{n+1} \\ \vdots \\ y_{2n} \end{pmatrix}, \\ 
-\widetilde{\vy}^{(1)} = \mH^{(m)} \vy^{(1)} = 
-\begin{pmatrix} \widetilde{y}^{(1)}_1 \\ \widetilde{y}^{(1)}_2 \\ \vdots \\ \widetilde{y}^{(1)}_{n} \end{pmatrix}, \quad 
-\widetilde{\vy}^{(2)}  =  \mH^{(m)} \vy^{(2)} =
-\begin{pmatrix} \widetilde{y}^{(2)}_{1} \\  \widetilde{y}^{(2)}_{2} \\ \vdots \\ \widetilde{y}^{(2)}_{n} \end{pmatrix}. 
-\end{gather*}
-Then,
-\begin{align*}
-\widetilde{\vy} &= \mH^{({m+1})} {\vy} \\
-& = \begin{pmatrix}
+\tvb &= \mH^{({m+1})} \vb = \begin{pmatrix}
 \mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & - \mH^{(m)}
 \end{pmatrix} 
 \begin{pmatrix}
-\vy^{(1)} \\ \vy^{(2)}
-\end{pmatrix}, \qquad \text{by \eqref{eqn:hadamard_matrix}} \\
+\vb_1 \\ \vb_2
+\end{pmatrix} \qquad \text{by \eqref{eqn:hadamard_matrix}} \\
 &= 
 \begin{pmatrix}
-\mH^{(m)} \vy^{(1)} + \mH^{(m)} \vy^{(2)} \\ 
-\mH^{(m)} \vy^{(1)} - \mH^{(m)} \vy^{(2)}
-\end{pmatrix}\\
-&= 
+\mH^{(m)} \vb_1 + \mH^{(m)}\vb_2 \\ 
+\mH^{(m)} \vb_1 - \mH^{(m)} \vb_2
+\end{pmatrix}
+= 
 \begin{pmatrix}
-\widetilde{\vy}^{(1)} + \widetilde {\vy}^{(2)} \\ 
-\widetilde {\vy}^{(1)} - \widetilde {\vy}^{(2)}
-\end{pmatrix} =: \widetilde{\vy} \quad.
+\tvb_1 + \tvb_2 \\ 
+\tvb_1 - \tvb_2
+\end{pmatrix}.
 \end{align*}
-As before with the lattice nodes, the computational cost to compute $\mV^{(m+1)H} \vy$ is 
-twice the cost of computing $\mV^{(m)H} \vy^{(1)}$ plus $2n$ additions, where $n=2^m$. An inductive argument shows that for any $m \in \naturals$, $\mV^{(m)H}\vy$ requires only $\Order(n \log n)$ operations. Usually the multiplications in $\mV^{(m)H} \vy^{(1)}$ are multiplications by $-1$ which are simply accomplished using sign change or negation, requiring no multiplications at all.
+Thus to compute $\tvb$ requires two matrix multiplications by $\mH^{(1)}$, at a cost of $m 2^m$ each, plus an addition and a subtraction of vectors of length $2^m$, for a total cost of $2 \times m 2^m + 2 \times 2^m = (m+1) 2^{m+1}$, which is exactly what is needed.
 
 
-\subsection{Higher Order Nets}
-
-Higher order digital nets are an extension of $(t,m,d)$-nets, introduced in \cite{Dic08a}. They can be used to numerically integrate smoother functions which are not necessarily periodic, but have square integrable mixed partial derivatives of order $\alpha$, at a rate of $\Order(n^{-\alpha})$ multiplied by a power of a $\log n$ factor using rules corresponding to the modified $(t,m, d)$-nets.
-We want to emphasize that quasi-Monte Carlo rules based on these point sets can achieve convergence rates faster than $\Order(n^{-1})$. 
-Higher order digital nets are constructed using matrix-vector multiplications over finite
-fields. 
-
-One could develop matching digitally shift invariant kernels to formulate the fast Bayesian cubature. Bayesian cubatures using higher order digital nets are a topic for future research.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\FJHNote{Fred stopped here}
 
 
 
