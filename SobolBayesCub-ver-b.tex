@@ -88,7 +88,7 @@
 \providecommand{\HickernellFJ}{Hickernell\xspace}
 \newcommand{\bm}[1]{\boldsymbol{#1}}
 \newcommand{\mSigma}{\mathsf{\Sigma}}
-\newcommand{\mB}{\mathsf{B}}
+%\newcommand{\mB}{\mathsf{B}}
 \newcommand{\smallocite}[1]{{\small\ocite{#1}}}
 \newcommand{\dif}[1]{\text{d}{#1}}
 % \newcommand{\D}[1]{\text{d}{#1}}
@@ -342,7 +342,7 @@ Cubature, or numerical multivariate integration, is the problem of inferring a n
 \label{eqn:defn_mu}
 \mu:= \mu(f) := \Ex[f(\boldsymbol{X})] = \int_{[0,1]^d} f(\vx)\, \dvx, 
 \end{equation}
-when no closed-form analytic expression exists. Typically, values of $f$ are accessible through a black-box function routine. ur goal is to construct a cubature, $\hmu = \hmu(f)$, depending only on integrand values at the nodes $\{\vx_i\}_{i=1}^n$, and determine the $n$ which satisfies the error criterion
+when no closed-form analytic expression exists. Typically, values of $f$ are accessible through a black-box function routine. Our goal is to construct a cubature, $\hmu = \hmu(f)$, depending only on integrand values at the nodes $\{\vx_i\}_{i=1}^n$, and determine the $n$ which satisfies the error criterion
 \begin{equation}
 \label{eqn:err_crit} 
 \abs{\mu - \hmu} \leq \errtol
@@ -354,7 +354,7 @@ Cubature is a key component of many problems in scientific computing, finance \c
 %\JRNote{add references}
 The original form of the integral may require a suitable variable transformation to become \eqref{eqn:defn_mu}. This process is addressed in \cite{BecHae92b, Sid08a, Sid93, Lau96a, CriEtal07}. 
 
-Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmussen and Ghahramani~\cite{RasGha03a}, \cite{BriEtal18a}, and others, we assume that our integrand is an instance of a Gaussian process, $\mathcal{GP}(m,s^2 C_\vtheta)$, and construct a probabilistic error bound for $\mu$ to via a Bayesian credible interval.  The integrand is sampled until the credible interval becomes small enough to satisfy \eqref{eqn:err_crit} with high probability.  
+Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmussen and Ghahramani~\cite{RasGha03a}, \cite{BriEtal18a}, and others, we assume that our integrand is an instance of a Gaussian process, $\mathcal{GP}(m,s^2 C_\vtheta)$, and construct a probabilistic error bound for $\mu$ via a Bayesian credible interval.  The integrand is sampled until the credible interval becomes small enough to satisfy \eqref{eqn:err_crit} with high probability.  
 
 Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes 
 \begin{itemize}
@@ -397,6 +397,8 @@ The next section summarizes the key formulae from \cite{RatHic19a}.  Section \re
 
 % \subsection{Bayesian Posterior Error} \label{sec:BayesPostErr}
 
+\FJHNote{Fred fix this section}
+
 We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a random function with constant mean $m$ and covariance kernel $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\vtheta$.  The parameter $\vtheta$ may affect the shape or smoothness of $C_\vtheta$. As shown in \cite[Give eq numbers]{RatHic19a}, under assumptions \eqref{eq:fastcompAssump} a credible interval for the integral is given in terms of the nodes, $\{\vx_i\}_{i=1}^n$, the function data, $\vy = \bigl (f (\vx_i) \bigr)_{i=1}^n$, the scale parameter, $s$, and the kernel, $C_\vtheta$,  by 
 \begin{subequations} \label{eqn_prob_confidence_interval}
 	\begin{gather}
@@ -410,7 +412,8 @@ We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussia
 	\err_{\CI} = 2.58 s \sqrt{1 - n/\lambda_{\vtheta,1} }.
 	\end{gather}
 \end{subequations}
-Moreover, $\lambda_{\vtheta,1}$ represents the first eigenvalue of the Gram matrix, $\mC_\vtheta$, defined in \eqref{eq:Gram}.  All eigenvalues can be computed by the which is computed by taking the fast Bayesian transform of the first column of the Gram matrix, denoted $\vC_{\vtheta,1}$ \cite[Equation number]{RatHic19a}:
+Moreover, $\lambda_{\vtheta,1}$ represents the first eigenvalue of the Gram matrix, $\mC_\vtheta$, defined in \eqref{eq:Gram}.  All eigenvalues can be computed %(by the which is computed) 
+by taking the fast Bayesian transform of the first column of the Gram matrix, denoted $\vC_{\vtheta,1}$ \cite[Equation number]{RatHic19a}:
 \begin{equation} 
 	\vlambda_\vtheta
 	= \begin{pmatrix}
@@ -423,6 +426,7 @@ Moreover, $\lambda_{\vtheta,1}$ represents the first eigenvalue of the Gram matr
 %\subsection{Resolving Hyperparameters} \label{sec:hyperparameters}
 In \eqref{eqn_prob_confidence_interval} the hyperparameter $m$ has already been tuned, but $s$ and $\vtheta$ have not yet been.  We use the function data 
 This formula for the credible interval depends essentially on $s$ and $\vtheta$.  Resolving these dependencies should also involve the integrand data,  $\vy$, since larger integrand data should tend to imply a larger credible interval. The data should also be used to identify the covariance kernel for which the integrand is a typical draw from the assumed Gaussian process. This is the motivation behind resolving the hyperparameters from function data. 
+\JRNote{Need to rephrase this paragraph}
 
 In \cite{RatHic19a} we introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{eq:fastcompAssump}, we have the estimates for the hyperparameters \cite[Theorem 2]{RatHic19a}:
 		\begin{align*}
@@ -645,15 +649,16 @@ For fast Bayesian cubature to succeed, the digital net data sites (\secref{sec:s
 \end{pmatrix}, \cdots
 \\
 \label{eqn:hadamard_matrix}
-\mH^{(m)} &= \mH^{(m-1)} \mH^{(1)} =
+\mH^{(m)} &= \mH^{(m-1)} \otimes \mH^{(1)} =
 \begin{pmatrix}
 \mH^{(m-1)} & \mH^{(m-1)} \\ \mH^{(m-1)} & -\mH^{(m-1)}
 \end{pmatrix} 
-= \mH^{(1)} \underbrace{\bigotimes \cdots \bigotimes}_{m \ \text{times}}  \mH^{(1)} \\
-\nonumber
-& = \Big((-1)^{\ai^T \aj)} \Big)_{i,j=0}^{2^m-1}.
+= \mH^{(1)} \underbrace{\bigotimes \cdots \bigotimes}_{m \ \text{times}}  \mH^{(1)} 
+% \\ \nonumber & = \Big((-1)^{\ai^T \aj)} \Big)_{i,j=0}^{2^m-1}.
 \end{align}
-where $\bigotimes$ is Kronecker product, and $\ai^T \aj = i_0 j_0 + i_1 j_1 +\cdots$. Note that the Walsh-Hadamard matrices are symmetric.
+where $\bigotimes$ is Kronecker product.
+%, and $\ai^T \aj = i_0 j_0 + i_1 j_1 +\cdots$. 
+Note that the Walsh-Hadamard matrices are symmetric.
 
 \begin{lemma} \label{lemma:eig}
     Let $\left(\vx_i\right)_{i=1}^{2^m}$ be digitally shifted Sobol' nodes and let the covariance kernel take the form of \eqref{eqn:digital_shift_in_kernel}. Then, for $m = 1, 2, \ldots$ the Gram matrix, $
