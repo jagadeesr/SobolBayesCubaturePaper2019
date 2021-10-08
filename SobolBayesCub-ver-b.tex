@@ -37,21 +37,21 @@
 % restore the original definition in fontmath.ltx
 \DeclareMathAccent{\vec}{\mathord}{letters}{"7E}
 
-\RequirePackage{amsmath}
-\RequirePackage{fix-cm}
+% \RequirePackage{amsmath}
+% \RequirePackage{fix-cm}
 
-\smartqed  % flush right qed marks, e.g. at end of proof
+% \smartqed  % flush right qed marks, e.g. at end of proof
 %
-\usepackage{graphicx}
+% \usepackage{graphicx}
 \usepackage{amssymb}
 % \usepackage{amsthm}
 
 % \usepackage{natbib}
 \usepackage{xspace}
-\usepackage{mathrsfs}  
-\usepackage{hhline}
-\usepackage{siunitx}
-\usepackage{bbm}
+% \usepackage{mathrsfs}  
+% \usepackage{hhline}
+% \usepackage{siunitx}
+% \usepackage{bbm}
 
 
 %
@@ -61,18 +61,18 @@
 % etc.
 %
 % Jag's 
-\usepackage{tabu}
-\usepackage{cancel}
+% \usepackage{tabu}
+% \usepackage{cancel}
 \usepackage{algorithm}
-\usepackage{algorithmicx}
+% \usepackage{algorithmicx}
 \usepackage{algpseudocode}
 %\usepackage[style=base]{caption}
 %\usepackage[caption=false]{subfig}
 %\usepackage{subcaption}
 \usepackage{booktabs, mathtools}
 %\usepackage[dvipsnames]{xcolor}
-\usepackage{url}
-\usepackage[titletoc,title]{appendix}
+% \usepackage{url}
+% \usepackage[titletoc,title]{appendix}
 %\usepackage{refcheck}  % points out unused labels, refs ...
 
 %\captionsetup{compatibility=false}
@@ -425,7 +425,7 @@ by taking the fast Bayesian transform of the first column of the Gram matrix, de
 \end{equation}
 
 %\subsection{Resolving Hyperparameters} \label{sec:hyperparameters}
-In \eqref{eqn_prob_confidence_interval} the hyperparameter $m$ has already been tuned, but $s$ and $\vtheta$ have not yet been.  We use the function data 
+In \eqref{eqn_prob_confidence_interval} the hyperparameter $m$ has already been tuned, but $s$ and $\vtheta$ have not yet been.  %We use the function data % JR: Commented this
 This formula for the credible interval depends essentially on $s$ and $\vtheta$.  Resolving these dependencies should also involve the integrand data,  $\vy$, since larger integrand data should tend to imply a larger credible interval. The data should also be used to identify the covariance kernel for which the integrand is a typical draw from the assumed Gaussian process. This is the motivation behind resolving the hyperparameters from function data. 
 \JRNote{Need to rephrase this paragraph}
 
@@ -750,7 +750,7 @@ Lemma \ref{lemma:eig} establishes that covariance kernels of the form \eqref{eqn
     
     \item \eqref{addAssump}, since all Walsh functions but the zeroth integrate to zero.
 \end{itemize}
-What remains to be shown is how $\mV^H \vb = \mH \vb$ can be calculated in $\O(n \log(n))$ operations for arbitrary $\vb$.
+What remains to be shown is how $\mV^H \vb = \mH \vb$ can be calculated in $\Order(n \log(n))$ operations for arbitrary $\vb$.
 
 The computation of $\tvb =\mH \vb$ is done iteratively as follows and claim that it requires $m2^m$ operations for vectors $\vb$ of length $2^m$. For the case $m=0$, $\tvb = \mH^{(m)} \vb = \vb$, which requires no arithmetic operations.  Now, Let $\vb = (\vb_1^{T},  \vb_2^{T})$, where $\vb_1$ and $\vb_2$ are each of length $2^m$, and so $\vb$ is of length $2^{m+1}$.  Let $\tvb = \mH^{(m+1)} \vb$,  $\tvb_1 = \mH^{(m)} \vb_1$, and $\tvb_2 = \mH^{(m)} \vb_2$.  It follows from the definition of the Walsh-Hadamard matrix that 
 \begin{align*}
@@ -780,6 +780,11 @@ Thus to compute $\tvb$ requires two matrix multiplications by $\mH^{(1)}$, at a 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Jags: TODO
+% Read and verify 1.3 Digital Nets
+% Remove unnecessary packages
+% f_Genz refer to old paper
+%
 
 
 
@@ -789,20 +794,20 @@ Thus to compute $\tvb$ requires two matrix multiplications by $\mH^{(1)}$, at a 
 
 \JRNote{use uniformly randomly chosen $\varepsilon$ instead 4 fixed}
 
-The fast Bayesian cubature algorithm using digital sequences and the digital shift invariant kernel in \eqref{eqn:digital_shift_in_kernel} with $r=1$ has been coded as \code{cubBayesNet\_g}.  We illustrate our algorithm for three common examples, which were also treated in \cite{RatHic19a} via fast Bayesian cubature based on rank-1 lattices and shift invariant kernels and coded as \code{cubBayesLattice\_g}. The first example evaluates a multivariate Gaussian probability, the second example is Keister's function \cite{Kei96}, and the final example is pricing an Asian arithmetic mean option.  
+The fast Bayesian cubature algorithm using digital sequences and the digital shift invariant kernel in \eqref{eqn:digital_shift_in_kernel} with order $r=1$ has been coded as \code{cubBayesNet\_g}.  We illustrate our algorithm for three common examples, which were also treated in \cite{RatHic19a} via fast Bayesian cubature based on rank-1 lattices and shift invariant kernels and coded as \code{cubBayesLattice\_g}. The first example evaluates a multivariate Gaussian probability, the second example is Keister's function \cite{Kei96}, and the final example is pricing an Asian arithmetic mean option.  
 
 The nodes used in \code{cubBayesNet\_g} were the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. Four hundred different error tolerances, $\varepsilon$, were randomly chosen such that $\log(\varepsilon)$ has a uniform distribution. 
 For each integral example, each $\varepsilon$, and each stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---we ran \code{cubBayesNet\_g}.  For each run, the execution time is plotted against $\abs{\mu - \hmu}/\varepsilon$.  We expect $\abs{\mu - \hmu}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate that the stopping criterion that is too conservative.
 
 \subsection{Multivariate Gaussian Probability}
 
-The integral if formulated as in \cite{RatHic19a} and following the variable transformation introduced by Alan Genz \cite{Gen92}. The simulation results are summarized in Figures \ref{fig:Sobol-mvn-guaranteed-MLE}, \ref{fig:Sobol-mvn-guaranteed-FB}, and \ref{fig:Sobol-mvn-guaranteed-GCV}.  In all cases, {\code{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, {\code{cubBayesNet\_g} takes about 2 \FJHNote{2 or 3 or 4?} seconds as shown in \figref{fig:Sobol-mvn-guaranteed-MLE} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-ups possible using fast Bayesian cubature.
+The integral if formulated as in \cite{RatHic19a} and following the variable transformation introduced by Alan Genz \cite{Gen92}. The simulation results are summarized in Figures \ref{fig:Sobol-mvn-guaranteed-MLE}, \ref{fig:Sobol-mvn-guaranteed-FB}, and \ref{fig:Sobol-mvn-guaranteed-GCV}.  In all cases, \code{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, \code{cubBayesNet\_g} takes about 3 seconds as shown in \figref{fig:Sobol-mvn-guaranteed-MLE} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-ups possible using fast Bayesian cubature.
 
-{\code{cubBayesNet\_g} uses MATLAB's fast Walsh transform which is slower than MATLAB's fast Fourier transform, due to the latter's implementation in C.  We suspect that this is part of the reason that {\code{cubBayesLattice\_g} is faster than {\code{cubBayesNet\_g} for this example.  Also, {\code{cubBayesLattice\_g} used $n=16384$ samples for $\varepsilon = 10^{-5}$, whereas {\code{cubBayesNet\_g} used $n=32768$ samples.
+The \code{cubBayesNet\_g} uses MATLAB's fast Walsh transform which is slower than MATLAB's fast Fourier transform, due to the latter's faster implementation in machine code.  We suspect that this is part of the reason that \code{cubBayesLattice\_g} is faster than \code{cubBayesNet\_g} for this example.  Also, \code{cubBayesLattice\_g} used on average $n \approx 16{,}000$ samples for $\varepsilon = 10^{-5}$, whereas \code{cubBayesNet\_g} used on average $n \approx 32{,}000$ samples.
 
 Amongst the three stopping criteria, GCV achieved an acceptable approximation faster than others but it is less conservative. 
 One can also observe from the figures that the credible intervals are narrower than in \figref{fig:Sobol-mvn-guaranteed-MLE}.
-This shows that {\code{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand.
+This shows that \code{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand.
 
 \begin{figure}
 \centering
@@ -862,6 +867,7 @@ The true value of $\mu$ can be calculated iteratively in terms of a quadrature a
 \mu = \frac{2 \pi^{d/2} I_c(d)}{\Gamma(d/2)}, \quad d=1,2, \ldots
 \end{equation*}
 where $\Gamma$ denotes the gamma function, and
+\JRNote{cite prev paper or the orig source instead}
 \begin{align*}
 I_c(1) &= \frac{\sqrt{\pi}}{2 \exp(1/4)}, 
 \\
@@ -882,8 +888,10 @@ I_s(j) &= \frac{(j-2)I_s(j-2)-I_c(j-1)}{2},
 
 
 Figures \ref{fig:Sobol-keister-guaranteed-MLE}, \ref{fig:Sobol-keister-guaranteed-FB} and \ref{fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case. We used  dimension $d=4$, and $r=1$.  No periodization transform was used as the integrand need not be periodic. 
-In this example, we use $r=1$ order kernel whereas \code{cubBayesLattice\_g} in \cite{RatHic19a}, $r=2$ kernel was used. This necessitates \code{cubBayesNet\_g} to use more samples for integration.
-As observed from the figures, the GCV stopping criterion achieved the results faster than the others but it is less conservative which is also the case with the multivariate Gaussian example.
+% In this example, we use $r=1$ order kernel whereas \code{cubBayesLattice\_g} in \cite{RatHic19a}, smoother $r=2$ order kernel was used. 
+In \cite{RatHic19a} \code{cubBayesLattice\_g} used a much smoother kernel that used here.
+This necessitates \code{cubBayesNet\_g} to use more samples for integration.
+As observed from the figures, the GCV stopping criterion, in Figure \ref{fig:Sobol-keister-guaranteed-GCV} achieved the results faster than the others but it is less conservative which is also the case with the multivariate Gaussian example.
 
 \begin{figure}
 \centering
@@ -935,7 +943,7 @@ Here, $T$ denotes the time to maturity of the option, $d$ the number of time ste
 The Figures \ref{fig:Sobol-optprice-guaranteed-MLE}, \ref{fig:Sobol-optprice-guaranteed-FB} and 
 \ref{fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the values for,
 $
-T = 1/4, \ \ d = 13, \ \ S_0 = 100, \ \ r =  0.05, \ \ \sigma = 0.5, \ \ K = 100
+T = 1/4, \ \ d = 13, \ \ S_0 = 100, \ \ r =  0.05, \ \ \sigma = 0.5, \ \ K = 200
 $, same as used in the experiments of \code{cubBayesLattice\_g} \cite{RatHic19a}.
 As mentioned before, this integrand has a kink caused by the $\max$ function, so, \code{cubBayesNet\_g} could be more efficient than \code{cubBayesLattice\_g}, as no periodization transform is required. This can be observed from the number of samples used for intgration to meet the same error threshold. For the error tolerance, $\varepsilon=10^{-3}$,  \code{cubBayesLattice\_g} used $n=2^{20}$ samples, whereas \code{cubBayesNet\_g} used $n=2^{17}$ samples.
 
@@ -985,6 +993,7 @@ Similar to \code{cubBayesLattice\_g}, it missed meeting the given error threshol
 
 \section{Conclusion and future work}
 \label{sec:conclusion-future-work}
+% Extended the fast Bayesian stopping criterion to use digital nets. Advantage is, integrand does not need to be periodic. Demonstrated using Matlab implementation.
 
 \paragraph{TBD}
 
