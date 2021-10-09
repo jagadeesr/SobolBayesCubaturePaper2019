@@ -57,11 +57,6 @@
     \ignorespacesafterend
 }
 
-\providecommand{\argmin}{\operatorname*{argmin}}
-\providecommand{\argmax}{\operatorname*{argmax}}
-\newcommand\figref{Figure~\ref}
-\newcommand\secref{Section~\ref}
-
 \graphicspath{{.}{./figures/grey/}{D:/Mega/MyWriteupBackup/Sep_2ndweek_1/}}
 %\graphicspath{{./figures/}}
 
@@ -72,13 +67,9 @@
 
 
 % Jags
-\newcommand{\mCtheta}{{\mathsf{C}_{\bstheta}}}
-\newcommand{\mLambdaInv}{\mathsf{\Lambda}^{-1}}
-
 \newcommand{\norm}[2][{}]{\ensuremath{\left \lVert #2 \right \rVert}_{#1}}
 % \def\abs#1{\ensuremath{\left \lvert #1 \right \rvert}}
 \newcommand{\abs}[1]{\left\lvert #1 \right\rvert} % abs
-
 \newcommand{\FJHNote}[1]{{\textcolor{blue}{FJH: #1}}}
 \newcommand{\JRNote}[1]{{\textcolor{green}{JR: #1}}}
 
@@ -414,7 +405,7 @@ An explicit expression is available for $\omega_{r}$ in the case of order $r=1$ 
 % \frac{\textup{wal}_{b,k}(x_l) }{b^{2 \lfloor \log_b k \rfloor}} 
 = 1  - 6 \times 2^{\lfloor \log_2 x \rfloor -1 }.
 \end{equation}
-\figref{FJ:fig:walshkernel-dim1} shows $C_\bstheta (x,t)$ for order $r=1$ and various values of $\eta$ in the interval $[0,1)$. Smaller $\eta_\ell$ implies lesser variation in the amplitude of the kernel.  Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. 
+Figure~\ref{FJ:fig:walshkernel-dim1} shows $C_\bstheta (x,t)$ for order $r=1$ and various values of $\eta$ in the interval $[0,1)$. Smaller $\eta_\ell$ implies lesser variation in the amplitude of the kernel.  Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. 
 
 \begin{figure}
 	\centering
@@ -436,7 +427,7 @@ The parameter vector $\bstheta$ may now be of dimension $d+1$.
 
 \subsection{Eigenvector-Eigenvalue Decomposition of the Gram Matrix}
 
-For fast Bayesian cubature to succeed, the digital net data sites (\secref{FJ:sec:sobol}) and the covariance kernels (\secref{FJ:sec:Walsh_kernels}) must match in a way that conditions \eqref{FJ:eq:fastcompAssump} are satisfied.  To do this, we identify the eigenvectors of the Gram matrix defined in \eqref{FJ:eq:Gram}.  These are actually the Walsh-Hadamard matrices
+For fast Bayesian cubature to succeed, the digital net data sites (Section~\ref{FJ:sec:sobol}) and the covariance kernels (Section~\ref{FJ:sec:Walsh_kernels}) must match in a way that conditions \eqref{FJ:eq:fastcompAssump} are satisfied.  To do this, we identify the eigenvectors of the Gram matrix defined in \eqref{FJ:eq:Gram}.  These are actually the Walsh-Hadamard matrices
 \begin{align}
 \nonumber
 %\arraycolsep=1.4pt\def\arraystretch{0.9}
@@ -466,18 +457,18 @@ Note that the Walsh-Hadamard matrices are symmetric.
 
 \begin{lemma} \label{FJ:lemma:eig}
     Let $\left(\bsx_i\right)_{i=1}^{2^m}$ be digitally shifted Sobol' nodes and let the covariance kernel take the form of \eqref{FJ:eqn:digital_shift_in_kernel}. Then, for $m = 1, 2, \ldots$ the Gram matrix, $
-	\mCtheta^{(m)} = \bigl(C_\bstheta(\bsx_i, \bsx_j)\bigr)_{i,j=1}^{2^m} = \bigl(K(\bsx_i \oplus \bsx_j)\bigr)_{i,j=1}^{2^m}$ is a $2\times 2$ block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks, etc.\ are also $2\times 2$ block-Toeplitz. Moreover, $\mCtheta^{(m)} = \mathsf{H}^{(m)} \mathsf{\Lambda}^{(m)}\mathsf{H}^{(m)}$, where $\mathsf{\Lambda}^{(m)}$ is the diagonal matrix of eigenvalues of $\mCtheta^{(m)}$.
+	\mathsf{C}_{\bstheta}^{(m)} = \bigl(C_\bstheta(\bsx_i, \bsx_j)\bigr)_{i,j=1}^{2^m} = \bigl(K(\bsx_i \oplus \bsx_j)\bigr)_{i,j=1}^{2^m}$ is a $2\times 2$ block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks, etc.\ are also $2\times 2$ block-Toeplitz. Moreover, $\mathsf{C}_{\bstheta}^{(m)} = \mathsf{H}^{(m)} \mathsf{\Lambda}^{(m)}\mathsf{H}^{(m)}$, where $\mathsf{\Lambda}^{(m)}$ is the diagonal matrix of eigenvalues of $\mathsf{C}_{\bstheta}^{(m)}$.
 \end{lemma}
 
 \begin{proof}
     First define the matrices that by Lemma \ref{FJ:lemma:digital_net_prop}, 
     \begin{align*}
-    \mCtheta^{(m,k)} & = \bigl(K(\bsx_i \oplus \bsx_{j + k2^m} )\bigr)_{i,j=1}^{2^m} \\
+    \mathsf{C}_{\bstheta}^{(m,k)} & = \bigl(K(\bsx_i \oplus \bsx_{j + k2^m} )\bigr)_{i,j=1}^{2^m} \\
     & = \bigl(K(\bsz_{i\oplus j+ k 2^m + 1})\bigr)_{i,j=0}^{2^m-1}, \qquad m,k  = 0, 1, \ldots
     \end{align*}
-    which means that $\mCtheta^{(m+1,k)}$, has the following block structure
+    which means that $\mathsf{C}_{\bstheta}^{(m+1,k)}$, has the following block structure
     \begin{align} \nonumber
-    \MoveEqLeft{\mCtheta^{(m+1,k)}} \\
+    \MoveEqLeft{\mathsf{C}_{\bstheta}^{(m+1,k)}} \\
     \nonumber
     & = 
     \begin{pmatrix} 
@@ -486,8 +477,8 @@ Note that the Walsh-Hadamard matrices are symmetric.
     \bigl(K(\bsz_{(i + 2^m) \oplus j + k2^{m+1}+1})\bigr)_{i,j=0}^{2^m-1} &
     \bigl(K(\bsz_{(i + 2^m) \oplus (j+2^m) + k2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1}
     \end{pmatrix} \\
-    & = \begin{pmatrix} \mCtheta^{(m,2k)} & \mCtheta^{(m,2k+1)} \\
-    \mCtheta^{(m,2k+1)} & \mCtheta^{(m,2k)}
+    & = \begin{pmatrix} \mathsf{C}_{\bstheta}^{(m,2k)} & \mathsf{C}_{\bstheta}^{(m,2k+1)} \\
+    \mathsf{C}_{\bstheta}^{(m,2k+1)} & \mathsf{C}_{\bstheta}^{(m,2k)}
     \end{pmatrix} , \label{FJ:eq:cblock}
     \end{align}
     since for $i,j = 0, \ldots, 2^m-1$, it follows that 
@@ -498,15 +489,15 @@ Note that the Walsh-Hadamard matrices are symmetric.
     
     The proof follows by induction.  Note that for the case $m=1$ and $k = 0, 1, \ldots$
     \begin{equation*}
-        \mCtheta^{(1,k)} 
+        \mathsf{C}_{\bstheta}^{(1,k)} 
         =  \begin{pmatrix}
         K_\bstheta(\bsz_{2k+1}) & K_\bstheta(\bsz_{2k+2}) \\
         K_\bstheta(\bsz_{2k+2}) & K_\bstheta(\bsz_{2k+1}) 
         \end{pmatrix} ,
     \end{equation*}
-   which has the desired Toeplitz property. Note also the eigenvectors of $\mCtheta^{(1,k)}$ are the columns of $\mathsf{H}^{(1)}$ since   
+   which has the desired Toeplitz property. Note also the eigenvectors of $\mathsf{C}_{\bstheta}^{(1,k)}$ are the columns of $\mathsf{H}^{(1)}$ since   
    \begin{align*}
-        \mCtheta^{(1,k)} \mathsf{H}^{(1)} & =  \begin{pmatrix}
+        \mathsf{C}_{\bstheta}^{(1,k)} \mathsf{H}^{(1)} & =  \begin{pmatrix}
         K_\bstheta(\bsz_{2k+1}) + K_\bstheta(\bsz_{2k+2}) & K_\bstheta(\bsz_{2k+1}) - K_\bstheta(\bsz_{2k+2})\\
         K_\bstheta(\bsz_{2k+2}{2k+2}) + K_\bstheta(\bsz_{2k+1}) &  K_\bstheta(\bsz_{2k+2}) - K_\bstheta(\bsz_{2k+1}) 
         \end{pmatrix} \\
@@ -516,14 +507,14 @@ Note that the Walsh-Hadamard matrices are symmetric.
         \end{pmatrix}}_{\mathsf{\Lambda}^{(1,k)}} \mathsf{H}^{(1)}.
     \end{align*}
 
-   Now assume that $\mCtheta^{(m,k)}$ is $2\times 2$ block-Toeplitz matrix with all its sub-blocks and sub-sub-blocks, etc.\ also $2\times 2$ block-Toeplitz for $k = 0, 1, \ldots$.  Then by \eqref{FJ:eq:cblock}, the same holds for $\mCtheta^{(m+1,k)}$ for $k = 0, 1, \ldots$.  In particular, the block Toepliz property of $\mCtheta^{(m,0)}$ holds.
+   Now assume that $\mathsf{C}_{\bstheta}^{(m,k)}$ is $2\times 2$ block-Toeplitz matrix with all its sub-blocks and sub-sub-blocks, etc.\ also $2\times 2$ block-Toeplitz for $k = 0, 1, \ldots$.  Then by \eqref{FJ:eq:cblock}, the same holds for $\mathsf{C}_{\bstheta}^{(m+1,k)}$ for $k = 0, 1, \ldots$.  In particular, the block Toepliz property of $\mathsf{C}_{\bstheta}^{(m,0)}$ holds.
    
-    Moreover, the hypothesized eigenvectors of $\mCtheta^{(m+1,k)}$ can also be verified by direct calculation under the induction hypothesis:
+    Moreover, the hypothesized eigenvectors of $\mathsf{C}_{\bstheta}^{(m+1,k)}$ can also be verified by direct calculation under the induction hypothesis:
      \begin{align*}
-        \MoveEqLeft{\mCtheta^{(m+1,k)} \mathsf{H}^{(m+1)}} \\
+        \MoveEqLeft{\mathsf{C}_{\bstheta}^{(m+1,k)} \mathsf{H}^{(m+1)}} \\
         & =  
-        \begin{pmatrix} \mCtheta^{(m,2k)} & \mCtheta^{(m,2k+1)} \\
-        \mCtheta^{(m,2k+1)} & \mCtheta^{(m,2k)}
+        \begin{pmatrix} \mathsf{C}_{\bstheta}^{(m,2k)} & \mathsf{C}_{\bstheta}^{(m,2k+1)} \\
+        \mathsf{C}_{\bstheta}^{(m,2k+1)} & \mathsf{C}_{\bstheta}^{(m,2k)}
         \end{pmatrix} 
         \begin{pmatrix}
         \mathsf{H}^{(m)} &   \mathsf{H}^{(m)} \\
@@ -531,8 +522,8 @@ Note that the Walsh-Hadamard matrices are symmetric.
         \end{pmatrix}\\
         & = 
     \begin{pmatrix}
-        [\mCtheta^{(m,2k)} + \mCtheta^{(m,2k+1)}] \mathsf{H}^{(m)} & [\mCtheta^{(m,2k)} - \mCtheta^{(m,2k+1)}] \mathsf{H}^{(m)}\\
-        [\mCtheta^{(m,2k+1)} + \mCtheta^{(m,2k)}] \mathsf{H}^{(m)} &   [\mCtheta^{(m,2k+1)} - \mCtheta^{(m,2k)}] \mathsf{H}^{(m)}
+        [\mathsf{C}_{\bstheta}^{(m,2k)} + \mathsf{C}_{\bstheta}^{(m,2k+1)}] \mathsf{H}^{(m)} & [\mathsf{C}_{\bstheta}^{(m,2k)} - \mathsf{C}_{\bstheta}^{(m,2k+1)}] \mathsf{H}^{(m)}\\
+        [\mathsf{C}_{\bstheta}^{(m,2k+1)} + \mathsf{C}_{\bstheta}^{(m,2k)}] \mathsf{H}^{(m)} &   [\mathsf{C}_{\bstheta}^{(m,2k+1)} - \mathsf{C}_{\bstheta}^{(m,2k)}] \mathsf{H}^{(m)}
         \end{pmatrix} \\
         & = \underbrace{\begin{pmatrix}
         \mathsf{\Lambda}_\bstheta^{(m,2k)} + \mathsf{\Lambda}_\bstheta^{(m,2k+1)}  & \mathsf{0}\\
@@ -604,12 +595,12 @@ For each integral example, each $\varepsilon$, and each stopping criteria---empi
 
 \subsection{Multivariate Gaussian Probability}
 
-The integral if formulated as in \cite{RatHic19a} and following the variable transformation introduced by Alan Genz \cite{Gen92}. The simulation results are summarized in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE}, \ref{FJ:fig:Sobol-mvn-guaranteed-FB}, and \ref{FJ:fig:Sobol-mvn-guaranteed-GCV}.  In all cases, \texttt{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, \texttt{cubBayesNet\_g} takes about 3 seconds as shown in \figref{FJ:fig:Sobol-mvn-guaranteed-MLE} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-ups possible using fast Bayesian cubature.
+The integral if formulated as in \cite{RatHic19a} and following the variable transformation introduced by Alan Genz \cite{Gen92}. The simulation results are summarized in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE}, \ref{FJ:fig:Sobol-mvn-guaranteed-FB}, and \ref{FJ:fig:Sobol-mvn-guaranteed-GCV}.  In all cases, \texttt{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, \texttt{cubBayesNet\_g} takes about 3 seconds as shown in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-MLE} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-ups possible using fast Bayesian cubature.
 
 The \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform which is slower than MATLAB's fast Fourier transform, due to the latter's faster implementation in machine code.  We suspect that this is part of the reason that \texttt{cubBayesLattice\_g} is faster than \texttt{cubBayesNet\_g} for this example.  Also, \texttt{cubBayesLattice\_g} used on average $n \approx 16{,}000$ samples for $\varepsilon = 10^{-5}$, whereas \texttt{cubBayesNet\_g} used on average $n \approx 32{,}000$ samples.
 
 Amongst the three stopping criteria, GCV achieved an acceptable approximation faster than others but it is less conservative. 
-One can also observe from the figures that the credible intervals are narrower than in \figref{FJ:fig:Sobol-mvn-guaranteed-MLE}.
+One can also observe from the figures that the credible intervals are narrower than in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-MLE}.
 This shows that \texttt{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand.
 
 \begin{figure}
