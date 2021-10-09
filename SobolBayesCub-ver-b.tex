@@ -22,15 +22,6 @@
 %\usepackage{newtxmath}
 %\usepackage{txfonts}
 
-% \documentclass{svjour3}                     % onecolumn (standard format)
-%\documentclass[smallcondensed]{svjour3}     % onecolumn (ditto)
-%\documentclass[smallextended]{svjour3}       % onecolumn (second format)
-%\documentclass[twocolumn]{svjour3}          % twocolumn
-%
-
-% \vec is not showing arruw, so redefine
-% \AtBeginDocument{\renewcommand{\vec}[1]{\overrightarrow{#1}}}
-
 % This approach is better than the above
 % remove the definition of \vec by svjour3
 \let\vec\relax
@@ -1004,7 +995,7 @@ Similar to \code{cubBayesLattice\_g}, it missed meeting the given error threshol
 
 
 % \bibliographystyle{abbrvnat}
-\bibliographystyle{spmpsci.bst}
-\bibliography{FJHown23,FJH23}
+\bibliographystyle{spmpsci}
+\bibliography{FJHown23,FJH23,mybib}
 
 \end{document}
