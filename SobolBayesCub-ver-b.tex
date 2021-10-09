@@ -15,7 +15,6 @@
 \usepackage{courier}        % selects Courier as typewriter font
 \usepackage{type1cm}        % activate if the above 3 fonts are
 % not available on your system
-
 \usepackage{graphicx}       % standard LaTeX graphics tool when including figure files
 
 % This approach is better than the above
@@ -27,11 +26,9 @@
 \usepackage{amssymb}
 \usepackage{xspace}
 
-
 %%%%%%%%%%%%%%%%%%%%%% Macros from the editors
-%\input{macros.tex}
+\input{macros.tex}
 %%%%%%%%%%%%%%%%%%%%%% Macros from the editors
-
 
 
 %
@@ -45,174 +42,11 @@
 
 \algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
 
-\DeclareMathOperator{\Order}{{\mathcal O}}
+% \DeclareMathOperator{\Order}{{\mathcal O}}
 
 % please place your own definitions here and don't use \def but
 % \newcommand{}{}
 \providecommand{\HickernellFJ}{Hickernell\xspace}
-\newcommand{\bm}[1]{\boldsymbol{#1}}
-\newcommand{\mSigma}{\mathsf{\Sigma}}
-\newcommand{\smallocite}[1]{{\small\ocite{#1}}}
-\newcommand{\dif}[1]{\text{d}{#1}}
-\newcommand{\trace}[1]{\textup{trace}{#1}}
-
-\newcommand{\naturals}{\mathbb{N}}
-\newcommand{\natzero}{\mathbb{N}_0}
-\newcommand{\reals}{\mathbb{R}}
-\newcommand{\integers}{\mathbb{Z}}
-\newcommand{\posIntegers}{\mathbb{Z}_{> 0}}
-\newcommand{\complex}{\mathbb{C}}
-\newcommand{\hilbert}{\mathbb{H}}
-\newcommand{\Ex}{\mathbb{E}}
-\newcommand{\bbone}{\mathbbm{1}}
-
-\newcommand{\cf}{\mathcal{F}}
-\newcommand{\cl}{\mathcal{L}}
-\newcommand{\bbcl}{\bar{\boldsymbol{\cl}}}
-\newcommand{\hbcl}{\hat{\boldsymbol{\cl}}}
-\newcommand{\cx}{\mathcal{X}}
-\newcommand{\tcx}{\widetilde{\cx}}
-\newcommand{\rC}{\mathring{C}}
-\newcommand{\ry}{\mathring{y}}
-\newcommand{\rlambda}{\mathring{\lambda}}
-\newcommand{\calU}{\mathcal{U}}
-
-\newcommand{\valpha}{{\bm{\alpha}}}
-\newcommand{\vbeta}{{\bm{\beta}}}
-\newcommand{\vDelta}{{\boldsymbol{\Delta}}}
-\newcommand{\veta}{{\bm{\eta}}}
-\newcommand{\vlambda}{{\bm{\lambda}}}
-\newcommand{\vphi}{{\bm{\phi}}}
-\newcommand{\vpsi}{{\bm{\psi}}}
-\newcommand{\vtheta}{{\bm{\theta}}}
-\newcommand{\vzeta}{{\bm{\zeta}}}
-\newcommand{\vthetaMLE}{\bm{\theta}_{\MLE}}
-\newcommand{\hvtheta}{\hat{\vtheta}}
-\newcommand{\va}{\bm{a}}
-\newcommand{\vA}{\bm{A}}
-\newcommand{\vb}{\bm{b}}
-\newcommand{\tvb}{\widetilde{\vb}}
-\newcommand{\vc}{\bm{c}}
-\newcommand{\vC}{\bm{C}}
-\newcommand{\tvc}{\tilde{\bm{c}}}
-\newcommand{\vg}{\bm{g}}
-\newcommand{\vh}{\bm{h}}
-\newcommand{\vf}{\bm{f}}
-\newcommand{\vk}{\bm{k}}
-\newcommand{\vl}{\bm{l}}
-\newcommand{\vm}{\bm{m}}
-\newcommand{\vs}{\bm{s}}
-\newcommand{\vt}{\bm{t}}
-\newcommand{\vv}{\bm{v}}
-\newcommand{\vV}{\bm{V}}
-\newcommand{\vw}{\bm{w}}
-\newcommand{\vW}{\bm{W}}
-\newcommand{\vx}{\bm{x}}
-\newcommand{\dx}{\dif{{x}}}
-\newcommand{\dt}{\dif{{t}}}
-\newcommand{\dvx}{\dif{\bm{x}}}
-\newcommand{\dvs}{\dif{\bm{s}}}
-\newcommand{\dvt}{\dif{\bm{t}}}
-\newcommand{\vrho}{\bm{\rho}}
-\newcommand{\hy}{\hat{y}}
-\newcommand{\vy}{\bm{y}}
-\newcommand{\vY}{\bm{Y}}
-\newcommand{\hvy}{\hat{\vy}}
-\newcommand{\vz}{\bm{z}}
-\newcommand{\vZ}{\bm{Z}}
-\newcommand{\dvz}{\dif{\bm{z}}}
-\newcommand{\tf}{\tilde{f}}
-\newcommand{\vPsi}{\boldsymbol{\Psi}}
-\newcommand{\vi}{\boldsymbol{i}}
-\newcommand{\ai}{\overrightarrow{\imath}}
-\newcommand{\aj}{\overrightarrow{\jmath}}
-\newcommand{\az}{\overrightarrow{z}}
-\newcommand{\ak}{\overrightarrow{k}}
-\newcommand{\ax}{\overrightarrow{x}}
-\newcommand{\abk}{\overrightarrow{\vk}}
-\newcommand{\abx}{\overrightarrow{\vx}}
-
-\newcommand{\fC}{\mathfrak{C}}
-\newcommand{\hfC}{\mathring{\fC}}
-\newcommand{\hbfC}{\mathring{\boldsymbol{\fC}}}
-\newcommand{\fc}{\mathfrak{c}}
-\newcommand{\bfc}{\boldsymbol{\mathfrak{c}}}
-
-\newcommand{\tvv}{\tilde{\vv}}
-\newcommand{\tvz}{\tilde{\vz}}
-
-\newcommand{\vCvtheta}{{C_\vtheta}}
-\newcommand{\hc}{\widehat{c}}
-
-\newcommand{\hatvy}{\hat{\bm{y}}}
-\newcommand{\haty}{\hat{y}}
-\newcommand{\tvy}{\widetilde{\bm{y}}}
-\newcommand{\ty}{\widetilde{y}}
-\newcommand{\vzero}{\bm{0}}
-\newcommand{\vone}{\bm{1}}
-\newcommand{\tvone}{\tilde{\bm{1}}}
-\newcommand{\mA}{\mathsf{A}}
-\newcommand{\mC}{\mathsf{C}}
-\newcommand{\mP}{\mathsf{P}}
-\newcommand{\mK}{\mathsf{K}}
-\newcommand{\rmC}{\mathring{\mathsf{C}}}
-\newcommand{\mCtheta}{{\mathsf{C}_{\vtheta}}}
-\newcommand{\mCthetaInv}{{\mathsf{C}^{-1}_{\vtheta}}}
-%\newcommand{\mCthetaMLE}{{\mathsf{C}_{\vthetaMLE}}}
-%\newcommand{\mCthetaInvMLE}{{\mathsf{C}^{-1}_{\vthetaMLE}}}
-\newcommand{\mCInv}{\mathsf{C}^{-1}}
-\newcommand{\cov}{{\textup{cov}}}
-\newcommand{\var}{{\textup{var}}}
-\newcommand{\opt}{{\textup{opt}}}
-
-\newcommand{\tmC}{\widetilde{\mathsf{C}}}
-\newcommand{\tlambda}{\tilde{\lambda}}
-
-\newcommand{\mL}{\mathsf{L}}
-
-\newcommand{\mLambda}{\mathsf{\Lambda}}
-\newcommand{\mLambdaInv}{\mathsf{\Lambda}^{-1}}
-
-\newcommand{\mG}{\mathsf{G}}
-\newcommand{\mH}{\mathsf{H}}
-\newcommand{\mV}{\mathsf{V}}
-\newcommand{\mW}{\mathsf{W}}
-
-\newcommand{\calN}{\mathcal{N}}
-\newcommand{\me}{\mathrm{e}}
-
-\newcommand{\tvrho}{\widetilde{\vrho}}
-\newcommand{\heta}{\hat{\eta}}
-\newcommand{\hmu}{\widehat{\mu}}
-\newcommand{\hsigma}{\widehat{\sigma}}
-\newcommand{\hnu}{\hat{\nu}}
-\newcommand{\rhoCond}{\mathring{\vrho}}
-
-\newcommand{\MVN}{\textup{MVN}}
-\newcommand{\MLE}{\textup{EB}}
-\newcommand{\full}{\textup{full}}
-\newcommand{\GCV}{\textup{GCV}}
-
-
-\newcommand{\wal}{\textup{wal}}
-\newcommand{\CI}{\textup{CI}}
-\newcommand{\NICE}{\textup{smth}}
-\newcommand{\PEAKY}{\textup{pky}}
-\newcommand{\NOISE}{\textup{noise}}
-\newcommand{\TRUE}{\textup{true}}
-
-%\newcommand{\errtol}{\text{tol}}
-\newcommand{\errtol}{\varepsilon}
-\newcommand{\errn}{\text{err}_{n}}
-\newcommand{\diag}{\text{diag}}
-\newcommand{\err}{\textup{err}}
-\newcommand{\code}[1]{\texttt{#1}}
-
-\def\abs#1{\ensuremath{\left \lvert #1 \right \rvert}}
-\newcommand{\norm}[2][{}]{\ensuremath{\left \lVert #2 \right \rVert}_{#1}}
-\newcommand{\ip}[3][{}]{\ensuremath{\left \langle #2, #3 \right \rangle_{#1}}}
-
-\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 
 \newenvironment{nalign}{
     \begin{equation}
@@ -235,6 +69,48 @@
 % Insert the name of "your journal" with
 % \journalname{Automatic Bayesian Cubature}
 %
+
+
+% Jags
+\newcommand{\dif}[1]{\text{d}{#1}}
+\newcommand{\dx}{\dif{{x}}}
+\newcommand{\dvx}{\dif{\bsx}}
+\newcommand{\dvz}{\dif{\bsz}}
+\newcommand{\dvt}{\dif{\bst}}
+
+\newcommand{\mL}{\mathsf{L}}
+\newcommand{\mV}{\mathsf{V}}
+\newcommand{\mC}{\mathsf{C}}
+\newcommand{\mH}{\mathsf{H}}
+\newcommand{\mCtheta}{{\mathsf{C}_{\bstheta}}}
+
+\newcommand{\mSigma}{\mathsf{\Sigma}}
+\newcommand{\mLambda}{\mathsf{\Lambda}}
+\newcommand{\mLambdaInv}{\mathsf{\Lambda}^{-1}}
+
+\newcommand{\MVN}{\textup{MVN}}
+\newcommand{\MLE}{\textup{EB}}
+\newcommand{\full}{\textup{full}}
+\newcommand{\GCV}{\textup{GCV}}
+\newcommand{\err}{\textup{err}}
+\newcommand{\CI}{\textup{CI}}
+
+\newcommand{\ai}{\overrightarrow{\imath}}
+\newcommand{\aj}{\overrightarrow{\jmath}}
+\newcommand{\az}{\overrightarrow{z}}
+\newcommand{\ak}{\overrightarrow{k}}
+\newcommand{\ax}{\overrightarrow{x}}
+\newcommand{\abk}{\overrightarrow{\vk}}
+\newcommand{\abx}{\overrightarrow{\vx}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\newcommand{\hmu}{\widehat{\mu}}
+\newcommand{\tvb}{\widetilde{\bsb}}
+\newcommand{\hsigma}{\widehat{\sigma}}
+
+\newcommand{\norm}[2][{}]{\ensuremath{\left \lVert #2 \right \rVert}_{#1}}
+% \def\abs#1{\ensuremath{\left \lvert #1 \right \rvert}}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert} % abs
 
 \newcommand{\FJHNote}[1]{{\textcolor{blue}{FJH: #1}}}
 \newcommand{\JRNote}[1]{{\textcolor{green}{JR: #1}}}
@@ -301,12 +177,12 @@
 Cubature, or numerical multivariate integration, is the problem of inferring a numerical value for a definite integral, 
 \begin{equation}
 \label{FJ:eqn:defn_mu}
-\mu:= \mu(f) := \Ex[f(\boldsymbol{X})] = \int_{[0,1]^d} f(\vx)\, \dvx, 
+\mu:= \mu(f) := \bbE[f(\boldsymbol{X})] = \int_{[0,1]^d} f(\bsx)\, \dvx, 
 \end{equation}
-when no closed-form analytic expression exists. Typically, values of $f$ are accessible through a black-box function routine. Our goal is to construct a cubature, $\hmu = \hmu(f)$, depending only on integrand values at the nodes $\{\vx_i\}_{i=1}^n$, and determine the $n$ which satisfies the error criterion
+when no closed-form analytic expression exists. Typically, values of $f$ are accessible through a black-box function routine. Our goal is to construct a cubature, $\hmu = \hmu(f)$, depending only on integrand values at the nodes $\{\bsx_i\}_{i=1}^n$, and determine the $n$ which satisfies the error criterion
 \begin{equation}
 \label{FJ:eqn:err_crit} 
-\abs{\mu - \hmu} \leq \errtol
+\abs{\mu - \hmu} \leq \varepsilon
 \end{equation}
 with high probability. This article extends the fast Bayesian cubature ideas presented in \cite{RatHic19a} to digital sequences \cite{DicPil10a}.
 
@@ -315,35 +191,35 @@ Cubature is a key component of many problems in scientific computing, finance \c
 %\JRNote{add references}
 The original form of the integral may require a suitable variable transformation to become \eqref{FJ:eqn:defn_mu}. This process is addressed in \cite{BecHae92b, Sid08a, Sid93, Lau96a, CriEtal07}. 
 
-Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmussen and Ghahramani~\cite{RasGha03a}, \cite{BriEtal18a}, and others, we assume that our integrand is an instance of a Gaussian process, $\mathcal{GP}(m,s^2 C_\vtheta)$, and construct a probabilistic error bound for $\mu$ via a Bayesian credible interval.  The integrand is sampled until the credible interval becomes small enough to satisfy \eqref{FJ:eqn:err_crit} with high probability.  
+Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmussen and Ghahramani~\cite{RasGha03a}, \cite{BriEtal18a}, and others, we assume that our integrand is an instance of a Gaussian process, $\mathcal{GP}(m,s^2 C_\bstheta)$, and construct a probabilistic error bound for $\mu$ via a Bayesian credible interval.  The integrand is sampled until the credible interval becomes small enough to satisfy \eqref{FJ:eqn:err_crit} with high probability.  
 
 Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes 
 \begin{itemize}
-    \item Choosing covariance kernels, $C_\vtheta:[0,1]^d \times [0,1]^d \to \reals$, for which the symmetric, positive definite Gram matrices, 
+    \item Choosing covariance kernels, $C_\bstheta:[0,1]^d \times [0,1]^d \to \R$, for which the symmetric, positive definite Gram matrices, 
     \begin{equation} \label{FJ:eq:Gram}
-        \mC_\vtheta = \left(  C_\vtheta(\vx_i,\vx_j)  \right)_{i,j=1}^n,
+        \mC_\bstheta = \left(  C_\bstheta(\bsx_i,\bsx_j)  \right)_{i,j=1}^n,
     \end{equation}
-    have an eigenvalue-eigenvector decomposition of the form $\mC_\vtheta = \mV \mLambda_\vtheta \mV^H/n$, where
+    have an eigenvalue-eigenvector decomposition of the form $\mC_\bstheta = \mV \mLambda_\bstheta \mV^H/n$, where
     \begin{subequations} \label{FJ:eq:fastcompAssump}
 	\begin{align}
 	\label{FJ:eq:fastcompAssumpA}
 	& \mV \text{ may be identified analytically}, \\
 	\label{FJ:eq:fastcompAssumpB}
-	& \text{the first row and column of $\mV$ are } \vone, \\
+	& \text{the first row and column of $\mV$ are } \bsone, \\
 	\label{FJ:eq:fastcompAssumpC}
-	& \text{ Computing $\mV^H \vb$ requires only $\Order(n \log n)$ operations } \forall \vb, \\
+	& \text{ Computing $\mV^H \bsb$ requires only $\calO(n \log n)$ operations } \forall \bsb, \\
 	\label{FJ:addAssump}
-    & \int_{[0,1]^d} C_\vtheta(\vt,\vx) \, \D \vt = 1 \qquad \forall \vx \in [0,1]^d,
+    & \int_{[0,1]^d} C_\bstheta(\bst,\bsx) \, \D \bst = 1 \qquad \forall \bsx \in [0,1]^d,
 	\end{align}
 \end{subequations}
 and
-\item The hyperparameters of the Gaussian process, $m$, $s$, and $\vtheta$ are tuned to increase the likelihood that $f$ is a typical integrand and not an outlier.
+\item The hyperparameters of the Gaussian process, $m$, $s$, and $\bstheta$ are tuned to increase the likelihood that $f$ is a typical integrand and not an outlier.
 \end{itemize}
-We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform}. Our earlier work, \cite{RatHic19a}, which laid the foundation for our approach to fast Bayesian cubature, focused on lattice nodes and shift-invariant kernels. In that context the computation of $\mV^H \vb$ is a one-dimensional fast Fourier transform.  This chapter focuses on digital sequences, such as Sobol' sequences \cite{Sob67}, and covariance kernels that are digital shift-invariant.  In this case the computation of $\mV^H \vb$ is a fast Walsh-Hadamard transform. 
+We call the transformation $\bsb \mapsto \mV^H \bsb$ a \emph{fast Bayesian transform}. Our earlier work, \cite{RatHic19a}, which laid the foundation for our approach to fast Bayesian cubature, focused on lattice nodes and shift-invariant kernels. In that context the computation of $\mV^H \bsb$ is a one-dimensional fast Fourier transform.  This chapter focuses on digital sequences, such as Sobol' sequences \cite{Sob67}, and covariance kernels that are digital shift-invariant.  In this case the computation of $\mV^H \bsb$ is a fast Walsh-Hadamard transform. 
 
 
 \iffalse 
-We call the transformation $\vb \mapsto \mV^H \vb$ a \emph{fast Bayesian transform} and $C_\vtheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\vx_i\}_{i=1}^\infty$.  The covariance kernels used in practice also may satisfy an additional assumption:
+We call the transformation $\bsb \mapsto \mV^H \bsb$ a \emph{fast Bayesian transform} and $C_\bstheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\bsx_i\}_{i=1}^\infty$.  The covariance kernels used in practice also may satisfy an additional assumption:
 \fi
 
 The next section summarizes the key formulae from \cite{RatHic19a}.  Section \ref{FJ:sec:sobol_walsh} extends fast Bayesian cubature to digital nets and digital-shift invariant kernels defined in terms of Walsh functions.  Section \ref{FJ:sec:NumExp} presents numerical experiments that illustrate these ideas.  
@@ -360,7 +236,7 @@ The next section summarizes the key formulae from \cite{RatHic19a}.  Section \re
 
 \FJHNote{Fred fix this section}
 
-We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\vtheta)$.  Specifically, $f$ is a random function with constant mean $m$ and covariance kernel $s^2C_\vtheta$, where $s$ is a positive scale factor, and $C_\vtheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\vtheta$.  The parameter $\vtheta$ may affect the shape or smoothness of $C_\vtheta$. As shown in \cite[Give eq numbers]{RatHic19a}, under assumptions \eqref{FJ:eq:fastcompAssump} a credible interval for the integral is given in terms of the nodes, $\{\vx_i\}_{i=1}^n$, the function data, $\vy = \bigl (f (\vx_i) \bigr)_{i=1}^n$, the scale parameter, $s$, and the kernel, $C_\vtheta$,  by 
+We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  Specifically, $f$ is a random function with constant mean $m$ and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.  The parameter $\bstheta$ may affect the shape or smoothness of $C_\bstheta$. As shown in \cite[Give eq numbers]{RatHic19a}, under assumptions \eqref{FJ:eq:fastcompAssump} a credible interval for the integral is given in terms of the nodes, $\{\bsx_i\}_{i=1}^n$, the function data, $\bsy = \bigl (f (\bsx_i) \bigr)_{i=1}^n$, the scale parameter, $s$, and the kernel, $C_\bstheta$,  by 
 \begin{subequations} \label{FJ:eqn_prob_confidence_interval}
 	\begin{gather}
 	\mathbb{P}_f \left[
@@ -370,29 +246,29 @@ We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussia
 	\label{FJ:muhatGCV-FB-MLE-Simple}
 	\hmu = \frac 1n \sum_{i=1}^n y_i, \\
 	\label{FJ:eqn:errcifast}
-	\err_{\CI} = 2.58 s \sqrt{1 - n/\lambda_{\vtheta,1} }.
+	\err_{\CI} = 2.58 s \sqrt{1 - n/\lambda_{\bstheta,1} }.
 	\end{gather}
 \end{subequations}
-Moreover, $\lambda_{\vtheta,1}$ represents the first eigenvalue of the Gram matrix, $\mC_\vtheta$, defined in \eqref{FJ:eq:Gram}.  All eigenvalues can be computed %(by the which is computed) 
-by taking the fast Bayesian transform of the first column of the Gram matrix, denoted $\vC_{\vtheta,1}$ \cite[Equation number]{RatHic19a}:
+Moreover, $\lambda_{\bstheta,1}$ represents the first eigenvalue of the Gram matrix, $\mC_\bstheta$, defined in \eqref{FJ:eq:Gram}.  All eigenvalues can be computed %(by the which is computed) 
+by taking the fast Bayesian transform of the first column of the Gram matrix, denoted $\bsC_{\bstheta,1}$ \cite[Equation number]{RatHic19a}:
 \begin{equation} 
-	\vlambda_\vtheta
+	\bslambda_\bstheta
 	= \begin{pmatrix}
-		\lambda_{\vtheta,1} \\ \vdots \\ \lambda _{\vtheta,n}
-	\end{pmatrix} = \diag(\mLambda) = \mLambda \vone 
-	= \mV^H \vC_{\vtheta,1}.
+		\lambda_{\bstheta,1} \\ \vdots \\ \lambda _{\bstheta,n}
+	\end{pmatrix} = \textup{diag}(\mLambda) = \mLambda \bsone 
+	= \mV^H \bsC_{\bstheta,1}.
 	\label{FJ:eqn:fast_transform_to_eigvalues}
 \end{equation}
 
 %\subsection{Resolving Hyperparameters} \label{FJ:sec:hyperparameters}
-In \eqref{FJ:eqn_prob_confidence_interval} the hyperparameter $m$ has already been tuned, but $s$ and $\vtheta$ have not yet been.  %We use the function data % JR: Commented this
-This formula for the credible interval depends essentially on $s$ and $\vtheta$.  Resolving these dependencies should also involve the integrand data,  $\vy$, since larger integrand data should tend to imply a larger credible interval. The data should also be used to identify the covariance kernel for which the integrand is a typical draw from the assumed Gaussian process. This is the motivation behind resolving the hyperparameters from function data. 
+In \eqref{FJ:eqn_prob_confidence_interval} the hyperparameter $m$ has already been tuned, but $s$ and $\bstheta$ have not yet been.  %We use the function data % JR: Commented this
+This formula for the credible interval depends essentially on $s$ and $\bstheta$.  Resolving these dependencies should also involve the integrand data,  $\bsy$, since larger integrand data should tend to imply a larger credible interval. The data should also be used to identify the covariance kernel for which the integrand is a typical draw from the assumed Gaussian process. This is the motivation behind resolving the hyperparameters from function data. 
 \JRNote{Need to rephrase this paragraph}
 
 In \cite{RatHic19a} we introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{FJ:eq:fastcompAssump}, we have the estimates for the hyperparameters \cite[Theorem 2]{RatHic19a}:
 		\begin{align*}
 		\nonumber 
-		\widetilde{\vy} &:= \mV^H \vy, \\
+		\widetilde{\bsy} &:= \mV^H \bsy, \\
 %		\nonumber
 %		m_\MLE &=  m_{\full} = m_{\GCV} =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
 %		\\
@@ -400,30 +276,30 @@ In \cite{RatHic19a} we introduced three methods for resolving the hyperparameter
 		s^2_\MLE 
 		& =
 		\frac{1}{n^2} 
-		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}},  \\
+		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}},  \\
 		\nonumber 
-		s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_{\vtheta,i}} \right]^{-1}, \\
+		s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_{\bstheta,i}} \right]^{-1}, \\
 		\nonumber
-		\widehat{\sigma}^2_{\textup{full}} &= \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}}  \left(\frac{\lambda_{\vtheta,1}}{n}  - 1  \right), 
+		\widehat{\sigma}^2_{\textup{full}} &= \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}}  \left(\frac{\lambda_{\bstheta,1}}{n}  - 1  \right), 
 		\end{align*}
 	\begin{subequations}
 		\label{FJ:eqn:fastTheta}
 		\begin{align}
 		\label{FJ:eqn:fastThetaMLE}
-		\vtheta_\MLE
+		\bstheta_\MLE
 		&= 
-		\argmin_{\vtheta}
+		\argmin_{\bstheta}
 		\left[
 		\log\left(
-		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}}
+		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}}
 		\right) 
-		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{\vtheta,i})
+		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{\bstheta,i})
 		\right],\\
 		\label{FJ:eqn:fastThetaGCV} 
-		\vtheta_{\GCV} 
-		&= \argmin_\vtheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\vtheta,i}^2} 
+		\bstheta_{\GCV} 
+		&= \argmin_\bstheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}^2} 
 		\right)  
-		-2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{\vtheta,i}} \right)
+		-2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{\bstheta,i}} \right)
 		\right].
 		\end{align}
 	\end{subequations}
@@ -431,12 +307,12 @@ In \cite{RatHic19a} we introduced three methods for resolving the hyperparameter
 	\label{FJ:errSimple}
 	\begin{align}
 		\label{FJ:eqn:err_MLEGCV}
-		\err_{\CI,\mathsf{x}} = \err_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{1 - \frac{n}{\lambda_{\vtheta,1}} }, \qquad \mathsf{x} \in \{\MLE, \GCV\},  \\ 
+		\err_{\CI,\mathsf{x}} = \err_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{1 - \frac{n}{\lambda_{\bstheta,1}} }, \qquad \mathsf{x} \in \{\MLE, \GCV\},  \\ 
 		\err_{\CI,\textup{full}} 
 		& = t_{n-1,0.995} \hsigma_{\textup{full}} > \err_\MLE. \label{FJ:eq:errFull}
 	\end{align}
 \end{subequations}
-In the formulas for the credible interval half-widths, $\vtheta$ is assumed to take on the values $\vtheta_{\MLE}$ or $\vtheta_{\GCV}$ as appropriate.
+In the formulas for the credible interval half-widths, $\bstheta$ is assumed to take on the values $\bstheta_{\MLE}$ or $\bstheta_{\GCV}$ as appropriate.
 
 Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size; these steps are detailed in Algorithm~\ref{FJ:algorithm1}.
 
@@ -450,7 +326,7 @@ Our  Bayesian cubature algorithm increases the sample size until the width of th
 	\caption{Automatic Bayesian Cubature}\label{FJ:algorithm1}
 	\begin{algorithmic}[1]
 		\Require a generator for the sequence
-		$\vx_1, \vx_2, \ldots$; 
+		$\bsx_1, \bsx_2, \ldots$; 
 		a black-box function, $f$; 
 		an absolute error tolerance,
 		$\varepsilon>0$; the positive initial sample size, $n_0$;
@@ -459,8 +335,8 @@ Our  Bayesian cubature algorithm increases the sample size until the width of th
 		\State $n \gets n_0, \; n' \gets 0, \; \err_\CI \gets \infty$
 		
 		\While{$\err_\CI > \varepsilon$ and $n \le n_{\textup{max}}$}
-		\State Generate $\{ \vx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\vx_i)\}_{i=n'+1}^{n}$
-		\State Compute $\vtheta$ by \eqref{FJ:eqn:fastThetaMLE} or \eqref{FJ:eqn:fastThetaGCV}
+		\State Generate $\{ \bsx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\bsx_i)\}_{i=n'+1}^{n}$
+		\State Compute $\bstheta$ by \eqref{FJ:eqn:fastThetaMLE} or \eqref{FJ:eqn:fastThetaGCV}
 		\State Compute $\err_\CI$  according to \eqref{FJ:eqn:err_MLEGCV} or \eqref{FJ:eq:errFull}
 		
 		\State	$n' \gets n, \; n \gets 2n'$
@@ -495,7 +371,7 @@ The results of this chapter can be summarized as follows:
 
 
 \begin{theorem}
-	Any symmetric, positive definite, digital shift-invariant kernel of the form \eqref{FJ:eqn:walsh_kernel} scaled to satisfy \eqref{FJ:addAssump}, when matched with digital sequence data sites, satisfies assumptions \eqref{FJ:eq:fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} performs the fast Bayesian transform,  $\vb \mapsto \mV^H \vb$ , in $\Order(n \log n)$ operations.
+	Any symmetric, positive definite, digital shift-invariant kernel of the form \eqref{FJ:eqn:walsh_kernel} scaled to satisfy \eqref{FJ:addAssump}, when matched with digital sequence data sites, satisfies assumptions \eqref{FJ:eq:fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} performs the fast Bayesian transform,  $\bsb \mapsto \mV^H \bsb$ , in $\calO(n \log n)$ operations.
 \end{theorem}
 This section defines digital sequences, digital shift-invariant kernels, and the fast Walsh-Hadamard transform.
 
@@ -510,29 +386,29 @@ The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and
 	For any non-negative integer $i = (\dots i_3 i_2 i_1)_2$, define $\ai = (i_1, i_2, \dots)^T$ as the $\infty \times 1$ vector $\ai$ of its binary digits. 
 	For any point $z = {}_20.z_1 z_2 \dots \in [0, 1)$, define $\az = (z_1, z_2, \dots)^T$ as the $\infty \times 1$ vector of its binary digits. 
 	Let $ \mathsf{G}_1, \dots , \mathsf{G}_d$ denote predetermined $\infty \times \infty$ generator matrices whose elements are zeros and ones. 
-	A digital sequence in base $2$ is $\{\vz_1, \vz_2, \vz_3, \dots\}$, where each $\vz_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
+	A digital sequence in base $2$ is $\{\bsz_1, \bsz_2, \bsz_3, \dots\}$, where each $\bsz_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
 	\begin{align*}
 	\az_{i+1,\ell} = \mathsf{G}_{\ell} \, \ai \pmod 2,  \quad \ell = 1, \dots, d, \quad i = 0, 1, \dots \;.
 	\end{align*}
 \end{definition}
 
-It is common to index digital sequences starting with $0$, whereas our data sites and matrices in the earlier section are indexed starting with $1$.  To keep our notation consistent, we define $\vz_{i+1}$ in terms of $\ai$.
+It is common to index digital sequences starting with $0$, whereas our data sites and matrices in the earlier section are indexed starting with $1$.  To keep our notation consistent, we define $\bsz_{i+1}$ in terms of $\ai$.
 
 Digital sequences have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$ and which also corresponds to an exclusive-or. Here and in what follows we ignore the cases of measure zero for which the $\oplus$ operation leads to a binary represntation ending in an infinite string of ones.  The following lemma summarizes some important properties of digital sequences. 
 
 
 \begin{lemma}
 	\label{FJ:lemma:digital_net_prop}
-	Let $\{\vz_i\}_{i=1}^{\infty}$ be a digital sequence in base $2$ as defined in Definition \ref{FJ:def:digitalseq}.  Choose any digital shift $\vDelta \in [0,1)^d$, and define $\{\vx_i\}_{i=1}^{\infty}$ by digitwise addition, $\vx_{i} = \vz_{i} \oplus \vDelta$.
-	Then for all $i,j \in \naturals_0$,
+	Let $\{\bsz_i\}_{i=1}^{\infty}$ be a digital sequence in base $2$ as defined in Definition \ref{FJ:def:digitalseq}.  Choose any digital shift $\bsDelta \in [0,1)^d$, and define $\{\bsx_i\}_{i=1}^{\infty}$ by digitwise addition, $\bsx_{i} = \bsz_{i} \oplus \bsDelta$.
+	Then for all $i,j \in \N_0$,
 	\begin{gather}
 		\label{FJ:eqn:digital_net_symmetric_prop}
-	\vx_{i+1} \oplus \vx_{i+1} = \boldsymbol{0}, \qquad 
-	\vx_{i+1} \oplus \vx_{j+1} = \vx_{j+1} \oplus \vx_{i+1} \\
+	\bsx_{i+1} \oplus \bsx_{i+1} = \boldsymbol{0}, \qquad 
+	\bsx_{i+1} \oplus \bsx_{j+1} = \bsx_{j+1} \oplus \bsx_{i+1} \\
 	\label{FJ:eqn:digital_shift_prop}
-	\vx_{i+1} \oplus \vx_{j+1} = \vz_{i+1} \oplus \vz_{j+1} = \vz_{(i \oplus j) + 1 }.
+	\bsx_{i+1} \oplus \bsx_{j+1} = \bsz_{i+1} \oplus \bsz_{j+1} = \bsz_{(i \oplus j) + 1 }.
 	\end{gather}
-	Therefore, $\{\vz_i\}_{i=1}^{\infty}$ is a group.  Moreover, $\{\vz_i\}_{i=1}^{2^m}$ is a subgroup for $m \in \natzero$.
+	Therefore, $\{\bsz_i\}_{i=1}^{\infty}$ is a group.  Moreover, $\{\bsz_i\}_{i=1}^{2^m}$ is a subgroup for $m \in {\N}_0$.
 \end{lemma}
 The proof follows straightforwardly from Definition \ref{FJ:def:digitalseq} can be found in \cite{JagThesis19a}.
 
@@ -545,7 +421,7 @@ The digital shift invariant kernels required for fast Bayesian cubature using di
 The one-dimensional Walsh functions in base $2$ are defined as
 \begin{align}
     \label{FJ:eqn:walsh_func}
-\textup{wal}_{k}(x) & := (-1)^{k_0 x_1 + k_1 x_2 + \cdots} = (-1)^{\langle \ak, \ax \rangle},  \qquad k \in \natzero, \ x \in [0,1), \\
+\textup{wal}_{k}(x) & := (-1)^{k_0 x_1 + k_1 x_2 + \cdots} = (-1)^{\langle \ak, \ax \rangle},  \qquad k \in {\N}_0, \ x \in [0,1), \\
 \nonumber
 \langle \ak, \ax \rangle & : = k_{0} x_{1} + k_{1} x_{2} + \cdots .
 \end{align}
@@ -553,13 +429,13 @@ where again $\ak$ is a vector containing the binary digits of $k$, and $\ax$ is 
 
 These Walsh functions can be used to construct a covariance kernel for univariate integrands as follows
 \begin{align*}
-    C_\vtheta (x,t) & = K_\vtheta(x \oplus t), \qquad K_\vtheta(x) : = 1 + \eta \omega_{r} (x), \qquad \vtheta = (r,\eta), \\
+    C_\bstheta (x,t) & = K_\bstheta(x \oplus t), \qquad K_\bstheta(x) : = 1 + \eta \omega_{r} (x), \qquad \bstheta = (r,\eta), \\
     \omega_r(x) & := \sum_{k=1}^\infty \frac{\textup{wal}_{k}(x) }{2^{2r \lfloor \log_2 k \rfloor}} \\
     \omega_{r} (x_\ell \oplus t_\ell) & = \sum_{k=1}^\infty \frac{\textup{wal}_{k}(x) \textup{wal}_{k}(t)  }{2^{2r \lfloor \log_2 k \rfloor}}.
 \end{align*}
-The symmetric, positive definite property of $ C_\vtheta (x,t)$ follows from its definition.  This kernel is digital shift invariant because 
+The symmetric, positive definite property of $ C_\bstheta (x,t)$ follows from its definition.  This kernel is digital shift invariant because 
 \[
-C_\vtheta (x \oplus \Delta ,t \oplus \Delta ) = K_\vtheta(x \oplus \Delta \oplus t \oplus \Delta) = K_\vtheta(x \oplus t) =  C_\vtheta (x,t).
+C_\bstheta (x \oplus \Delta ,t \oplus \Delta ) = K_\bstheta(x \oplus \Delta \oplus t \oplus \Delta) = K_\bstheta(x \oplus t) =  C_\bstheta (x,t).
 \]
 This follows because $\Delta \oplus \Delta = 0$.
 
@@ -571,7 +447,7 @@ An explicit expression is available for $\omega_{r}$ in the case of order $r=1$ 
 % \frac{\textup{wal}_{b,k}(x_l) }{b^{2 \lfloor \log_b k \rfloor}} 
 = 1  - 6 \times 2^{\lfloor \log_2 x \rfloor -1 }.
 \end{equation}
-\figref{FJ:fig:walshkernel-dim1} shows $C_\vtheta (x,t)$ for order $r=1$ and various values of $\eta$ in the interval $[0,1)$. Smaller $\eta_\ell$ implies lesser variation in the amplitude of the kernel.  Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. 
+\figref{FJ:fig:walshkernel-dim1} shows $C_\bstheta (x,t)$ for order $r=1$ and various values of $\eta$ in the interval $[0,1)$. Smaller $\eta_\ell$ implies lesser variation in the amplitude of the kernel.  Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. 
 
 \begin{figure}
 	\centering
@@ -584,12 +460,12 @@ An explicit expression is available for $\omega_{r}$ in the case of order $r=1$ 
 Covariance kernels for multivariate integrands defined on $[0,1)^d$ are constructed as tensor products:
 \begin{align}
 \label{FJ:eqn:digital_shift_in_kernel}
-C_{\vtheta}(\vx, \vt) &= K_{\vtheta} (\vx \oplus \vt), \\
+C_{\bstheta}(\bsx, \bst) &= K_{\bstheta} (\bsx \oplus \bst), \\
 \label{FJ:eqn:walsh_kernel}
-K_{\vtheta} (\vx) & =  
-\prod_{\ell=1}^d  1 + \eta_\ell \omega_{r} (x_\ell), \quad \veta = (\eta_1, \cdots, \eta_d), \quad \vtheta = (r, \veta).
+K_{\bstheta} (\bsx) & =  
+\prod_{\ell=1}^d  1 + \eta_\ell \omega_{r} (x_\ell), \quad \bseta = (\eta_1, \cdots, \eta_d), \quad \bstheta = (r, \bseta).
 \end{align}
-The parameter vector $\vtheta$ may now be of dimension $d+1$.
+The parameter vector $\bstheta$ may now be of dimension $d+1$.
 
 \subsection{Eigenvector-Eigenvalue Decomposition of the Gram Matrix}
 
@@ -622,15 +498,15 @@ where $\bigotimes$ is Kronecker product.
 Note that the Walsh-Hadamard matrices are symmetric.
 
 \begin{lemma} \label{FJ:lemma:eig}
-    Let $\left(\vx_i\right)_{i=1}^{2^m}$ be digitally shifted Sobol' nodes and let the covariance kernel take the form of \eqref{FJ:eqn:digital_shift_in_kernel}. Then, for $m = 1, 2, \ldots$ the Gram matrix, $
-	\mCtheta^{(m)} = \bigl(C_\vtheta(\vx_i, \vx_j)\bigr)_{i,j=1}^{2^m} = \bigl(K(\vx_i \oplus \vx_j)\bigr)_{i,j=1}^{2^m}$ is a $2\times 2$ block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks, etc.\ are also $2\times 2$ block-Toeplitz. Moreover, $\mCtheta^{(m)} = \mH^{(m)} \mLambda^{(m)}\mH^{(m)}$, where $\mLambda^{(m)}$ is the diagonal matrix of eigenvalues of $\mCtheta^{(m)}$.
+    Let $\left(\bsx_i\right)_{i=1}^{2^m}$ be digitally shifted Sobol' nodes and let the covariance kernel take the form of \eqref{FJ:eqn:digital_shift_in_kernel}. Then, for $m = 1, 2, \ldots$ the Gram matrix, $
+	\mCtheta^{(m)} = \bigl(C_\bstheta(\bsx_i, \bsx_j)\bigr)_{i,j=1}^{2^m} = \bigl(K(\bsx_i \oplus \bsx_j)\bigr)_{i,j=1}^{2^m}$ is a $2\times 2$ block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks, etc.\ are also $2\times 2$ block-Toeplitz. Moreover, $\mCtheta^{(m)} = \mH^{(m)} \mLambda^{(m)}\mH^{(m)}$, where $\mLambda^{(m)}$ is the diagonal matrix of eigenvalues of $\mCtheta^{(m)}$.
 \end{lemma}
 
 \begin{proof}
     First define the matrices that by Lemma \ref{FJ:lemma:digital_net_prop}, 
     \begin{align*}
-    \mCtheta^{(m,k)} & = \bigl(K(\vx_i \oplus \vx_{j + k2^m} )\bigr)_{i,j=1}^{2^m} \\
-    & = \bigl(K(\vz_{i\oplus j+ k 2^m + 1})\bigr)_{i,j=0}^{2^m-1}, \qquad m,k  = 0, 1, \ldots
+    \mCtheta^{(m,k)} & = \bigl(K(\bsx_i \oplus \bsx_{j + k2^m} )\bigr)_{i,j=1}^{2^m} \\
+    & = \bigl(K(\bsz_{i\oplus j+ k 2^m + 1})\bigr)_{i,j=0}^{2^m-1}, \qquad m,k  = 0, 1, \ldots
     \end{align*}
     which means that $\mCtheta^{(m+1,k)}$, has the following block structure
     \begin{align} \nonumber
@@ -638,10 +514,10 @@ Note that the Walsh-Hadamard matrices are symmetric.
     \nonumber
     & = 
     \begin{pmatrix} 
-    \bigl(K(\vz_{i\oplus j+ k2^{m+1} + 1})\bigr)_{i,j=0}^{2^m-1} &
-    \bigl(K(\vz_{i\oplus (j+2^m)+ k2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1} \\
-    \bigl(K(\vz_{(i + 2^m) \oplus j + k2^{m+1}+1})\bigr)_{i,j=0}^{2^m-1} &
-    \bigl(K(\vz_{(i + 2^m) \oplus (j+2^m) + k2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1}
+    \bigl(K(\bsz_{i\oplus j+ k2^{m+1} + 1})\bigr)_{i,j=0}^{2^m-1} &
+    \bigl(K(\bsz_{i\oplus (j+2^m)+ k2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1} \\
+    \bigl(K(\bsz_{(i + 2^m) \oplus j + k2^{m+1}+1})\bigr)_{i,j=0}^{2^m-1} &
+    \bigl(K(\bsz_{(i + 2^m) \oplus (j+2^m) + k2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1}
     \end{pmatrix} \\
     & = \begin{pmatrix} \mCtheta^{(m,2k)} & \mCtheta^{(m,2k+1)} \\
     \mCtheta^{(m,2k+1)} & \mCtheta^{(m,2k)}
@@ -657,19 +533,19 @@ Note that the Walsh-Hadamard matrices are symmetric.
     \begin{equation*}
         \mCtheta^{(1,k)} 
         =  \begin{pmatrix}
-        K_\vtheta(\vz_{2k+1}) & K_\vtheta(\vz_{2k+2}) \\
-        K_\vtheta(\vz_{2k+2}) & K_\vtheta(\vz_{2k+1}) 
+        K_\bstheta(\bsz_{2k+1}) & K_\bstheta(\bsz_{2k+2}) \\
+        K_\bstheta(\bsz_{2k+2}) & K_\bstheta(\bsz_{2k+1}) 
         \end{pmatrix} ,
     \end{equation*}
    which has the desired Toeplitz property. Note also the eigenvectors of $\mCtheta^{(1,k)}$ are the columns of $\mH^{(1)}$ since   
    \begin{align*}
         \mCtheta^{(1,k)} \mH^{(1)} & =  \begin{pmatrix}
-        K_\vtheta(\vz_{2k+1}) + K_\vtheta(\vz_{2k+2}) & K_\vtheta(\vz_{2k+1}) - K_\vtheta(\vz_{2k+2})\\
-        K_\vtheta(\vz_{2k+2}{2k+2}) + K_\vtheta(\vz_{2k+1}) &  K_\vtheta(\vz_{2k+2}) - K_\vtheta(\vz_{2k+1}) 
+        K_\bstheta(\bsz_{2k+1}) + K_\bstheta(\bsz_{2k+2}) & K_\bstheta(\bsz_{2k+1}) - K_\bstheta(\bsz_{2k+2})\\
+        K_\bstheta(\bsz_{2k+2}{2k+2}) + K_\bstheta(\bsz_{2k+1}) &  K_\bstheta(\bsz_{2k+2}) - K_\bstheta(\bsz_{2k+1}) 
         \end{pmatrix} \\
         & = \underbrace{\begin{pmatrix}
-        K_\vtheta(\vz_{2k+1}) + K_\vtheta(\vz_{2k+2}) & 0\\
-        0 &   K_\vtheta(\vz_{2k+1}) - K_\vtheta(\vz_{2k+2})
+        K_\bstheta(\bsz_{2k+1}) + K_\bstheta(\bsz_{2k+2}) & 0\\
+        0 &   K_\bstheta(\bsz_{2k+1}) - K_\bstheta(\bsz_{2k+2})
         \end{pmatrix}}_{\mLambda^{(1,k)}} \mH^{(1)}.
     \end{align*}
 
@@ -692,9 +568,9 @@ Note that the Walsh-Hadamard matrices are symmetric.
         [\mCtheta^{(m,2k+1)} + \mCtheta^{(m,2k)}] \mH^{(m)} &   [\mCtheta^{(m,2k+1)} - \mCtheta^{(m,2k)}] \mH^{(m)}
         \end{pmatrix} \\
         & = \underbrace{\begin{pmatrix}
-        \mLambda_\vtheta^{(m,2k)} + \mLambda_\vtheta^{(m,2k+1)}  & \mathsf{0}\\
-        \mathsf{0} &   \mLambda_\vtheta^{(m,2k)} - \mLambda_\vtheta^{(m,2k+1)}
-        \end{pmatrix}}_{\mLambda_\vtheta^{(m+1,2k)}} 
+        \mLambda_\bstheta^{(m,2k)} + \mLambda_\bstheta^{(m,2k+1)}  & \mathsf{0}\\
+        \mathsf{0} &   \mLambda_\bstheta^{(m,2k)} - \mLambda_\bstheta^{(m,2k+1)}
+        \end{pmatrix}}_{\mLambda_\bstheta^{(m+1,2k)}} 
         \begin{pmatrix}
         \mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & -\mH^{(m)}
         \end{pmatrix}.
@@ -710,20 +586,20 @@ Lemma \ref{FJ:lemma:eig} establishes that covariance kernels of the form \eqref{
     
     \item \eqref{FJ:addAssump}, since all Walsh functions but the zeroth integrate to zero.
 \end{itemize}
-What remains to be shown is how $\mV^H \vb = \mH \vb$ can be calculated in $\Order(n \log(n))$ operations for arbitrary $\vb$.
+What remains to be shown is how $\mV^H \bsb = \mH \bsb$ can be calculated in $\calO(n \log(n))$ operations for arbitrary $\bsb$.
 
-The computation of $\tvb =\mH \vb$ is done iteratively as follows and claim that it requires $m2^m$ operations for vectors $\vb$ of length $2^m$. For the case $m=0$, $\tvb = \mH^{(m)} \vb = \vb$, which requires no arithmetic operations.  Now, Let $\vb = (\vb_1^{T},  \vb_2^{T})$, where $\vb_1$ and $\vb_2$ are each of length $2^m$, and so $\vb$ is of length $2^{m+1}$.  Let $\tvb = \mH^{(m+1)} \vb$,  $\tvb_1 = \mH^{(m)} \vb_1$, and $\tvb_2 = \mH^{(m)} \vb_2$.  It follows from the definition of the Walsh-Hadamard matrix that 
+The computation of $\tvb =\mH \bsb$ is done iteratively as follows and claim that it requires $m2^m$ operations for vectors $\bsb$ of length $2^m$. For the case $m=0$, $\tvb = \mH^{(m)} \bsb = \bsb$, which requires no arithmetic operations.  Now, Let $\bsb = (\bsb_1^{T},  \bsb_2^{T})$, where $\bsb_1$ and $\bsb_2$ are each of length $2^m$, and so $\bsb$ is of length $2^{m+1}$.  Let $\tvb = \mH^{(m+1)} \bsb$,  $\tvb_1 = \mH^{(m)} \bsb_1$, and $\tvb_2 = \mH^{(m)} \bsb_2$.  It follows from the definition of the Walsh-Hadamard matrix that 
 \begin{align*}
-\tvb &= \mH^{({m+1})} \vb = \begin{pmatrix}
+\tvb &= \mH^{({m+1})} \bsb = \begin{pmatrix}
 \mH^{(m)} & \mH^{(m)} \\ \mH^{(m)} & - \mH^{(m)}
 \end{pmatrix} 
 \begin{pmatrix}
-\vb_1 \\ \vb_2
+\bsb_1 \\ \bsb_2
 \end{pmatrix} \qquad \text{by \eqref{FJ:eqn:hadamard_matrix}} \\
 &= 
 \begin{pmatrix}
-\mH^{(m)} \vb_1 + \mH^{(m)}\vb_2 \\ 
-\mH^{(m)} \vb_1 - \mH^{(m)} \vb_2
+\mH^{(m)} \bsb_1 + \mH^{(m)}\bsb_2 \\ 
+\mH^{(m)} \bsb_1 - \mH^{(m)} \bsb_2
 \end{pmatrix}
 = 
 \begin{pmatrix}
@@ -801,14 +677,14 @@ This shows that \code{cubBayesNet\_g} with $r=1$ kernel more accurately approxim
 This multidimensional integral function comes from \cite{Kei96} and is inspired by a physics application:
 \begin{align}
 \label{FJ:eqn:keister_integral}
-\mu & =  \int_{\reals^d} \cos(\norm{ \vt}) \exp(-\norm{ \vt }^2) \, \dvt \\
+\mu & =  \int_{\R^d} \cos(\norm{ \bst}) \exp(-\norm{ \bst }^2) \, \dvt \\
 \nonumber
 %&  = 
-%\int_{\reals^d} \cos(a\norm{ \vt}) \exp(-a^2\norm{ \vt }^2)  a^d \, \dvt \\
-& = \int_{[0,1]^d} f_{\textup{Keister}}(\vx) \, \dvx,\\
+%\int_{\R^d} \cos(a\norm{ \bst}) \exp(-a^2\norm{ \bst }^2)  a^d \, \dvt \\
+& = \int_{[0,1]^d} f_{\textup{Keister}}(\bsx) \, \dvx,\\
 \intertext{where }
 \nonumber
-f_\textup{Keister}(\vx) &= \pi^{d/2} \cos\left(\norm{ \Phi^{-1}(\vx)/2}\right)  ,
+f_\textup{Keister}(\bsx) &= \pi^{d/2} \cos\left(\norm{ \Phi^{-1}(\bsx)/2}\right)  ,
 \end{align}
 and $\Phi$ is the standard normal distribution.
 %\begin{figure}
@@ -831,7 +707,7 @@ where $\Gamma$ denotes the gamma function, and
 \begin{align*}
 I_c(1) &= \frac{\sqrt{\pi}}{2 \exp(1/4)}, 
 \\
-I_s(1) &= \int_{x=0}^\infty \exp(-\vx^T\vx)\sin(\vx) \, \dvx 
+I_s(1) &= \int_{x=0}^\infty \exp(-\bsx^T\bsx)\sin(\bsx) \, \dvx 
 \\
 & =  0.4244363835020225,
 \\
@@ -882,20 +758,20 @@ As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:
 
 The price of financial derivatives can often be modeled by high dimensional integrals. If the underlying asset is described in terms of a discretized geometric Brownian motion, then the fair price of the option is:
 \begin{equation*}
-\mu = \int_{\reals^d} \text{payoff}(\vz) \frac{\exp(\frac 12 \vz^T\mSigma^{-1}\vz)}{\sqrt{(2\pi)^d \det(\mSigma)}} \, \dvz = \int_{[0,1]^d} f(\vx) \, \dvx,
+\mu = \int_{\R^d} \text{payoff}(\bsz) \frac{\exp(\frac 12 \bsz^T\mSigma^{-1}\bsz)}{\sqrt{(2\pi)^d \det(\mSigma)}} \, \dvz = \int_{[0,1]^d} f(\bsx) \, \dvx,
 \end{equation*} 
 where {payoff($\cdot$)} defines the discounted payoff of the option,
 \begin{align*}
 \mSigma &= (T/d) \bigl(\min(j,k) \bigr)_{j,k=1}^d = \mL \mL^T,\\
-f(\vx) &= \text{payoff} \left(\mL 
+f(\bsx) &= \text{payoff} \left(\mL 
 \begin{pmatrix}
 \Phi^{-1}(x_1) \\ \vdots \\ \Phi^{-1}(x_d)
 \end{pmatrix} \right).
 \end{align*}
 The Asian arithmetic mean call option has a payoff of the form
 \begin{align*}
-\text{payoff}(\vz) &= \max\left( \frac 1d  \sum_{j=1}^d S_j(\vz) - K, 0 \right) \me^{-r T}, \\
-S_j(\vz) &= S_0 \exp\bigl((r-\sigma^2/2)jT/d + \sigma \sqrt{T/d} z_j \bigr).
+\text{payoff}(\bsz) &= \max\left( \frac 1d  \sum_{j=1}^d S_j(\bsz) - K, 0 \right) \mathrm{e}^{-r T}, \\
+S_j(\bsz) &= S_0 \exp\bigl((r-\sigma^2/2)jT/d + \sigma \sqrt{T/d} z_j \bigr).
 \end{align*}
 Here, $T$ denotes the time to maturity of the option, $d$ the number of time steps, $S_0$ the initial price of the stock, $r$ the interest rate, $\sigma$ the volatility, and $K$ the strike price.  
 
