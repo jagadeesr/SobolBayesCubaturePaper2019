@@ -765,10 +765,10 @@ As mentioned before, this integrand has a kink caused by the $\max$ function, so
 \subsection{Discussion}
 % \JRNote{Move this to end of chapter}
 
-As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, both the algorithms computed the integral within user specified threshold most of the time except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand. 
-Also notice that the \texttt{cubBayesLattice\_g} algorithm finished within 10 seconds for Keister and multivariate Gaussian. Option pricing took closer to 70 seconds due to the complexity of the integrand.
+As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, our algorithm computed the integral within user specified threshold most of the time except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand. 
+Also notice that our \texttt{cubBayesNet\_g} algorithm finished within 40 seconds for Keister and multivariate Gaussian. Option pricing took little above 100 seconds due to the complexity of integrand.
 
-Another noticeable aspect from the plots of \texttt{cubBayesLattice\_g} is how much the error bounds differ from the true error. For option pricing example, the error bound is not as conservative as it is for the multivariate Gaussian and Keister examples. A possible reason is that the latter integrands are significantly smoother than the covariance kernel.  This is a matter for further investigation.
+Another noticeable aspect from the plots is how much the error bounds differ from the true error. For option pricing example, the error bound is not as conservative as it is for the multivariate Gaussian and Keister examples. A possible reason is that the latter integrands are significantly smoother than the covariance kernel.  This is a matter for further investigation.
 
 % As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, the \texttt{cubBayesNet\_g} algorithm computes the integral within user specified threshold most of the times except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand as mentioned in the previous example. 
 
@@ -777,7 +777,7 @@ Another noticeable aspect from the plots of \texttt{cubBayesLattice\_g} is how m
 
 Most noticeable aspect from the plots of \texttt{cubBayesNet\_g} is how closer the error bounds are to the true error. 
 This shows that the \texttt{cubBayesNet\_g}'s estimation of expected error in the stopping criterion is very accurate. 
-Similar to \texttt{cubBayesLattice\_g}, it missed meeting the given error threshold for the option pricing example, as marked by the hollow stars, for $\varepsilon=10^{-4}$. The algorithm reached max allowed number of samples, $n=2^{20}$ due to the complexity of the integrand.
+Similar to \texttt{cubBayesLattice\_g} in \cite{RatHic19a}, it missed meeting the given error threshold for the option pricing example, as marked by the hollow stars, for $\varepsilon=10^{-4}$. The algorithm reached max allowed number of samples, $n=2^{20}$ due to the complexity of the integrand.
 
 
 
