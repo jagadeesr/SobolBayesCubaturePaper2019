@@ -40,10 +40,6 @@
 \usepackage{booktabs, mathtools}
 
 
-\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
-
-% \DeclareMathOperator{\Order}{{\mathcal O}}
-
 % please place your own definitions here and don't use \def but
 % \newcommand{}{}
 \providecommand{\HickernellFJ}{Hickernell\xspace}
@@ -67,6 +63,7 @@
 
 
 % Jags
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
 \newcommand{\norm}[2][{}]{\ensuremath{\left \lVert #2 \right \rVert}_{#1}}
 % \def\abs#1{\ensuremath{\left \lvert #1 \right \rvert}}
 \newcommand{\abs}[1]{\left\lvert #1 \right\rvert} % abs
@@ -660,7 +657,8 @@ The true value of $\mu$ can be calculated iteratively in terms of a quadrature a
 \begin{equation*}
 \mu = \frac{2 \pi^{d/2} I_c(d)}{\Gamma(d/2)}, \quad d=1,2, \ldots
 \end{equation*}
-where $\Gamma$ denotes the gamma function, and
+where $\Gamma$ denotes the gamma function, and the definition of $I_c$ can be found in \cite{RatHic19a}.
+\iffalse
 \JRNote{cite prev paper or the orig source instead}
 \begin{align*}
 I_c(1) &= \frac{\sqrt{\pi}}{2 \exp(1/4)}, 
@@ -679,7 +677,7 @@ I_s(j) &= \frac{(j-2)I_s(j-2)-I_c(j-1)}{2},
 \qquad j =3,4,\ldots.
 % ref: https://www.mathworks.com/help/matlab/ref/gamma.html
 \end{align*}
-
+\fi
 
 Figures \ref{FJ:fig:Sobol-keister-guaranteed-MLE}, \ref{FJ:fig:Sobol-keister-guaranteed-FB} and \ref{FJ:fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case. We used  dimension $d=4$, and $r=1$.  No periodization transform was used as the integrand need not be periodic. 
 % In this example, we use $r=1$ order kernel whereas \texttt{cubBayesLattice\_g} in \cite{RatHic19a}, smoother $r=2$ order kernel was used. 
@@ -765,7 +763,7 @@ As mentioned before, this integrand has a kink caused by the $\max$ function, so
 
 
 \subsection{Discussion}
-\JRNote{Move this to end of chapter}
+% \JRNote{Move this to end of chapter}
 
 As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, both the algorithms computed the integral within user specified threshold most of the time except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand. 
 Also notice that the \texttt{cubBayesLattice\_g} algorithm finished within 10 seconds for Keister and multivariate Gaussian. Option pricing took closer to 70 seconds due to the complexity of the integrand.
@@ -787,9 +785,17 @@ Similar to \texttt{cubBayesLattice\_g}, it missed meeting the given error thresh
 
 \section{Conclusion and future work}
 \label{FJ:sec:conclusion-future-work}
-% Extended the fast Bayesian stopping criterion to use digital nets. Advantage is, integrand does not need to be periodic. Demonstrated using Matlab implementation.
+% Extended the fast Bayesian stopping criterion to use digital nets.  Demonstrated using Matlab implementation.
 
-\paragraph{TBD}
+
+
+In this chapter, we extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.
+A Bayesian perspective \cite{RatHic19a}, is used to construct a credible interval for the integral to achieve the user defined error tolerance. 
+Implementation of our algorithm \texttt{cubBayesNet\_g} is available in the Guaranteed Automatic Integration Library (GAIL).  One major advantage this alogithm is, integrand does not need to be periodic unlike the algorithm in \cite{RatHic19a}.
+We deemonstrated \texttt{cubBayesNet\_g} using three example integrand compared with \texttt{cubBayesLattice\_g}. 
+
+Accuracy and spped of the algorithm could be improved by using smoother higher order digital nets and digital shift-invariant covariance kernels. This could help with the smoother integrands. The exisitng implmentation  \texttt{cubBayesNet\_g} uses only the first order kernel and nets.
+
 
 
 % \bibliographystyle{abbrvnat}
