@@ -565,7 +565,6 @@ The computation of $\widetilde{\bsb} =\mathsf{H} \bsb$ is done iteratively as fo
 Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\mathsf{H}^{(1)}$, at a cost of $m 2^m$ each, plus an addition and a subtraction of vectors of length $2^m$, for a total cost of $2 \times m 2^m + 2 \times 2^m = (m+1) 2^{m+1}$, which is exactly what is needed.
 
 
-\FJHNote{Fred stopped here}
 
 
 
@@ -583,26 +582,28 @@ Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\math
 
 % \JRNote{use uniformly randomly chosen $\varepsilon$ instead 4 fixed}
 
-The fast Bayesian cubature algorithm using digital sequences and the digital shift invariant kernel in \eqref{FJ:eqn:digital_shift_in_kernel} with order $r=1$ has been coded as \texttt{cubBayesNet\_g}.  We illustrate our algorithm for three common examples, which were also treated in \cite{RatHic19a} via fast Bayesian cubature based on rank-1 lattices and shift invariant kernels and coded as \texttt{cubBayesLattice\_g}. The first example evaluates a multivariate Gaussian probability, the second example is Keister's function \cite{Kei96}, and the final example is pricing an Asian arithmetic mean option.  
+The fast Bayesian cubature algorithm using digital sequences and the digital shift invariant kernel in \eqref{FJ:eqn:digital_shift_in_kernel} with order $r=1$ has been coded as \texttt{cubBayesNet\_g}.  We illustrate our algorithm for three common examples, which were also treated in \cite{RatHic19a} via fast Bayesian cubature based on rank-1 lattices and shift invariant kernels and coded as \texttt{cubBayesLattice\_g}. The first example evaluates a multivariate Gaussian probability, the second example is Keister's function \cite{Kei96}, and the final example is pricing an Asian arithmetic mean option.  For each example we are able to find an ``exact'' answer, either by direct computation, or by running a numerical algorithm with a very small error tolerance.
 
 The nodes used in \texttt{cubBayesNet\_g} were the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. Four hundred different error tolerances, $\varepsilon$, were randomly chosen such that $\log(\varepsilon)$ has a uniform distribution. 
-For each integral example, each $\varepsilon$, and each stopping criteria---empirical Bayes, full Bayes, and generalized cross-validation---we ran \texttt{cubBayesNet\_g}.  For each run, the execution time is plotted against $\abs{\mu - \widehat{\mu}}/\varepsilon$.  We expect $\abs{\mu - \widehat{\mu}}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate that the stopping criterion that is too conservative.
+For each integral example, each $\varepsilon$, and each stopping criterion---empirical Bayes, full Bayes, and generalized cross-validation---we ran \texttt{cubBayesNet\_g}.  For each run, the execution time is plotted against $\abs{\mu - \widehat{\mu}}/\varepsilon$.  We expect $\abs{\mu - \widehat{\mu}}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate that the stopping criterion that is too conservative.
+
+\FJHNote{Fred stopped here}
 
 \subsection{Multivariate Gaussian Probability}
 
-The integral if formulated as in \cite{RatHic19a} and following the variable transformation introduced by Alan Genz \cite{Gen92}. The simulation results are summarized in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE}, \ref{FJ:fig:Sobol-mvn-guaranteed-FB}, and \ref{FJ:fig:Sobol-mvn-guaranteed-GCV}.  In all cases, \texttt{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, \texttt{cubBayesNet\_g} takes about 3 seconds as shown in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-MLE} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-ups possible using fast Bayesian cubature.
+The integral is formulated as in \cite{RatHic19a} following the variable transformation introduced by Alan Genz \cite{Gen92}. The simulation results are summarized in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE}, \ref{FJ:fig:Sobol-mvn-guaranteed-FB}, and \ref{FJ:fig:Sobol-mvn-guaranteed-GCV}.  In all cases, \texttt{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, \texttt{cubBayesNet\_g} takes about 3 seconds as shown in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-MLE} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-up possible using fast Bayesian cubature.
 
-The \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform which is slower than MATLAB's fast Fourier transform, due to the latter's faster implementation in machine code. We suspect that this is part of the reason that \texttt{cubBayesLattice\_g} is faster than \texttt{cubBayesNet\_g} for this example. Also, \texttt{cubBayesLattice\_g} used higher order kernels whereas here we are limited to first order kernels only. The \texttt{cubBayesLattice\_g} used on average $n \approx 16{,}000$ samples for $\varepsilon = 10^{-5}$, whereas \texttt{cubBayesNet\_g} used on average $n \approx 32{,}000$ samples.
+The \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform which is slower than MATLAB's fast Fourier transform, which is implemented in compiled code. We suspect that this is part of the reason that \texttt{cubBayesLattice\_g} is faster than \texttt{cubBayesNet\_g} for this example. Also, \texttt{cubBayesLattice\_g} here uses higher order kernels whereas higher order digital shift-invariant kernels are inappropriate for these examples. The \texttt{cubBayesLattice\_g} uses on average $n \approx 16{,}000$ samples for $\varepsilon = 10^{-5}$, whereas \texttt{cubBayesNet\_g} uses on average $n \approx 32{,}000$ samples.
 
-Amongst the three stopping criteria, GCV achieved an acceptable approximation faster than others but it is less conservative. 
-One can also observe from the figures that the credible intervals are narrower than in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-MLE}.
-This shows that \texttt{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand.
+Amongst the three stopping criteria, GCV achieves an acceptable approximation faster than others but it is less conservative. 
+One can also observe from the figures that the credible intervals are narrower \FJHNote{than what?} than in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-MLE}.
+This shows that \texttt{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand \FJHNote{than what?} .
 
 \begin{figure}
 \centering
 %d=3 problem transformed into d=2
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Sep-1"}
-\caption[Sobol: MVN guaranteed: MLE]{Multivariate normal probability example with empirical Bayes stopping criterion.}
+\caption[Sobol: MVN guaranteed: MLE]{Multivariate normal probability example with empirical Bayes stopping criterion. \FJHNote{Each caption should say what this is and why it is important.}}
 \label{FJ:fig:Sobol-mvn-guaranteed-MLE}
 \end{figure}
 \begin{figure}
@@ -630,29 +631,26 @@ This shows that \texttt{cubBayesNet\_g} with $r=1$ kernel more accurately approx
 This multidimensional integral function comes from \cite{Kei96} and is inspired by a physics application:
 \begin{align}
 \label{FJ:eqn:keister_integral}
-\mu & =  \int_{\R^d} \cos(\norm{ \bst}) \exp(-\norm{ \bst }^2) \, \textup{d}\bst \\
-\nonumber
+\mu  &=  \int_{\R^d} \cos(\norm{ \bst}) \exp(-\norm{ \bst }^2) \, \textup{d}\bst 
+%\\
+%\nonumber
 %&  = 
 %\int_{\R^d} \cos(a\norm{ \bst}) \exp(-a^2\norm{ \bst }^2)  a^d \, \textup{d}\bst \\
-& = \int_{[0,1]^d} f_{\textup{Keister}}(\bsx) \, \textup{d}\bsx,\\
+= \int_{[0,1]^d} f_{\textup{Keister}}(\bsx) \, \textup{d}\bsx,\\
 \intertext{where }
 \nonumber
-f_\textup{Keister}(\bsx) &= \pi^{d/2} \cos\left(\norm{ \Phi^{-1}(\bsx)/2}\right)  ,
+f_\textup{Keister}(\bsx) &= \pi^{d/2} \cos\left(\norm{ \bsPhi^{-1}(\bsx)/2}\right)  ,
 \end{align}
-and $\Phi$ is the standard normal distribution.
-
-The true value of $\mu$ can be calculated iteratively in terms of a quadrature as follows:  
-\begin{equation*}
-\mu = \frac{2 \pi^{d/2} I_c(d)}{\Gamma(d/2)}, \quad d=1,2, \ldots
-\end{equation*}
-where $\Gamma$ denotes the gamma function, and the definition of $I_c$ can be found in \cite{RatHic19a} (Section 5.2).
+and $\bsPhi$ is the component-wise standard normal distribution.
+The true value of $\mu$ can be calculated iteratively in terms of  quadrature as found in \cite[Section 5.2]{RatHic19a}.
 
 
-Figures \ref{FJ:fig:Sobol-keister-guaranteed-MLE}, \ref{FJ:fig:Sobol-keister-guaranteed-FB} and \ref{FJ:fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case. We used  dimension $d=4$, and order $r=1$.  No periodization transform was used as the integrand need not be periodic. 
+Figures \ref{FJ:fig:Sobol-keister-guaranteed-MLE}, \ref{FJ:fig:Sobol-keister-guaranteed-FB} and \ref{FJ:fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case for dimension $d=4$ and order $r=1$.  
+%No periodization transform was used as the integrand need not be periodic. 
 % In this example, we use $r=1$ order kernel whereas \texttt{cubBayesLattice\_g} in \cite{RatHic19a}, smoother $r=2$ order kernel was used. 
 In \cite{RatHic19a} \texttt{cubBayesLattice\_g} used a much smoother kernel that used here.
-This necessitates \texttt{cubBayesNet\_g} to use more samples for integration.
-As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:Sobol-keister-guaranteed-GCV} achieved the results faster than the others but it is less conservative which is also the case with the multivariate Gaussian example.
+This explains why \texttt{cubBayesNet\_g} uses more samples for integration.
+As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:Sobol-keister-guaranteed-GCV} achieves the results faster than the others but it is less conservative which is also the case with the multivariate Gaussian example.
 
 \begin{figure}
 \centering
@@ -708,10 +706,8 @@ Here, $T$ denotes the time to maturity of the option, $d$ the number of time ste
 %\Subsection{Option Pricing}
 The Figures \ref{FJ:fig:Sobol-optprice-guaranteed-MLE}, \ref{FJ:fig:Sobol-optprice-guaranteed-FB} and 
 \ref{FJ:fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the values for,
-$
-T = 1/4, \ \ d = 13, \ \ S_0 = 100, \ \ r =  0.05, \ \ \sigma = 0.5, \ \ K = 200
-$, same as used in the experiments of \texttt{cubBayesLattice\_g} \cite{RatHic19a}.
-As mentioned before, this integrand has a kink caused by the $\max$ function, so, \texttt{cubBayesNet\_g} could be more efficient than \texttt{cubBayesLattice\_g}, as no periodization transform is required. This can be observed from the number of samples used for intgration to meet the same error threshold. For the error tolerance, $\varepsilon=10^{-3}$,  \texttt{cubBayesLattice\_g} used $n \approx 2^{20}$ samples, whereas \texttt{cubBayesNet\_g} used $n \approx 2^{17}$ samples.
+time horizon $T = 1/4$ of a year, $d = 13$ time steps, initial asset price of $S_0 = 100$, interest rate of $r =  0.05$ per year, volatility of $\sigma = 0.5$ per root year, and strike price of  $K = 200$, the same as used in the experiments of \texttt{cubBayesLattice\_g} \cite{RatHic19a}.
+This integrand has a kink caused by the $\max$ function, so lattice rules cannot perform better, even if the integrand were to be periodized.  We observe that \texttt{cubBayesNet\_g} is more efficient than \texttt{cubBayesLattice\_g}.  For the error tolerance, $\varepsilon=10^{-3}$,  \texttt{cubBayesLattice\_g} uses $n \approx 2^{20}$ samples, whereas \texttt{cubBayesNet\_g} uses $n \approx 2^{17}$ samples.
 
 
 \begin{figure}
@@ -739,17 +735,17 @@ As mentioned before, this integrand has a kink caused by the $\max$ function, so
 \subsection{Discussion}
 % \JRNote{Move this to end of chapter}
 
-As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, our algorithm computed the integral within user specified threshold most of the time except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand. 
+As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, our algorithm computed the integral within user specified threshold most of the time with few exceptions. The exceptions occurred for the  option pricing example due to the complexity and high dimension of the integrand. 
 Also notice that our algorithm \texttt{cubBayesNet\_g}, finished within 40 seconds for Keister and multivariate Gaussian. Option pricing took little above 100 seconds due to the complexity of integrand.
 
-Another noticeable aspect from the plots is how much the error bounds closer to the true error compared to \texttt{cubBayesLattice\_g}. 
-A possible reason is that the periodization transform is not applied to the integrands, keeping the smoothness of the integrand unchanged.
+\FJHNote{For which examples?} in comparison to the Bayesian lattice cubature the ratio $\abs{\mu - \widehat{\mu}}/\varepsilon$  is closer to one for  the Bayesian net cubature.  
+A possible reason is that the periodization transform speeds the convergence in the former case and makes the error bounds too conservative.
 % This is a matter for further investigation.
 
 % As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, the \texttt{cubBayesNet\_g} algorithm computes the integral within user specified threshold most of the times except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand as mentioned in the previous example. 
 
 
-Most noticeable aspect from the plots of \texttt{cubBayesNet\_g} is how closer the error bounds are to the true error. 
+\FJHNote{I do not understand this paragraph. }Most noticeable aspect from the plots of \texttt{cubBayesNet\_g} is how closer the error bounds are to the true error. 
 This shows that the \texttt{cubBayesNet\_g}'s estimation of expected error in the stopping criterion is very accurate. 
 Similar to \texttt{cubBayesLattice\_g} in \cite{RatHic19a}, it missed meeting the given error threshold for the option pricing example, as marked by the hollow stars, for $\varepsilon=10^{-4}$. The algorithm reached max allowed number of samples, $n=2^{20}$ due to the complexity of the integrand.
 
@@ -760,13 +756,11 @@ Similar to \texttt{cubBayesLattice\_g} in \cite{RatHic19a}, it missed meeting th
 \section{Conclusion and future work}
 \label{FJ:sec:conclusion-future-work}
 
-In this chapter, we extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms. A Bayesian perspective, as developed in \cite{RatHic19a}, is used to construct a credible interval for the integral to achieve the user defined error tolerance. 
-
-Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL).  One major advantage this algorithm, unlike the \texttt{cubBayesLattice\_g} developed in \cite{RatHic19a}, is the integrand does not need to be periodic.
-However, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
+We have extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.  Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL) \FJHNote{and QMCPy???}.  One major advantage this algorithm, unlike the \texttt{cubBayesLattice\_g} developed in \cite{RatHic19a}, is that the integrand does not need to be periodic.
+\FJHNote{Not sure what this means.  }However, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
 We demonstrated \texttt{cubBayesNet\_g} using three example integrand compared with \texttt{cubBayesLattice\_g}. 
 
-The \texttt{cubBayesNet\_g} in the current implementation uses only the first order kernel and digital nets. Accuracy and speed of the algorithm could be improved by using smoother higher order digital nets and digital shift-invariant covariance kernels. This could help with the smoother integrands. 
+The \texttt{cubBayesNet\_g} in the current implementation uses only the first order kernel and digital nets. Accuracy and speed of the algorithm could be improved by using smoother higher order digital nets and digital shift-invariant covariance kernels. This could help with the smoother integrands. This is a promising direction for future work.
 
 \JRNote{mention any shortcomings? Especially higher dimensions}
 
