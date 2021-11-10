@@ -587,8 +587,6 @@ The fast Bayesian cubature algorithm using digital sequences and the digital shi
 The nodes used in \texttt{cubBayesNet\_g} were the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. Four hundred different error tolerances, $\varepsilon$, were randomly chosen such that $\log(\varepsilon)$ has a uniform distribution. 
 For each integral example, each $\varepsilon$, and each stopping criterion---empirical Bayes, full Bayes, and generalized cross-validation---we ran \texttt{cubBayesNet\_g}.  For each run, the execution time is plotted against $\abs{\mu - \widehat{\mu}}/\varepsilon$.  We expect $\abs{\mu - \widehat{\mu}}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate that the stopping criterion that is too conservative.
 
-\FJHNote{Fred stopped here}
-
 \subsection{Multivariate Gaussian Probability}
 
 The integral is formulated as in \cite{RatHic19a} following the variable transformation introduced by Alan Genz \cite{Gen92}. The simulation results are summarized in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE}, \ref{FJ:fig:Sobol-mvn-guaranteed-FB}, and \ref{FJ:fig:Sobol-mvn-guaranteed-GCV}.  In all cases, \texttt{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, \texttt{cubBayesNet\_g} takes about 3 seconds as shown in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-MLE} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-up possible using fast Bayesian cubature.
@@ -725,7 +723,7 @@ This integrand has a kink caused by the $\max$ function, so lattice rules cannot
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.}
+\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The hollow stars indicate the data-based error estimate has not met the error threshold $\epsilon$ before reaching maximum $n$.}
 \label{FJ:fig:Sobol-optprice-guaranteed-GCV}
 \end{figure}
 
