@@ -596,14 +596,14 @@ The integral is formulated as in \cite{RatHic19a} following the variable transfo
 The \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform which is slower than MATLAB's fast Fourier transform, which is implemented in compiled code. We suspect that this is part of the reason that \texttt{cubBayesLattice\_g} is faster than \texttt{cubBayesNet\_g} for this example. Also, \texttt{cubBayesLattice\_g} here uses higher order kernels whereas higher order digital shift-invariant kernels are inappropriate for these examples. The \texttt{cubBayesLattice\_g} uses on average $n \approx 16{,}000$ samples for $\varepsilon = 10^{-5}$, whereas \texttt{cubBayesNet\_g} uses on average $n \approx 32{,}000$ samples.
 
 Amongst the three stopping criteria, GCV achieves an acceptable approximation faster than others but it is less conservative. 
-One can also observe from the figures that the credible intervals are narrower \FJHNote{than what?} than in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-MLE}.
-This shows that \texttt{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand \FJHNote{than what?} .
+One can also observe from the figures that the credible intervals are narrower \FJHNote{than what?} than Empirical Bayes as in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-MLE}.
+This shows that \texttt{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand \FJHNote{than what?} than the Empirical Bayes.
 
 \begin{figure}
 \centering
 %d=3 problem transformed into d=2
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Sep-1"}
-\caption[Sobol: MVN guaranteed: MLE]{Multivariate normal probability example with empirical Bayes stopping criterion. \FJHNote{Each caption should say what this is and why it is important.}}
+\caption[Sobol: MVN guaranteed: MLE]{Multivariate normal probability example with empirical Bayes stopping criterion. \FJHNote{Each caption should say what this is and why it is important.} \JRNote{discuss }}
 \label{FJ:fig:Sobol-mvn-guaranteed-MLE}
 \end{figure}
 \begin{figure}
@@ -756,7 +756,7 @@ Similar to \texttt{cubBayesLattice\_g} in \cite{RatHic19a}, it missed meeting th
 \section{Conclusion and future work}
 \label{FJ:sec:conclusion-future-work}
 
-We have extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.  Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL) \FJHNote{and QMCPy???}.  One major advantage this algorithm, unlike the \texttt{cubBayesLattice\_g} developed in \cite{RatHic19a}, is that the integrand does not need to be periodic.
+We have extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.  Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL) \cite{ChoEtal20a} and Quasi-Monte-Carlo Software in Python (QMCPy) \cite{QMCPy2020a} \FJHNote{and QMCPy???}.  One major advantage of this algorithm, unlike the \texttt{cubBayesLattice\_g} developed in \cite{RatHic19a}, is that the integrand does not have to be periodic.
 \FJHNote{Not sure what this means.  }However, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
 We demonstrated \texttt{cubBayesNet\_g} using three example integrand compared with \texttt{cubBayesLattice\_g}. 
 
