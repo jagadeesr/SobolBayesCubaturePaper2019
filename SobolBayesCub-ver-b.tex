@@ -597,28 +597,31 @@ The integral is formulated as in \cite{RatHic19a} following the variable transfo
 The \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform which is slower than MATLAB's fast Fourier transform, which is implemented in compiled code. We suspect that this is part of the reason that \texttt{cubBayesLattice\_g} is faster than \texttt{cubBayesNet\_g} for this example. Also, \texttt{cubBayesLattice\_g} here uses higher order kernels whereas higher order digital shift-invariant kernels are inappropriate for these examples. The \texttt{cubBayesLattice\_g} uses on average $n \approx 16{,}000$ samples for $\varepsilon = 10^{-5}$, whereas \texttt{cubBayesNet\_g} uses on average $n \approx 32{,}000$ samples.
 
 Amongst the three stopping criteria, GCV achieves an acceptable approximation faster than others but it is less conservative. 
-One can also observe from the figures that the credible intervals are narrower \FJHNote{than what?} than Empirical Bayes as in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-MLE}.
-This shows that \texttt{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand \FJHNote{than what?} than the Empirical Bayes.
+One can also observe from the figures that the credible intervals are narrower than Empirical Bayes as in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-MLE}.
+This shows that \texttt{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand than the Empirical Bayes.
 
 \begin{figure}
 \centering
 %d=3 problem transformed into d=2
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Sep-1"}
-\caption[Sobol: MVN guaranteed: MLE]{Multivariate normal probability example with empirical Bayes stopping criterion. \FJHNote{Each caption should say what this is and why it is important.} \JRNote{discuss }}
+\caption[Sobol: MVN guaranteed: MLE]{Multivariate normal probability example with empirical Bayes stopping criterion.  Algorithm has met the error threshold for all the $\epsilon$ in $[10^{-5}, 10^{-2}]$.}
+	% \FJHNote{Each caption should say what this is and why it is important.} 
+	% \JRNote{Done.  Explain the observation. Compare with other like EB, GCV, full. 
+% The error tolerance is always met by cubBayesLatticG } }
 \label{FJ:fig:Sobol-mvn-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 \centering
 %d=3 problem transformed into d=2
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_full__d2_r1_2019-Sep-1"}
-\caption[Sobol: MVN guaranteed: Full Bayes]{Multivariate normal probability example with the full-Bayes stopping criterion.}
+\caption[Sobol: MVN guaranteed: Full Bayes]{Multivariate normal probability example with the full-Bayes stopping criterion. Algorithm has met the error threshold for all the $\epsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
 \label{FJ:fig:Sobol-mvn-guaranteed-FB}
 \end{figure}
 \begin{figure}
 \centering
 %d=3 problem transformed into d=2
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_GCV__d2_r1_2019-Sep-1"}
-\caption[Sobol: MVN guaranteed: GCV]{Multivariate normal probability example with the GCV stopping criterion.}
+\caption[Sobol: MVN guaranteed: GCV]{Multivariate normal probability example with the GCV stopping criterion. Algorithm has met the error threshold for all the $\epsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
 \label{FJ:fig:Sobol-mvn-guaranteed-GCV}
 \end{figure}
 
@@ -656,19 +659,19 @@ As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_MLE__d4_r1_2019-Sep-1"}
-\caption[Sobol: Keister guaranteed: MLE]{Keister example using the empirical Bayes stopping criterion.}
+\caption[Sobol: Keister guaranteed: MLE]{Keister example using the empirical Bayes stopping criterion. Algorithm has met the error threshold for all the $\epsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
 \label{FJ:fig:Sobol-keister-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_full__d4_r1_2019-Sep-1"}
-\caption[Sobol: Keister guaranteed: Full Bayes]{Keister example using the full-Bayes stopping criterion.}
+\caption[Sobol: Keister guaranteed: Full Bayes]{Keister example using the full-Bayes stopping criterion. Algorithm has met the error threshold for all the $\epsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
 \label{FJ:fig:Sobol-keister-guaranteed-FB}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_GCV__d4_r1_2019-Sep-1"}
-\caption[Sobol: Keister guaranteed: GCV]{Keister example using the GCV stopping criterion.}
+\caption[Sobol: Keister guaranteed: GCV]{Keister example using the GCV stopping criterion. Algorithm has met the error threshold for all the $\epsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
 \label{FJ:fig:Sobol-keister-guaranteed-GCV}
 \end{figure}
 
@@ -714,13 +717,16 @@ This integrand has a kink caused by the $\max$ function, so lattice rules cannot
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed: MLE]{Option pricing using the empirical Bayes stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.}
+\caption[Sobol: Option pricing guaranteed: MLE]{Option pricing using the empirical Bayes stopping criterion. The hollow stars indicate the half-width of the credible interval has not met the error threshold $\epsilon$ before reaching maximum $n$.}
 \label{FJ:fig:Sobol-optprice-guaranteed-MLE}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed: Full Bayes]{Option pricing using the full-Bayes stopping criterion. The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.}
+\caption[Sobol: Option pricing guaranteed: Full Bayes]{Option pricing using the full-Bayes stopping criterion. The hollow stars indicate the half-width of the credible interval has not met the error threshold $\epsilon$ before reaching maximum $n$. 
+%The hollow stars indicate the algorithm has not met the error threshold $\epsilon$ even with using maximum $n$.
+%\JRNote{fix this: hollow star means algoritm used maximum N, estimated error is bigger than the threshold}
+}
 \label{FJ:fig:Sobol-optprice-guaranteed-FB}
 \end{figure}
 \begin{figure}
