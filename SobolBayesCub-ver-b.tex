@@ -723,7 +723,7 @@ This integrand has a kink caused by the $\max$ function, so lattice rules cannot
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The hollow stars indicate the data-based error estimate has not met the error threshold $\epsilon$ before reaching maximum $n$.}
+\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The hollow stars indicate the half-width of the credible interval has not met the error threshold $\epsilon$ before reaching maximum $n$.}
 \label{FJ:fig:Sobol-optprice-guaranteed-GCV}
 \end{figure}
 
@@ -736,16 +736,21 @@ This integrand has a kink caused by the $\max$ function, so lattice rules cannot
 As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, our algorithm computed the integral within user specified threshold most of the time with few exceptions. The exceptions occurred for the  option pricing example due to the complexity and high dimension of the integrand. 
 Also notice that our algorithm \texttt{cubBayesNet\_g}, finished within 40 seconds for Keister and multivariate Gaussian. Option pricing took little above 100 seconds due to the complexity of integrand.
 
-\FJHNote{For which examples?} in comparison to the Bayesian lattice cubature the ratio $\abs{\mu - \widehat{\mu}}/\varepsilon$  is closer to one for  the Bayesian net cubature.  
+%\FJHNote{For which examples?} 
+A most noticeable aspect from the plots of \texttt{cubBayesNet\_g} is how close the error bounds are to the true error. 
+This shows that the \texttt{cubBayesNet\_g}'s error bounding is not too conservative.
+
+In nearly all of the examples, the ratio $\abs{\mu - \widehat{\mu}}/\varepsilon$  is closer to one for the Bayesian net cubature in comparison to the Bayesian lattice cubature.  
 A possible reason is that the periodization transform speeds the convergence in the former case and makes the error bounds too conservative.
 % This is a matter for further investigation.
 
 % As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-MLE} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, the \texttt{cubBayesNet\_g} algorithm computes the integral within user specified threshold most of the times except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand as mentioned in the previous example. 
 
 
-\FJHNote{I do not understand this paragraph. }Most noticeable aspect from the plots of \texttt{cubBayesNet\_g} is how closer the error bounds are to the true error. 
-This shows that the \texttt{cubBayesNet\_g}'s estimation of expected error in the stopping criterion is very accurate. 
-Similar to \texttt{cubBayesLattice\_g} in \cite{RatHic19a}, it missed meeting the given error threshold for the option pricing example, as marked by the hollow stars, for $\varepsilon=10^{-4}$. The algorithm reached max allowed number of samples, $n=2^{20}$ due to the complexity of the integrand.
+% \FJHNote{I do not understand this paragraph. }
+% A most noticeable aspect from the plots of \texttt{cubBayesNet\_g} is how close the error bounds are to the true error. 
+% This shows that the \texttt{cubBayesNet\_g}'s error bounding is not too conservative.
+% Similar to the situation with \texttt{cubBayesLattice\_g} in \cite{RatHic19a}, \texttt{cubBayesNet\_g} missed meeting the given error threshold for the option pricing example, as marked by the hollow stars, for $\varepsilon=10^{-4}$. The algorithm reached max allowed number of samples, $n=2^{20}$ due to the complexity of the integrand.
 
 
 
@@ -754,13 +759,16 @@ Similar to \texttt{cubBayesLattice\_g} in \cite{RatHic19a}, it missed meeting th
 \section{Conclusion and future work}
 \label{FJ:sec:conclusion-future-work}
 
-We have extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.  Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL) \cite{ChoEtal20a} and Quasi-Monte-Carlo Software in Python (QMCPy) \cite{QMCPy2020a} \FJHNote{and QMCPy???}.  One major advantage of this algorithm, unlike the \texttt{cubBayesLattice\_g} developed in \cite{RatHic19a}, is that the integrand does not have to be periodic.
-\FJHNote{Not sure what this means.  }However, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
-We demonstrated \texttt{cubBayesNet\_g} using three example integrand compared with \texttt{cubBayesLattice\_g}. 
+We have extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.  Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL) \cite{ChoEtal20a} and Quasi-Monte-Carlo Software in Python (QMCPy) \cite{QMCPy2020a}.  We demonstrated \texttt{cubBayesNet\_g} using three example integrand compared with \texttt{cubBayesLattice\_g}. 
+One major advantage of this algorithm, unlike the \texttt{cubBayesLattice\_g} developed in \cite{RatHic19a}, is that the integrand does not have to be periodic.  However, unlike \texttt{cubBayesNet\_g}, \texttt{cubBayesLattice\_g} is more efficient for smoother, periodic functions when using sufficiently smooth and periodic covariance kernels.
+%\FJHNote{Not sure what this means.  }However, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
 
 The \texttt{cubBayesNet\_g} in the current implementation uses only the first order kernel and digital nets. Accuracy and speed of the algorithm could be improved by using smoother higher order digital nets and digital shift-invariant covariance kernels. This could help with the smoother integrands. This is a promising direction for future work.
 
-\JRNote{mention any shortcomings? Especially higher dimensions}
+For higher dimensions, both Bayesian cubature algorithms face sometimes fail to produce an acceptable answer within a reasonable amount of time.  This seems to be related to an excessive amount of time required to identify the optimal shape parameter $\boldsymbol{\theta}$.  The root of the problem and its resolution is a matter for future investigation.
+
+
+
 
 % \bibliographystyle{abbrvnat}
 \bibliographystyle{spmpsci}
