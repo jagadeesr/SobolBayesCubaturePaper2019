@@ -17,6 +17,7 @@
 % not available on your system
 \usepackage{graphicx}       % standard LaTeX graphics tool when including figure files
 
+
 % This approach is better than the above
 % remove the definition of \vec by svjour3
 \let\vec\relax
@@ -38,6 +39,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{booktabs, mathtools}
+\usepackage{url} %added by the authors
 
 
 % please place your own definitions here and don't use \def but
@@ -118,8 +120,8 @@
 \maketitle
 
 \abstract{
-	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern, but one can automatically determine the sample size, $n$, given a reasonable, fixed sampling pattern. This approach is pursued in \cite{RatHic19a}, where a Bayesian perspective is used to construct a credible interval for the integral, and the computation is terminated when the half-widths of the interval is no greater than the required error tolerance.  In \cite{RatHic19a} integration lattice sampling is employed and the computations are expedited by the use of a fast Fourier transform because the covariance kernels for the Gaussian process prior on the integrand are chosen to be shift-invariant.  In this chapter, we extend our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.
-	Our algorithm is implemented in the Guaranteed Automatic Integration Library (GAIL).
+	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern to focus on peaks because peaks can hide more easily in high dimensional space.  But, one can automatically determine the sample size, $n$, given a reasonable, fixed sampling pattern. This approach is pursued in Jagdeeswaran and Hickernell, Stat.\ Comput., 29:1214-1229, 2019, where a Bayesian perspective is used to construct a credible interval for the integral, and the computation is terminated when the half-widths of the interval is no greater than the required error tolerance.  In our earlier work integration lattice sampling is employed and the computations are expedited by the use of a fast Fourier transform because the covariance kernels for the Gaussian process prior on the integrand are chosen to be shift-invariant.  In this chapter, we extend our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.
+	Our algorithm is implemented in the Guaranteed Automatic Integration Library (GAIL) and QMCPy.
 }
 
 
@@ -134,7 +136,7 @@ Cubature, or numerical multivariate integration, is the problem of inferring a n
 \label{FJ:eqn:defn_mu}
 \mu:= \mu(f) := \bbE[f(\boldsymbol{X})] = \int_{[0,1]^d} f(\bsx)\, \textup{d}\bsx, 
 \end{equation}
-when no closed-form analytic expression exists. Typically, values of $f$ are accessible through a black-box function routine. Our goal is to construct a cubature, $\widehat{\mu} = \widehat{\mu}(f)$, depending only on integrand values at the nodes $\{\bsx_i\}_{i=1}^n$, and determine the $n$ which satisfies the error criterion
+when no closed-form analytic expression exists. Typically, values of $f$ are accessible through a black-box function routine. Our goal is to construct a cubature, $\widehat{\mu} = \widehat{\mu}(f)$, depending only on integrand values at the nodes $\{\bsx_i\}_{i=1}^n$, and determine the $n$ that satisfies the error criterion
 \begin{equation}
 \label{FJ:eqn:err_crit} 
 \abs{\mu - \widehat{\mu}} \leq \varepsilon
@@ -144,12 +146,13 @@ with high probability. This article extends the fast Bayesian cubature ideas pre
 
 Cubature is a key component of many problems in scientific computing, finance \cite{Gla03}, statistical modeling, imaging \cite{Keller2013}, uncertainty quantification, and machine learning \cite{Goodfellow-et-al-2016}. 
 %\JRNote{add references}
-The original form of the integral may require a suitable variable transformation to become \eqref{FJ:eqn:defn_mu}. This process is addressed in \cite{BecHae92b, Sid08a, Sid93, Lau96a, CriEtal07}. 
+The original form of the integral may require a suitable variable transformation to become \eqref{FJ:eqn:defn_mu}. This process is addressed in \cite{BecHae92b, CriEtal07, Lau96a,  Sid93, Sid08a}. 
 
-Following the Bayesian numerics approach of \cite{Dia88a}, \cite{OHa91a}, Rasmussen and Ghahramani~\cite{RasGha03a}, \cite{BriEtal18a}, and others, we assume that our integrand is an instance of a Gaussian process, $\mathcal{GP}(m,s^2 C_\bstheta)$, and construct a probabilistic error bound for $\mu$ via a Bayesian credible interval.  The integrand is sampled until the credible interval becomes small enough to satisfy \eqref{FJ:eqn:err_crit} with high probability.  
+Following the Bayesian numerics approach of \cite{BriEtal18a, Dia88a, OHa91a, RasGha03a} and others, we assume that our integrand is an instance of a Gaussian process, $\mathcal{GP}(m,s^2 C_\bstheta)$, and construct a probabilistic error bound for $\mu$ via a Bayesian credible interval.  The integrand is sampled until the credible interval becomes small enough to satisfy \eqref{FJ:eqn:err_crit} with high probability.  
 
-Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes 
-\begin{itemize}
+Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes two key points
+\begin{enumerate}
+\renewcommand{\labelenumi}{\roman{enumi})}
     \item Choosing covariance kernels, $C_\bstheta:[0,1]^d \times [0,1]^d \to \R$, for which the symmetric, positive definite Gram matrices, 
     \begin{equation} \label{FJ:eq:Gram}
         \mathsf{C}_\bstheta = \left(  C_\bstheta(\bsx_i,\bsx_j)  \right)_{i,j=1}^n,
@@ -162,15 +165,15 @@ Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes
 	\label{FJ:eq:fastcompAssumpB}
 	& \text{the first row and column of $\mathsf{V}$ are } \bsone, \\
 	\label{FJ:eq:fastcompAssumpC}
-	& \text{ Computing $\mathsf{V}^H \bsb$ requires only $\calO(n \log n)$ operations } \forall \bsb, \\
+	& \text{ Computing $\mathsf{V}^H \bsb$ requires only $\calO(n \log n)$ operations } \forall \bsb, \text{ and} \\
 	\label{FJ:addAssump}
     & \int_{[0,1]^d} C_\bstheta(\bst,\bsx) \, \D \bst = 1 \qquad \forall \bsx \in [0,1]^d,
 	\end{align}
 \end{subequations}
 and
 \item The hyperparameters of the Gaussian process, $m$, $s$, and $\bstheta$ are tuned to increase the likelihood that $f$ is a typical integrand and not an outlier.
-\end{itemize}
-We call the transformation $\bsb \mapsto \mathsf{V}^H \bsb$ a \emph{fast Bayesian transform}. Our earlier work, \cite{RatHic19a}, which laid the foundation for our approach to fast Bayesian cubature, focused on lattice nodes and shift-invariant kernels. In that context the computation of $\mathsf{V}^H \bsb$ is a one-dimensional fast Fourier transform.  This chapter focuses on digital sequences, such as Sobol' sequences \cite{Sob67}, and covariance kernels that are digital shift-invariant.  In this case the computation of $\mathsf{V}^H \bsb$ is a fast Walsh-Hadamard transform. 
+\end{enumerate}
+We call the transformation $\bsb \mapsto \mathsf{V}^H \bsb$ a \emph{fast Bayesian transform}. Our earlier work \cite{RatHic19a} focuses on lattice nodes and shift-invariant kernels. In that context the computation of $\mathsf{V}^H \bsb$ is a one-dimensional fast Fourier transform.  This chapter focuses on digital sequences, such as Sobol' sequences \cite{Sob67}, and covariance kernels that are digital shift-invariant.  In this case the computation of $\mathsf{V}^H \bsb$ is a fast Walsh-Hadamard transform. 
 
 
 \iffalse 
@@ -759,7 +762,7 @@ A possible reason is that the periodization transform speeds the convergence in 
 \section{Conclusion and future work}
 \label{FJ:sec:conclusion-future-work}
 
-We have extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.  Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL) \cite{ChoEtal20a} and Quasi-Monte-Carlo Software in Python (QMCPy) \cite{QMCPy2020a}.  We demonstrated \texttt{cubBayesNet\_g} using three example integrand compared with \texttt{cubBayesLattice\_g}. 
+We have extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.  Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL) \cite{ChoEtal21a} and Quasi-Monte-Carlo Software in Python (QMCPy) \cite{QMCPy2020a}.  We demonstrated \texttt{cubBayesNet\_g} using three example integrand compared with \texttt{cubBayesLattice\_g}. 
 One major advantage of this algorithm, unlike the \texttt{cubBayesLattice\_g} developed in \cite{RatHic19a}, is that the integrand does not have to be periodic.  However, unlike \texttt{cubBayesNet\_g}, \texttt{cubBayesLattice\_g} is more efficient for smoother, periodic functions when using sufficiently smooth and periodic covariance kernels.
 %\FJHNote{Not sure what this means.  }However, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
 
