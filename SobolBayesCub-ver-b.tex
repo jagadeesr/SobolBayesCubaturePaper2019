@@ -194,7 +194,7 @@ The next section summarizes the key formulae from \cite{RatHic19a}.  Section \re
 
 \FJHNote{Fred fix this section}
 
-We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  Specifically, $f$ is a random function with constant mean $m$ and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.  The parameter $\bstheta$ may affect the shape or smoothness of $C_\bstheta$. As shown in \cite[Give eq numbers]{RatHic19a}, under assumptions \eqref{FJ:eq:fastcompAssump} a credible interval for the integral is given in terms of the nodes, $\{\bsx_i\}_{i=1}^n$, the function data, $\bsy = \bigl (f (\bsx_i) \bigr)_{i=1}^n$, the scale parameter, $s$, and the kernel, $C_\bstheta$,  by 
+We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  Specifically, $f$ is a random function with constant mean, $m$, and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.  The parameter $\bstheta$ may affect the shape or smoothness of $C_\bstheta$. Under assumptions As shown in \cite[Give eq numbers]{RatHic19a}, under assumptions \eqref{FJ:eq:fastcompAssump} a credible interval for the integral is given in terms of the nodes, $\{\bsx_i\}_{i=1}^n$, the function data, $\bsy = \bigl (f (\bsx_i) \bigr)_{i=1}^n$, the scale parameter, $s$, and the kernel, $C_\bstheta$,  by 
 \begin{subequations} \label{FJ:eqn_prob_confidence_interval}
 	\begin{gather}
 	\mathbb{P}_f \left[
@@ -604,7 +604,7 @@ This shows that \texttt{cubBayesNet\_g} with $r=1$ kernel more accurately approx
 \centering
 %d=3 problem transformed into d=2
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Sep-1"}
-\caption[Sobol: MVN guaranteed: MLE]{Multivariate normal probability example with empirical Bayes stopping criterion.  Algorithm has met the error threshold for all the $\epsilon$ in $[10^{-5}, 10^{-2}]$.}
+\caption[Sobol: MVN guaranteed: MLE]{Multivariate normal probability example with empirical Bayes stopping criterion.  Algorithm has met the error threshold for all the $\epsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
 	% \FJHNote{Each caption should say what this is and why it is important.} 
 	% \JRNote{Done.  Explain the observation. Compare with other like EB, GCV, full. 
 % The error tolerance is always met by cubBayesLatticG } }
