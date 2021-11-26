@@ -192,44 +192,20 @@ The next section summarizes the key formulae from \cite{RatHic19a}.  Section \re
 
 % \subsection{Bayesian Posterior Error} \label{FJ:sec:BayesPostErr}
 
-\FJHNote{Fred fix this section}
+%\FJHNote{Fred fix this section}
 
-We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  Specifically, $f$ is a random function with constant mean, $m$, and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.  The parameter $\bstheta$ may affect the shape or smoothness of $C_\bstheta$. Under assumptions As shown in \cite[Give eq numbers]{RatHic19a}, under assumptions \eqref{FJ:eq:fastcompAssump} a credible interval for the integral is given in terms of the nodes, $\{\bsx_i\}_{i=1}^n$, the function data, $\bsy = \bigl (f (\bsx_i) \bigr)_{i=1}^n$, the scale parameter, $s$, and the kernel, $C_\bstheta$,  by 
-\begin{subequations} \label{FJ:eqn_prob_confidence_interval}
-	\begin{gather}
-	\mathbb{P}_f \left[
-	|\mu-\widehat{\mu}| \leq \textup{err}_{\textup{CI}}
-	\right] = 99\%, \\
-	\intertext{where}
-	\label{FJ:muhatGCV-FB-MLE-Simple}
-	\widehat{\mu} = \frac 1n \sum_{i=1}^n y_i, \\
-	\label{FJ:eqn:errcifast}
-	\textup{err}_{\textup{CI}} = 2.58 s \sqrt{1 - n/\lambda_{\bstheta,1} }.
-	\end{gather}
-\end{subequations}
-Moreover, $\lambda_{\bstheta,1}$ represents the first eigenvalue of the Gram matrix, $\mathsf{C}_\bstheta$, defined in \eqref{FJ:eq:Gram}.  All eigenvalues can be computed %(by the which is computed) 
-by taking the fast Bayesian transform of the first column of the Gram matrix, denoted $\bsC_{\bstheta,1}$ \cite[Equation number]{RatHic19a}:
-\begin{equation} 
-	\bslambda_\bstheta
-	= \begin{pmatrix}
-		\lambda_{\bstheta,1} \\ \vdots \\ \lambda _{\bstheta,n}
-	\end{pmatrix} = \textup{diag}(\mathsf{\Lambda}) = \mathsf{\Lambda} \bsone 
-	= \mathsf{V}^H \bsC_{\bstheta,1}.
-	\label{FJ:eqn:fast_transform_to_eigvalues}
-\end{equation}
-
-%\subsection{Resolving Hyperparameters} \label{FJ:sec:hyperparameters}
-In \eqref{FJ:eqn_prob_confidence_interval} the hyperparameter $m$ has already been tuned, but $s$ and $\bstheta$ have not yet been.  %We use the function data % JR: Commented this
-This formula for the credible interval depends essentially on $s$ and $\bstheta$.  Resolving these dependencies should also involve the integrand data,  $\bsy$, since larger integrand data should tend to imply a larger credible interval. The data should also be used to identify the covariance kernel for which the integrand is a typical draw from the assumed Gaussian process. This is the motivation behind resolving the hyperparameters from function data. 
-\JRNote{Need to rephrase this paragraph}
-
-In \cite{RatHic19a} we introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{FJ:eq:fastcompAssump}, we have the estimates for the hyperparameters \cite[Theorem 2]{RatHic19a}:
-		\begin{align*}
+We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  Specifically, $f$ is a random function with constant mean, $m$, and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.  The parameter $\bstheta$ may affect the shape or smoothness of $C_\bstheta$.  In \cite{RatHic19a} we introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{FJ:eq:fastcompAssump} it was shown in \cite[Theorem 2]{RatHic19a} that under these three approaches the credible interval for the integral takes the form
+%	\begin{subequations}		
+		\begin{align}
+			\label{FJ:eqn:CI}
+			&\mathbb{P}_f \left[
+			|\mu-\widehat{\mu}| \leq \textup{err}_{\textup{CI}}
+			\right] = 99\%, \\
+			\intertext{where}
+			\label{FJ:muhatGCV-FB-MLE-Simple}
+			\widehat{\mu} &= \frac 1n \sum_{i=1}^n y_i = \widetilde{y}_1, \\
 		\nonumber 
 		\widetilde{\bsy} &:= \mathsf{V}^H \bsy, \\
-%		\nonumber
-%		m_\textup{MLE} &=  m_{\textup{full}} = m_{\textup{GCV}} =  \frac{\widetilde{y}_1}{n} = \frac 1n \sum_{i=1}^n y_i,
-%		\\
 		\nonumber
 		s^2_\textup{MLE} 
 		& =
@@ -239,7 +215,8 @@ In \cite{RatHic19a} we introduced three methods for resolving the hyperparameter
 		s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_{\bstheta,i}} \right]^{-1}, \\
 		\nonumber
 		\widehat{\sigma}^2_{\textup{full}} &= \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}}  \left(\frac{\lambda_{\bstheta,1}}{n}  - 1  \right), 
-		\end{align*}
+		\end{align}
+%	\end{subequations}
 	\begin{subequations}
 		\label{FJ:eqn:fastTheta}
 		\begin{align}
@@ -421,7 +398,7 @@ Covariance kernels for multivariate integrands defined on $[0,1)^d$ are construc
 C_{\bstheta}(\bsx, \bst) &= K_{\bstheta} (\bsx \oplus \bst), \\
 \label{FJ:eqn:walsh_kernel}
 K_{\bstheta} (\bsx) & =  
-\prod_{\ell=1}^d  1 + \eta_\ell \omega_{r} (x_\ell), \quad \bseta = (\eta_1, \cdots, \eta_d), \quad \bstheta = (r, \bseta).
+\prod_{\ell=1}^d  [1 + \eta_\ell \omega_{r} (x_\ell)], \quad \bseta = (\eta_1, \cdots, \eta_d), \quad \bstheta = (r, \bseta).
 \end{align}
 The parameter vector $\bstheta$ may now be of dimension $d+1$.
 
@@ -784,3 +761,39 @@ For higher dimensions, both Bayesian cubature algorithms face sometimes fail to 
 \bibliography{FJHown23,FJH23,mybib}
 
 \end{document}
+
+
+
+
+
+
+As shown in \cite[Give eq numbers]{RatHic19a}, under assumptions \eqref{FJ:eq:fastcompAssump} a credible interval for the integral is given in terms of the nodes, $\{\bsx_i\}_{i=1}^n$, the function data, $\bsy = \bigl (f (\bsx_i) \bigr)_{i=1}^n$, the scale parameter, $s$, and the kernel, $C_\bstheta$,  by 
+\begin{subequations} \label{FJ:eqn_prob_confidence_interval}
+	\begin{gather}
+		\mathbb{P}_f \left[
+		|\mu-\widehat{\mu}| \leq \textup{err}_{\textup{CI}}
+		\right] = 99\%, \\
+		\intertext{where}
+		\label{FJ:muhatGCV-FB-MLE-Simple}
+		\widehat{\mu} = \frac 1n \sum_{i=1}^n y_i, \\
+		\label{FJ:eqn:errcifast}
+		\textup{err}_{\textup{CI}} = 2.58 s \sqrt{1 - n/\lambda_{\bstheta,1} }.
+	\end{gather}
+\end{subequations}
+Moreover, $\lambda_{\bstheta,1}$ represents the first eigenvalue of the Gram matrix, $\mathsf{C}_\bstheta$, defined in \eqref{FJ:eq:Gram}.  All eigenvalues can be computed %(by the which is computed) 
+by taking the fast Bayesian transform of the first column of the Gram matrix, denoted $\bsC_{\bstheta,1}$ \cite[Equation number]{RatHic19a}:
+\begin{equation} 
+	\bslambda_\bstheta
+	= \begin{pmatrix}
+		\lambda_{\bstheta,1} \\ \vdots \\ \lambda _{\bstheta,n}
+	\end{pmatrix} = \textup{diag}(\mathsf{\Lambda}) = \mathsf{\Lambda} \bsone 
+	= \mathsf{V}^H \bsC_{\bstheta,1}.
+	\label{FJ:eqn:fast_transform_to_eigvalues}
+\end{equation}
+
+%\subsection{Resolving Hyperparameters} \label{FJ:sec:hyperparameters}
+In \eqref{FJ:eqn_prob_confidence_interval} the hyperparameter $m$ has already been tuned, but $s$ and $\bstheta$ have not yet been.  %We use the function data % JR: Commented this
+This formula for the credible interval depends essentially on $s$ and $\bstheta$.  Resolving these dependencies should also involve the integrand data,  $\bsy$, since larger integrand data should tend to imply a larger credible interval. The data should also be used to identify the covariance kernel for which the integrand is a typical draw from the assumed Gaussian process. This is the motivation behind resolving the hyperparameters from function data. 
+\JRNote{Need to rephrase this paragraph}
+
+In \cite{RatHic19a} we introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{FJ:eq:fastcompAssump}, we have the estimates for the hyperparameters \cite[Theorem 2]{RatHic19a}:
