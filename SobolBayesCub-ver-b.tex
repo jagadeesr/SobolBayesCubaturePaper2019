@@ -134,7 +134,7 @@
 Cubature, or numerical multivariate integration, is the problem of inferring a numerical value for a definite integral, 
 \begin{equation}
 \label{FJ:eqn:defn_mu}
-\mu:= \mu(f) := \bbE[f(\boldsymbol{X})] = \int_{[0,1]^d} f(\bsx)\, \textup{d}\bsx, 
+\mu:= \mu(f) := \int_{[0,1]^d} f(\bsx)\, \textup{d}\bsx, 
 \end{equation}
 when no closed-form analytic expression exists. Typically, values of $f$ are accessible through a black-box function routine. Our goal is to construct a cubature, $\widehat{\mu} = \widehat{\mu}_n = \widehat{\mu}_n(f)$, depending only on integrand values at the nodes $\{\bsx_i\}_{i=1}^n$, and determine the $n$ that satisfies the error criterion
 \begin{equation}
