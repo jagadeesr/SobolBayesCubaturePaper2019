@@ -658,7 +658,7 @@ As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:
 
 
 
-\subsection{Option Pricing}
+\subsection{Asian Option Pricing}
 
 The price of financial derivatives can often be modeled by high dimensional integrals. 
 We refer to the formulation of the fair price of the option as in \cite{RatHic19a}, where the underlying asset is described in terms of a discretized geometric Brownian motion.
@@ -742,7 +742,7 @@ A possible reason is that the periodization transform speeds the convergence in 
 
 
 
-\section{Conclusion and future work}
+\section{Conclusion and Future Work}
 \label{FJ:sec:conclusion-future-work}
 
 We have extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.  Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL) \cite{ChoEtal21a} and Quasi-Monte-Carlo Software in Python (QMCPy) \cite{QMCPy2020a}.  We demonstrated \texttt{cubBayesNet\_g} using three example integrand compared with \texttt{cubBayesLattice\_g}. 
