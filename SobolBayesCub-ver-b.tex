@@ -46,6 +46,13 @@
 % \newcommand{}{}
 \providecommand{\HickernellFJ}{Hickernell\xspace}
 
+% Jags
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+\newcommand{\norm}[2][{}]{\ensuremath{\left \lVert #2 \right \rVert}_{#1}}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert} % abs
+\newcommand{\FJHNote}[1]{{\textcolor{blue}{FJH: #1}}}
+\newcommand{\JRNote}[1]{{\textcolor{green}{JR: #1}}}
+
 \newenvironment{nalign}{
     \begin{equation}
     \begin{aligned}
@@ -55,22 +62,13 @@
     \ignorespacesafterend
 }
 
-\graphicspath{{.}{./figures/grey/}{D:/Mega/MyWriteupBackup/Sep_2ndweek_1/}}
-%\graphicspath{{./figures/}}
+\graphicspath{{.}{./figures/grey/}}
 
 %
 % Insert the name of "your journal" with
 % \journalname{Automatic Bayesian Cubature}
 %
 
-
-% Jags
-\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
-\newcommand{\norm}[2][{}]{\ensuremath{\left \lVert #2 \right \rVert}_{#1}}
-% \def\abs#1{\ensuremath{\left \lvert #1 \right \rvert}}
-\newcommand{\abs}[1]{\left\lvert #1 \right\rvert} % abs
-\newcommand{\FJHNote}[1]{{\textcolor{blue}{FJH: #1}}}
-\newcommand{\JRNote}[1]{{\textcolor{green}{JR: #1}}}
 
 
 \allowdisplaybreaks
@@ -176,26 +174,20 @@ and
 We call the transformation $\bsb \mapsto \mathsf{V}^H \bsb$ a \emph{fast Bayesian transform}. Our earlier work \cite{RatHic19a} focuses on lattice nodes and shift-invariant kernels. In that context the computation of $\mathsf{V}^H \bsb$ is a one-dimensional fast Fourier transform.  This chapter focuses on digital sequences, such as Sobol' sequences \cite{Sob67}, and covariance kernels that are digital shift-invariant.  In this case the computation of $\mathsf{V}^H \bsb$ is a fast Walsh-Hadamard transform. 
 
 
-\iffalse 
-We call the transformation $\bsb \mapsto \mathsf{V}^H \bsb$ a \emph{fast Bayesian transform} and $C_\bstheta$ a \emph{fast Bayesian transform kernel} for the matching nodes $\{\bsx_i\}_{i=1}^\infty$.  The covariance kernels used in practice also may satisfy an additional assumption:
-\fi
 
 The next section summarizes the key formulae from \cite{RatHic19a}.  Section \ref{FJ:sec:sobol_walsh} extends fast Bayesian cubature to digital nets and digital-shift invariant kernels defined in terms of Walsh functions.  Section \ref{FJ:sec:NumExp} presents numerical experiments that illustrate these ideas.  
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \section{Bayesian Cubature}
 \label{FJ:sec:BC} 
 
-% \subsection{Bayesian Posterior Error} \label{FJ:sec:BayesPostErr}
 
-%\FJHNote{Fred fix this section}
+
 
 We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  Specifically, the random function $f$ has constant mean, $m$, and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.  The parameter $\bstheta$ may affect the shape or smoothness of $C_\bstheta$.  In \cite{RatHic19a} we introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{FJ:eq:fastcompAssump} for the covariance kernel and sampling sites, it was shown in \cite[Theorem 2]{RatHic19a} that under these three approaches the credible interval for the integral takes the form
-%	\begin{subequations}		
+
 		\begin{align}
 			\label{FJ:eqn:CI}
 			&\mathbb{P}_f \left[
@@ -216,7 +208,7 @@ We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussia
 		\nonumber
 		\widehat{\sigma}^2_{\textup{full}} &= \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}}  \left(\frac{\lambda_{\bstheta,1}}{n}  - 1  \right), 
 		\end{align}
-%	\end{subequations}
+
 	\begin{subequations}
 		\label{FJ:eqn:fastTheta}
 		\begin{align}
@@ -288,9 +280,7 @@ We recognize that multiple applications of our credible intervals in one run of 
 
 The credible intervals in our automatic algorithm are homogeneous with respect to the function data.  If they are valid for some integrand, $f$, they are also valid for the integrand $a f$ for any constant $a$.  
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -302,7 +292,7 @@ The previous section does not mention which sequences of data sites and  kernels
 digital sequences nets and Walsh kernels
 The results of this chapter can be summarized as follows:
 
-% \Section{Summary}
+
 
 
 \begin{theorem} \label{FJ:thm:main}
@@ -311,9 +301,7 @@ The results of this chapter can be summarized as follows:
 This section defines digital sequences, digital shift-invariant kernels, and the fast Walsh-Hadamard transform.
 
 \subsection{Digital Sequences} \label{FJ:sec:sobol}
-% Notations
-% \ell - dimesnion
-% i,j - point sequence index
+
 
 The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and his Sobol' sequences are the most popular.  These were later generalized.  In this chapter we specialize to the case of base $2$, which includes Sobol' sequences.  Here is a definition of a digital sequence in base $2$.
 
@@ -378,8 +366,6 @@ The parameter $r$ is a measure of the digital smoothness of the kernel, which do
 \begin{equation}
 \label{FJ:eqn:omega1}
 \omega_1(x) 
-% &= \prod_{l=1}^d \sum_{k=1}^\infty 
-% \frac{\textup{wal}_{b,k}(x_l) }{b^{2 \lfloor \log_b k \rfloor}} 
 = 1  - 6 \times 2^{\lfloor \log_2 x \rfloor -1 }.
 \end{equation}
 Figure~\ref{FJ:fig:walshkernel-dim1} shows $C_\bstheta (x,t)$ for order $r=1$ and various values of $\eta$ in the interval $[0,1)$. Smaller $\eta_\ell$ implies lesser variation in the amplitude of the kernel.  Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. 
@@ -426,10 +412,8 @@ For fast Bayesian cubature to succeed, the digital net data sites (Section~\ref{
 \mathsf{H}^{(m-1)} & \mathsf{H}^{(m-1)} \\ \mathsf{H}^{(m-1)} & -\mathsf{H}^{(m-1)}
 \end{pmatrix} 
 = \mathsf{H}^{(1)} \underbrace{\bigotimes \cdots \bigotimes}_{m \ \text{times}}  \mathsf{H}^{(1)} 
-% \\ \nonumber & = \Big((-1)^{\overrightarrow{i}^T \overrightarrow{j})} \Big)_{i,j=0}^{2^m-1}.
 \end{align}
 where $\bigotimes$ is Kronecker product.
-%, and $\overrightarrow{i}^T \overrightarrow{j} = i_0 j_0 + i_1 j_1 +\cdots$. 
 Note that the Walsh-Hadamard matrices are symmetric.
 
 \begin{lemma} \label{FJ:lemma:eig}
@@ -549,18 +533,11 @@ Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\math
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Jags: TODO
-% Read and verify 1.3 Digital Nets
-%
-
-
 
 \section{Numerical Experiments}
 
 \label{FJ:sec:NumExp}
 
-% \JRNote{use uniformly randomly chosen $\varepsilon$ instead 4 fixed}
 
 The Bayesian cubature algorithm described here the digital shift invariant kernel in \eqref{FJ:eqn:digital_shift_in_kernel} with order $r=1$  and the Bayesian lattice cubature algorithm described in \cite{RatHic19a} have been coded as  \texttt{cubBayesNet\_g} and \texttt{cubBayesLattice\_g}, respectively, in GAIL \cite{ChoEtal21a}.  We illustrate our algorithm for three common examples, which are also discussed in \cite{RatHic19a}.  The first example evaluates a multivariate Gaussian probability, the second example is Keister's function \cite{Kei96}, and the final example is pricing an Asian arithmetic mean option.  For each example we are able to find an ``exact'' answer, either by analytic computation, or by running a numerical algorithm with a very small error tolerance.
 
@@ -579,25 +556,22 @@ This shows that \texttt{cubBayesNet\_g} with $r=1$ kernel more accurately approx
 
 \begin{figure}
 \centering
-%d=3 problem transformed into d=2
-\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Sep-1"}
+\includegraphics[width=0.95\linewidth]{"figures/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Sep-1"}
 \caption[Sobol: MVN guaranteed:EB]{Multivariate normal probability example with empirical Bayes stopping criterion.  Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
-	% \FJHNote{Each caption should say what this is and why it is important.} 
-	% \JRNote{Done.  Explain the observation. Compare with other like EB, GCV, full. 
-% The error tolerance is always met by cubBayesLatticG } }
+
 \label{FJ:fig:Sobol-mvn-guaranteed-EB}
 \end{figure}
 \begin{figure}
 \centering
 %d=3 problem transformed into d=2
-\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_full__d2_r1_2019-Sep-1"}
+\includegraphics[width=0.95\linewidth]{"figures/Sobol_MVN_guaranteed_time_full__d2_r1_2019-Sep-1"}
 \caption[Sobol: MVN guaranteed: Full Bayes]{Multivariate normal probability example with the full-Bayes stopping criterion. Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
 \label{FJ:fig:Sobol-mvn-guaranteed-FB}
 \end{figure}
 \begin{figure}
 \centering
 %d=3 problem transformed into d=2
-\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_GCV__d2_r1_2019-Sep-1"}
+\includegraphics[width=0.95\linewidth]{"figures/Sobol_MVN_guaranteed_time_GCV__d2_r1_2019-Sep-1"}
 \caption[Sobol: MVN guaranteed: GCV]{Multivariate normal probability example with the GCV stopping criterion. Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
 \label{FJ:fig:Sobol-mvn-guaranteed-GCV}
 \end{figure}
@@ -613,11 +587,7 @@ This multidimensional integral function comes from \cite{Kei96} and is inspired 
 \begin{align}
 \label{FJ:eqn:keister_integral}
 \mu  &=  \int_{\R^d} \cos(\norm{ \bst}) \exp(-\norm{ \bst }^2) \, \textup{d}\bst 
-%\\
-%\nonumber
-%&  = 
-%\int_{\R^d} \cos(a\norm{ \bst}) \exp(-a^2\norm{ \bst }^2)  a^d \, \textup{d}\bst \\
-= \int_{[0,1]^d} f_{\textup{Keister}}(\bsx) \, \textup{d}\bsx,\\
+ = \int_{[0,1]^d} f_{\textup{Keister}}(\bsx) \, \textup{d}\bsx,\\
 \intertext{where }
 \nonumber
 f_\textup{Keister}(\bsx) &= \pi^{d/2} \cos\left(\norm{ \bsPhi^{-1}(\bsx)/2}\right)  ,
@@ -627,27 +597,26 @@ The true value of $\mu$ can be calculated iteratively in terms of  quadrature as
 
 
 Figures \ref{FJ:fig:Sobol-keister-guaranteed-EB}, \ref{FJ:fig:Sobol-keister-guaranteed-FB} and \ref{FJ:fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case for dimension $d=4$ and order $r=1$.  
-%No periodization transform was used as the integrand need not be periodic. 
-% In this example, we use $r=1$ order kernel whereas \texttt{cubBayesLattice\_g} in \cite{RatHic19a}, smoother $r=2$ order kernel was used. 
+
 In \cite{RatHic19a} \texttt{cubBayesLattice\_g} used a much smoother kernel that used here.
 This explains why \texttt{cubBayesNet\_g} uses more samples for integration.
 As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:Sobol-keister-guaranteed-GCV} achieves the results faster than the others but it is less conservative which is also the case with the multivariate Gaussian example.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_MLE__d4_r1_2019-Sep-1"}
+\includegraphics[width=0.95\linewidth]{"figures/Sobol_Keister_guaranteed_time_MLE__d4_r1_2019-Sep-1"}
 \caption[Sobol: Keister guaranteed:EB]{Keister example using the empirical Bayes stopping criterion. Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
 \label{FJ:fig:Sobol-keister-guaranteed-EB}
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_full__d4_r1_2019-Sep-1"}
+\includegraphics[width=0.95\linewidth]{"figures/Sobol_Keister_guaranteed_time_full__d4_r1_2019-Sep-1"}
 \caption[Sobol: Keister guaranteed: Full Bayes]{Keister example using the full-Bayes stopping criterion. Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
 \label{FJ:fig:Sobol-keister-guaranteed-FB}
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_GCV__d4_r1_2019-Sep-1"}
+\includegraphics[width=0.95\linewidth]{"figures/Sobol_Keister_guaranteed_time_GCV__d4_r1_2019-Sep-1"}
 \caption[Sobol: Keister guaranteed: GCV]{Keister example using the GCV stopping criterion. Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
 \label{FJ:fig:Sobol-keister-guaranteed-GCV}
 \end{figure}
@@ -663,28 +632,7 @@ As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:
 The price of financial derivatives can often be modeled by high dimensional integrals. 
 We refer to the formulation of the fair price of the option as in \cite{RatHic19a}, where the underlying asset is described in terms of a discretized geometric Brownian motion.
 
-\iffalse
-, then  is:
-\begin{equation*}
-\mu = \int_{\R^d} \text{payoff}(\bsz) \frac{\exp(\frac 12 \bsz^T\mathsf{\Sigma}^{-1}\bsz)}{\sqrt{(2\pi)^d \det(\mathsf{\Sigma})}} \, \textup{d}\bsz = \int_{[0,1]^d} f(\bsx) \, \textup{d}\bsx,
-\end{equation*} 
-where {payoff($\cdot$)} defines the discounted payoff of the option,
-\begin{align*}
-\mathsf{\Sigma} &= (T/d) \bigl(\min(j,k) \bigr)_{j,k=1}^d = \mathsf{L} \mathsf{L}^T,\\
-f(\bsx) &= \text{payoff} \left(\mathsf{L} 
-\begin{pmatrix}
-\Phi^{-1}(x_1) \\ \vdots \\ \Phi^{-1}(x_d)
-\end{pmatrix} \right).
-\end{align*}
-The Asian arithmetic mean call option has a payoff of the form
-\begin{align*}
-\text{payoff}(\bsz) &= \max\left( \frac 1d  \sum_{j=1}^d S_j(\bsz) - K, 0 \right) \mathrm{e}^{-r T}, \\
-S_j(\bsz) &= S_0 \exp\bigl((r-\sigma^2/2)jT/d + \sigma \sqrt{T/d} z_j \bigr).
-\end{align*}
-Here, $T$ denotes the time to maturity of the option, $d$ the number of time steps, $S_0$ the initial price of the stock, $r$ the interest rate, $\sigma$ the volatility, and $K$ the strike price.  
-\fi
 
-%\Subsection{Option Pricing}
 The Figures \ref{FJ:fig:Sobol-optprice-guaranteed-EB}, \ref{FJ:fig:Sobol-optprice-guaranteed-FB} and 
 \ref{FJ:fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the values for,
 time horizon $T = 1/4$ of a year, $d = 13$ time steps, initial asset price of $S_0 = 100$, interest rate of $r =  0.05$ per year, volatility of $\sigma = 0.5$ per root year, and strike price of  $K = 200$, the same as used in the experiments of \texttt{cubBayesLattice\_g} \cite{RatHic19a}.
@@ -693,22 +641,20 @@ This integrand has a kink caused by the $\max$ function, so lattice rules cannot
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Sep-1"}
+\includegraphics[width=0.95\linewidth]{"figures/Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Sep-1"}
 \caption[Sobol: Option pricing guaranteed:EB]{Option pricing using the empirical Bayes stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$.}
 \label{FJ:fig:Sobol-optprice-guaranteed-EB}
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Sep-1"}
+\includegraphics[width=0.95\linewidth]{"figures/Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Sep-1"}
 \caption[Sobol: Option pricing guaranteed: Full Bayes]{Option pricing using the full-Bayes stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$. 
-%The hollow stars indicate the algorithm did not meet the error threshold $\epsilon$ even with using maximum $n$.
-%\JRNote{fix this: hollow star means algoritm used maximum N, estimated error is bigger than the threshold}
 }
 \label{FJ:fig:Sobol-optprice-guaranteed-FB}
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Sep-1"}
+\includegraphics[width=0.95\linewidth]{"figures/Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Sep-1"}
 \caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$.}
 \label{FJ:fig:Sobol-optprice-guaranteed-GCV}
 \end{figure}
@@ -717,7 +663,7 @@ This integrand has a kink caused by the $\max$ function, so lattice rules cannot
 
 
 \subsection{Discussion}
-% \JRNote{Move this to end of chapter}
+
 
 As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, our algorithm computed the integral within user specified threshold with few exceptions. The exceptions occurred for the  option pricing example due to the complexity and high dimension of the integrand. 
 Also notice that our algorithm \texttt{cubBayesNet\_g}, finished within 40 seconds for Keister and multivariate Gaussian for the smallest tolerance. Option pricing took little above 100 seconds due to the complexity of integrand.
@@ -728,15 +674,6 @@ This shows that the \texttt{cubBayesNet\_g}'s error bounding is not too conserva
 
 In nearly all of the examples, the ratio $\abs{\mu - \widehat{\mu}_n}/\varepsilon$  is closer to one for the Bayesian net cubature in comparison to the Bayesian lattice cubature.  
 A possible reason is that the periodization transform speeds the convergence in the former case and makes the error bounds too conservative.
-% This is a matter for further investigation.
-
-% As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, the \texttt{cubBayesNet\_g} algorithm computes the integral within user specified threshold most of the times except on a few occasions. This is especially the case with option pricing example due to the complexity and high dimension of the integrand as mentioned in the previous example. 
-
-
-% \FJHNote{I do not understand this paragraph. }
-% A most noticeable aspect from the plots of \texttt{cubBayesNet\_g} is how close the error bounds are to the true error. 
-% This shows that the \texttt{cubBayesNet\_g}'s error bounding is not too conservative.
-% Similar to the situation with \texttt{cubBayesLattice\_g} in \cite{RatHic19a}, \texttt{cubBayesNet\_g} missed meeting the given error threshold for the option pricing example, as marked by the hollow stars, for $\varepsilon=10^{-4}$. The algorithm reached max allowed number of samples, $n=2^{20}$ due to the complexity of the integrand.
 
 
 
@@ -756,7 +693,6 @@ For higher dimensions, both Bayesian cubature algorithms face sometimes fail to 
 
 
 
-% \bibliographystyle{abbrvnat}
 \bibliographystyle{spmpsci}
 \bibliography{FJHown23,FJH23,mybib}
 
@@ -765,35 +701,3 @@ For higher dimensions, both Bayesian cubature algorithms face sometimes fail to 
 
 
 
-
-
-As shown in \cite[Give eq numbers]{RatHic19a}, under assumptions \eqref{FJ:eq:fastcompAssump} a credible interval for the integral is given in terms of the nodes, $\{\bsx_i\}_{i=1}^n$, the function data, $\bsy = \bigl (f (\bsx_i) \bigr)_{i=1}^n$, the scale parameter, $s$, and the kernel, $C_\bstheta$,  by 
-\begin{subequations} \label{FJ:eqn_prob_confidence_interval}
-	\begin{gather}
-		\mathbb{P}_f \left[
-		|\mu-\widehat{\mu}_n| \leq \textup{err}_{\textup{CI}}
-		\right] = 99\%, \\
-		\intertext{where}
-		\label{FJ:muhatGCV-FB-MLE-Simple}
-		\widehat{\mu}_n = \frac 1n \sum_{i=1}^n y_i, \\
-		\label{FJ:eqn:errcifast}
-		\textup{err}_{\textup{CI}} = 2.58 s \sqrt{1 - n/\lambda_{\bstheta,1} }.
-	\end{gather}
-\end{subequations}
-Moreover, $\lambda_{\bstheta,1}$ represents the first eigenvalue of the Gram matrix, $\mathsf{C}_\bstheta$, defined in \eqref{FJ:eq:Gram}.  All eigenvalues can be computed %(by the which is computed) 
-by taking the fast Bayesian transform of the first column of the Gram matrix, denoted $\bsC_{\bstheta,1}$ \cite[Equation number]{RatHic19a}:
-\begin{equation} 
-	\bslambda_\bstheta
-	= \begin{pmatrix}
-		\lambda_{\bstheta,1} \\ \vdots \\ \lambda _{\bstheta,n}
-	\end{pmatrix} = \textup{diag}(\mathsf{\Lambda}) = \mathsf{\Lambda} \bsone 
-	= \mathsf{V}^H \bsC_{\bstheta,1}.
-	\label{FJ:eqn:fast_transform_to_eigvalues}
-\end{equation}
-
-%\subsection{Resolving Hyperparameters} \label{FJ:sec:hyperparameters}
-In \eqref{FJ:eqn_prob_confidence_interval} the hyperparameter $m$ has already been tuned, but $s$ and $\bstheta$ have not yet been.  %We use the function data % JR: Commented this
-This formula for the credible interval depends essentially on $s$ and $\bstheta$.  Resolving these dependencies should also involve the integrand data,  $\bsy$, since larger integrand data should tend to imply a larger credible interval. The data should also be used to identify the covariance kernel for which the integrand is a typical draw from the assumed Gaussian process. This is the motivation behind resolving the hyperparameters from function data. 
-\JRNote{Need to rephrase this paragraph}
-
-In \cite{RatHic19a} we introduced three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{FJ:eq:fastcompAssump}, we have the estimates for the hyperparameters \cite[Theorem 2]{RatHic19a}:

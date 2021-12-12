@@ -1,12 +1,7 @@
-
-*.gz
-
+*.synctex.gz
 *.aux
-
-*.log
-
-*.blg
-
 *.bbl
-
-Sobol-BayesCubatureVerB.pdf
+*.log
+*.blg
+*.thm
+*.pdf
