@@ -1,0 +1,43 @@
+Referee report on the manuscript
+"Fast automatic Bayesian cubature using Sobol' Sampling"
+by R. Jagadeeswaran and F.J. Hickernell
+
+Below is a list of minor comments:
+
+page 2, line 5: "analytic expression exists" -> add "or is easily available"
+          ("Nonexistence" is not equivalent to "not (yet) known" or "cumbersome to obtain".)
+page 3, equations (1.5)-(1.7): please make it clear where the integrand f is hidden and
+  where the evaluation points x_i are used. (It's in the y_i.)
+page 5, line 1: typo's "digital sequence nets" and missing period before "The"
+  Actually, it becomes confusing later on. Section 1.3.1 is about digital sequences
+  and from section 1.3.2 on its about digital nets. That should be cleared out.
+page 5, last line - 8: typo "represntation" -> "representation"
+page 6, line 1: add word -> "from Definition 1 and can be found"
+page 6, displayed equation in the middle: specify range for r and eta
+Figures, all: adjust point size of axis labels and legends to make them of the same size
+   as the text;
+   adjust the horizontal axis to provide more space for the information. No need to go 
+   down to 10^(-4) or even 10^(-9) in Fig 1.7, if there is (almost) nothing below 10^(-4) 
+page 7, line before section 1.3.3: Why "may"?
+page 8, rephrase first sentence of proof. "Define the matrices that by Lemma 1" sounds strange.
+   There is too much in that first sentence
+page 10, first para of section 1.4.1: OK the timings should be read comparatively, but normally
+   one specifies the platform when giving timings
+page 10, second para of section 1.4.1: such a comparison is problematic. Here too much depends
+   on platform plus implementation details. Most of the time in the cubature context one says
+   the cost is in the function evaluations, but this example is probably too simple to state
+   just that.
+page 10, please mention the dimension of the problem explicitely (as is done for the following 2 examples).
+page 14, line 2, "effient" in what way?
+Figures 1.8, 1.9 and 1.10: I first missed the hollow stars. I guess many became effectively unvisible
+   because they are overprinted by blue dots
+page 16, section 1.4.4: it is unclear what was one in the mentioned 40 or 100 seconds. The whole
+   test run to produce the figures?
+   The log(eps) value leading to the 400 dots come from a uniform distribution. Comment on why the 
+     log(time) is clear not uniformely distribtued
+page 16, line 3: Can you quantify what "few exceptions" means? The dimension of the problem is not that 
+  high here. It's 13. For me the examples show that eps = 10^4 seems to be the limit for this approach, 
+  a message that deserves to be mentioned in the Conclusion.
+page 16, section 1.5, line 6: integrand -> integrands
+page 16, section 1.5, line 17: remove "face"
+----------------the-end----------------------------------------------------------------------------

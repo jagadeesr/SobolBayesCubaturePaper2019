@@ -134,7 +134,7 @@ Cubature, or numerical multivariate integration, is the problem of inferring a n
 \label{FJ:eqn:defn_mu}
 \mu:= \mu(f) := \int_{[0,1]^d} f(\bsx)\, \textup{d}\bsx, 
 \end{equation}
-when no closed-form analytic expression exists. Typically, values of $f$ are accessible through a black-box function routine. Our goal is to construct a cubature, $\widehat{\mu}_n = \widehat{\mu}_n(f)$, depending only on integrand values at the nodes $\{\bsx_i\}_{i=1}^n$, and determine the $n$ that satisfies the error criterion
+when no closed-form analytic expression exists or is easily available. Typically, values of $f$ are accessible through a black-box function routine. Our goal is to construct a cubature, $\widehat{\mu}_n = \widehat{\mu}_n(f)$, depending only on integrand values at the nodes $\{\bsx_i\}_{i=1}^n$, and determine the $n$ that satisfies the error criterion
 \begin{equation}
 \label{FJ:eqn:err_crit} 
 \abs{\mu - \widehat{\mu}_n} \leq \varepsilon
@@ -236,9 +236,11 @@ We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussia
 		\label{FJ:eqn:err_EBGCV}
 		\textup{err}_{\textup{CI},\mathsf{x}} = \textup{err}_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{1 - \frac{n}{\lambda_{\bstheta,1}} }, \qquad \mathsf{x} \in \{\textup{EB}, \textup{GCV}\},  \\ 
 		\textup{err}_{\textup{CI},\textup{full}} 
-		& = t_{n-1,0.995} \widehat{\sigma}_{\textup{full}} > \textup{err}_\textup{EB}. \label{FJ:eq:errFull}
+		& = t_{n-1,0.995} \widehat{\sigma}_{\textup{full}} > \textup{err}_\textup{EB}, \label{FJ:eq:errFull}
 	\end{align}
 \end{subequations}
+where the integrand values are evaluated as $y_i = f(\bsx_i)$.
+
 In the formulas for the credible interval half-widths, $\bstheta$ is assumed to take on the values $\bstheta_{\textup{EB}}$ or $\bstheta_{\textup{GCV}}$ as appropriate.  There is no suitable $\bstheta_{\textup{full}}$.
 
 Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size; these steps are detailed in Algorithm~\ref{FJ:algorithm1}.
@@ -288,8 +290,7 @@ The credible intervals in our automatic algorithm are homogeneous with respect t
 \label{FJ:sec:sobol_walsh}
 
 
-The previous section does not mention which sequences of data sites and  kernels satisfy assumptions \eqref{FJ:eq:fastcompAssump}.  We demonstrated in \cite{RatHic19a} that rank-1 lattice points and shift-invariant kernels do so.  In this section, we give another example, namely 
-digital sequences nets and Walsh kernels
+The previous section does not mention which sequences of data sites and  kernels satisfy assumptions \eqref{FJ:eq:fastcompAssump}.  We demonstrated in \cite{RatHic19a} that rank-1 lattice points and shift-invariant kernels do so.  In this section, we give another example, namely digital sequences nets and Walsh kernels.
 The results of this chapter can be summarized as follows:
 
 
@@ -317,7 +318,7 @@ The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and
 
 It is common to index digital sequences starting with $0$, whereas our data sites and matrices in the earlier section are indexed starting with $1$.  To keep our notation consistent, we define $\bsz_{i+1}$ in terms of $\overrightarrow{i}$.
 
-Digital sequences have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$ and which also corresponds to an exclusive-or. Here and in what follows we ignore the cases of measure zero for which the $\oplus$ operation leads to a binary represntation ending in an infinite string of ones.  The following lemma summarizes some important properties of digital sequences. 
+Digital sequences have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$ and which also corresponds to an exclusive-or. Here and in what follows we ignore the cases of measure zero for which the $\oplus$ operation leads to a binary representation ending in an infinite string of ones.  The following lemma summarizes some important properties of digital sequences. 
 
 
 \begin{lemma}
@@ -333,7 +334,7 @@ Digital sequences have a group structure under digitwise, element-by-element add
 	\end{gather}
 	Therefore, $\{\bsz_i\}_{i=1}^{\infty}$ is a group.  Moreover, $\{\bsz_i\}_{i=1}^{2^m}$ is a subgroup for $m \in {\N}_0$.
 \end{lemma}
-The proof follows straightforwardly from Definition \ref{FJ:def:digitalseq} can be found in \cite{JagThesis19a}.
+The proof follows straightforwardly from Definition \ref{FJ:def:digitalseq}, and can be found in \cite{JagThesis19a}.
 
 Digital sequence generators can be chosen by number theory, as are those of Sobol' \cite{Sob67} and Niederreiter and Xing  \cite{NieXin01a} (see also \cite[Chapter 8]{DicPil10a}, or they can be chosen by computer search \cite[Chapter 10]{DicPil10a}.  The original generator matrices may be scrambled using linear matrix scrambling \cite{Mat98}.
 
@@ -353,7 +354,7 @@ where again $\overrightarrow{k}$ is a vector containing the binary digits of $k$
 These Walsh functions can be used to construct a covariance kernel for univariate integrands as follows
 \begin{align*}
     C_\bstheta (x,t) & = K_\bstheta(x \oplus t), \qquad K_\bstheta(x) : = 1 + \eta \omega_{r} (x), \qquad \bstheta = (r,\eta), \\
-    \omega_r(x) & := \sum_{k=1}^\infty \frac{\textup{wal}_{k}(x) }{2^{2r \lfloor \log_2 k \rfloor}} \\
+    \omega_r(x) & := \sum_{k=1}^\infty \frac{\textup{wal}_{k}(x) }{2^{2r \lfloor \log_2 k \rfloor}}, \qquad r \in {\N}, \qquad \eta \in (0, 1)\\
     \omega_{r} (x_\ell \oplus t_\ell) & = \sum_{k=1}^\infty \frac{\textup{wal}_{k}(x) \textup{wal}_{k}(t)  }{2^{2r \lfloor \log_2 k \rfloor}}.
 \end{align*}
 The symmetric, positive definite property of $ C_\bstheta (x,t)$ follows from its definition.  This kernel is digital shift invariant because 
@@ -386,7 +387,7 @@ C_{\bstheta}(\bsx, \bst) &= K_{\bstheta} (\bsx \oplus \bst), \\
 K_{\bstheta} (\bsx) & =  
 \prod_{\ell=1}^d  [1 + \eta_\ell \omega_{r} (x_\ell)], \quad \bseta = (\eta_1, \cdots, \eta_d), \quad \bstheta = (r, \bseta).
 \end{align}
-The parameter vector $\bstheta$ may now be of dimension $d+1$.
+The parameter vector $\bstheta$ now is of dimension $d+1$.
 
 \subsection{Eigenvector-Eigenvalue Decomposition of the Gram Matrix}
 
@@ -422,7 +423,7 @@ Note that the Walsh-Hadamard matrices are symmetric.
 \end{lemma}
 
 \begin{proof}
-    First define the matrices that by Lemma \ref{FJ:lemma:digital_net_prop}, 
+    First define the matrices using the notations from Lemma \ref{FJ:lemma:digital_net_prop}, 
     \begin{align*}
     \mathsf{C}_{\bstheta}^{(m,k)} & = \bigl(K(\bsx_i \oplus \bsx_{j + k2^m} )\bigr)_{i,j=1}^{2^m} \\
     & = \bigl(K(\bsz_{i\oplus j+ k 2^m + 1})\bigr)_{i,j=0}^{2^m-1}, \qquad m,k  = 0, 1, \ldots
@@ -543,6 +544,7 @@ The Bayesian cubature algorithm described here, the digital shift invariant kern
 
 The nodes used in \texttt{cubBayesNet\_g} are the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. Four hundred different error tolerances, $\varepsilon$, are randomly chosen such that $\log(\varepsilon)$ has a uniform distribution. 
 For each integral example, each $\varepsilon$, and each stopping criterion---empirical Bayes, full Bayes, and generalized cross-validation---we ran \texttt{cubBayesNet\_g}.  For each run, the execution time is plotted against $\abs{\mu - \widehat{\mu}_n}/\varepsilon$.  We expect $\abs{\mu - \widehat{\mu}_n}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate that the stopping criterion  is too conservative.
+All the tests were run Matlab version 2019b running on Intel i7-7700HQ.
 
 \subsection{Multivariate Gaussian Probability}
 
@@ -552,7 +554,7 @@ The \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform.  This is slower 
 
 Amongst the three stopping criteria, GCV achieves an acceptable approximation faster than others but it is less conservative. 
 One can also observe from the figures that the credible intervals are narrower than empirical Bayes as in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-EB}.
-This shows that \texttt{cubBayesNet\_g} with $r=1$ kernel more accurately approximates the integrand than the empirical Bayes.
+This shows that \texttt{cubBayesNet\_g} with $d=2, r=1$ kernel more accurately approximates the integrand than the empirical Bayes.
 
 \begin{figure}
 \centering
@@ -682,13 +684,13 @@ A possible reason is that the periodization transform speeds the convergence in 
 \section{Conclusion and Future Work}
 \label{FJ:sec:conclusion-future-work}
 
-We have extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.  Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL) \cite{ChoEtal21a} and Quasi-Monte-Carlo Software in Python (QMCPy) \cite{QMCPy2020a}.  We demonstrated \texttt{cubBayesNet\_g} using three example integrand compared with \texttt{cubBayesLattice\_g}. 
+We have extended our fast automatic Bayesian cubature to digital net sampling via digital shift-invariant covariance kernels and fast Walsh transforms.  Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL) \cite{ChoEtal21a} and Quasi-Monte-Carlo Software in Python (QMCPy) \cite{QMCPy2020a}.  We demonstrated \texttt{cubBayesNet\_g} using three example integrands compared with \texttt{cubBayesLattice\_g}. 
 One major advantage of this algorithm, unlike the \texttt{cubBayesLattice\_g} developed in \cite{RatHic19a}, is that the integrand does not have to be periodic.  However, unlike \texttt{cubBayesNet\_g}, \texttt{cubBayesLattice\_g} is more efficient for smoother, periodic functions when using sufficiently smooth and periodic covariance kernels.
 %\FJHNote{Not sure what this means.  }However, special structure of both the sequences and the kernels are required to take advantage of integrand smoothness.
 
 The \texttt{cubBayesNet\_g} in the current implementation uses only the first order kernel and digital nets. Accuracy and speed of the algorithm could be improved by using higher order digital nets and smoother digital shift-invariant covariance kernels. This could help with the smoother integrands. This is a promising direction for future work.
 
-For higher dimensions, both Bayesian cubature algorithms face sometimes fail to produce an acceptable answer within a reasonable amount of time.  This seems to be related to an excessive amount of time required to identify the optimal shape parameter $\boldsymbol{\theta}$.  The root of the problem and its resolution is a matter for future investigation.
+For higher dimensions, both Bayesian cubature algorithms  sometimes fail to produce an acceptable answer within a reasonable amount of time.  This seems to be related to an excessive amount of time required to identify the optimal shape parameter $\boldsymbol{\theta}$.  The root of the problem and its resolution is a matter for future investigation.
 
 
 
