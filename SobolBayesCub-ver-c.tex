@@ -146,7 +146,9 @@ Cubature is a key component of many problems in scientific computing, finance \c
 %\JRNote{add references}
 The original form of the integral may require a suitable variable transformation to become \eqref{FJ:eqn:defn_mu}. This process is addressed in \cite{BecHae92b, CriEtal07, Lau96a,  Sid93, Sid08a}. 
 
-Following the Bayesian numerics approach of \cite{BriEtal18a, Dia88a, OHa91a, RasGha03a} and others, we assume that our integrand is an instance of a Gaussian process, $\mathcal{GP}(m,s^2 C_\bstheta)$, and construct a probabilistic error bound for $\mu$ via a Bayesian credible interval.  The integrand is sampled until the credible interval becomes small enough to satisfy \eqref{FJ:eqn:err_crit} with high probability.  
+Following the Bayesian numerics approach of \cite{BriEtal18a, Dia88a, OHa91a, RasGha03a} and others, we assume that our integrand, $f$, is an instance of a Gaussian process, $\mathcal{GP}(m,s^2 C_\bstheta)$, and construct a probabilistic error bound for $\mu$ via a Bayesian credible interval. 
+Where, the random function $f$ has constant mean, $m$, and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.   
+The integrand is sampled until the credible interval becomes small enough to satisfy \eqref{FJ:eqn:err_crit} with high probability.  
 
 Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes two key points
 \begin{enumerate}
@@ -186,7 +188,7 @@ The next section summarizes the key formulae from \cite{RatHic19a}.  Section \re
 
 
 
-We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  Specifically, the random function $f$ has constant mean, $m$, and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.  The parameter $\bstheta$ may affect the shape or smoothness of $C_\bstheta$.  Let $\boldsymbol{y} = (y_i)_{i=1}^n = \bigl( f(\bsx_i) \bigr)_{i=1}^n$ denote the vector of sampled integrand values.  In \cite{RatHic19a} we introduce three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions (\ref{FJ:eq:fastcompAssump}a)--(\ref{FJ:eq:fastcompAssump}d) for the covariance kernel and sampling sites, it is shown in \cite[Theorem 2]{RatHic19a} that under these three approaches the credible interval for the integral takes the form
+We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  As introduced earlier, specifically, the random function $f$ has constant mean, $m$, and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.  The parameter $\bstheta$ may affect the shape or smoothness of $C_\bstheta$.  Let $\boldsymbol{y} = (y_i)_{i=1}^n = \bigl( f(\bsx_i) \bigr)_{i=1}^n$ denote the vector of sampled integrand values.  In \cite{RatHic19a} we introduce three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions (\ref{FJ:eq:fastcompAssump}a)--(\ref{FJ:eq:fastcompAssump}d) for the covariance kernel and sampling sites, it is shown in \cite[Theorem 2]{RatHic19a} that under these three approaches the credible interval for the integral takes the form
 
 		\begin{align}
 			\label{FJ:eqn:CI}
@@ -195,9 +197,12 @@ We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussia
 			\right] = 99\%, \\
 			\intertext{where}
 			\label{FJ:muhatGCV-FB-MLE-Simple}
-			\widehat{\mu}_n &= \frac 1n \sum_{i=1}^n y_i = \widetilde{y}_1, \\
+			\widehat{\mu}_n &= \frac 1n \sum_{i=1}^n y_i = \widetilde{y}_1, \; \text{where $y_i = f(x_i)$}\\
 		\nonumber 
-		\widetilde{\bsy} &:= \mathsf{V}^H \bsy, \\
+		\widetilde{\bsy} &:= \mathsf{V}^H \bsy, \; \text{where $\widetilde{\bsy}$ fast transform of $\bsy$}  \\
+		\nonumber 
+		{\bslambda}_\bstheta &:= \begin{pmatrix}
+			\lambda_{\bstheta,1} \\ \vdots \\ \lambda_{\bstheta,n} \end{pmatrix} = \mathsf{V}^H \bsC_1, \text{where $\bsC_1$ first row of covariance matrix} \\
 		\nonumber
 		s^2_\textup{EB} 
 		& =
@@ -289,14 +294,7 @@ The credible intervals in our automatic algorithm are homogeneous with respect t
 
 
 The previous section does not mention which sequences of data sites and  kernels satisfy assumptions \eqref{FJ:eq:fastcompAssump}.  We demonstrate in \cite{RatHic19a} that rank-1 lattice points and shift-invariant kernels do so.  In this section, we give another example, namely digital sequences and digitally shift-invariant kernels based on Walsh functions.
-The results of this chapter can be summarized as follows:
 
-
-
-
-\begin{theorem} \label{FJ:thm:main}
-	Any symmetric, positive definite, digitally shift-invariant kernel of the form \eqref{FJ:eqn:walsh_kernel} scaled to satisfy \eqref{FJ:addAssump}, when matched with digital sequence data sites, satisfies assumptions \eqref{FJ:eq:fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} performs the fast Bayesian transform,  $\bsb \mapsto \mathsf{V}^H \bsb$ , in $\calO(n \log n)$ operations.
-\end{theorem}
 This section defines digital sequences, digitally shift-invariant kernels, and the fast Walsh-Hadamard transform.
 
 \subsection{Digital Sequences} \label{FJ:sec:sobol}
@@ -306,7 +304,7 @@ The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and
 
 \begin{definition} \label{FJ:def:digitalseq}
 	For any non-negative integer $i = (\dots i_3 i_2 i_1)_2$, define $\overrightarrow{i} = (i_1, i_2, \dots)^T$ as the $\infty \times 1$ vector $\overrightarrow{i}$ of its binary digits. 
-	For any point $z = {}_20.z_1 z_2 \dots \in [0, 1)$, define $\overrightarrow{z} = (z_1, z_2, \dots)^T$ as the $\infty \times 1$ vector of its binary digits. 
+	For any point $z = ({0.z_1 z_2 \dots })_2 \in [0, 1)$ where ${(\;)}_2$ indicates base-2, define $\overrightarrow{z} = (z_1, z_2, \dots)^T$ as the $\infty \times 1$ vector of its binary digits. 
 	Let $ \mathsf{G}_1, \dots , \mathsf{G}_d$ denote predetermined $\infty \times \infty$ generator matrices whose elements are zeros and ones. 
 	A digital sequence in base $2$ is $\{\bsz_1, \bsz_2, \bsz_3, \dots\}$, where each $\bsz_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
 	\begin{align*}
@@ -334,7 +332,7 @@ Digital sequences have a group structure under digitwise, element-by-element add
 \end{lemma}
 The proof follows straightforwardly from Definition \ref{FJ:def:digitalseq}, and can be found in \cite{JagThesis19a}.
 
-Digital sequence generators can be chosen by number theory, as are those of Sobol' \cite{Sob67} and Niederreiter and Xing  \cite{NieXin01a} (see also \cite[Chapter 8]{DicPil10a}, or they can be chosen by computer search \cite[Chapter 10]{DicPil10a}.  The original generator matrices may be scrambled using linear matrix scrambling \cite{Mat98}.
+Digital sequence generators can be chosen by number theory, as are those of Sobol' \cite{Sob67} and Niederreiter and Xing  \cite{NieXin01a} (see also \cite[Chapter 8]{DicPil10a}), or they can be chosen by computer search \cite[Chapter 10]{DicPil10a}.  The original generator matrices may be scrambled using linear matrix scrambling \cite{Mat98}.
 
 
 \subsection{Covariance Kernels Constructed via Walsh Functions} \label{FJ:sec:Walsh_kernels}
@@ -350,24 +348,27 @@ The one-dimensional Walsh functions in base $2$ are defined as
 where again $\overrightarrow{k}$ is a vector containing the binary digits of $k$, and $\overrightarrow{x}$ is a vector containing the binary digits of $x$.  Note that by this definition, $\textup{wal}_{k}(x \oplus t) =  \textup{wal}_{k}(x) \textup{wal}_{k}(t)$.  
 
 These Walsh functions can be used to construct a covariance kernel for univariate integrands as follows
-\begin{align*}
+\begin{align}
+	\label{FJ:eqn:walsh_kernel}
     C_\bstheta (x,t) & = K_\bstheta(x \oplus t), \qquad K_\bstheta(x) : = 1 + \eta \omega_{r} (x), \qquad \bstheta = (r,\eta), \\
+    \nonumber
     \omega_r(x) & := \sum_{k=1}^\infty \frac{\textup{wal}_{k}(x) }{2^{2r \lfloor \log_2 k \rfloor}}, \qquad r \in {\N}, \qquad \eta \in (0, 1)\\
+    \nonumber
     \omega_{r} (x_\ell \oplus t_\ell) & = \sum_{k=1}^\infty \frac{\textup{wal}_{k}(x) \textup{wal}_{k}(t)  }{2^{2r \lfloor \log_2 k \rfloor}}.
-\end{align*}
+\end{align}
 The symmetric, positive definite property of $ C_\bstheta (x,t)$ follows from its definition.  This kernel is digitally shift invariant because 
 \[
 C_\bstheta (x \oplus \Delta ,t \oplus \Delta ) = K_\bstheta(x \oplus \Delta \oplus t \oplus \Delta) = K_\bstheta(x \oplus t) =  C_\bstheta (x,t).
 \]
 This follows because $\Delta \oplus \Delta = 0$.
 
-The parameter $r$ is a measure of the digital smoothness of the kernel, which does not correspond to ordinary smoothness.  An explicit expression is available for $\omega_{r}$ in the case of order $r=1$ \cite{Nuyens2013}:
+The parameter $r$ is a measure of the digital smoothness of the kernel, which does not correspond to ordinary smoothness.  An explicit expression is available for $\omega_{r}$ in the case of order $r=1$ (see \cite{Nuyens2013}):
 \begin{equation}
 \label{FJ:eqn:omega1}
 \omega_1(x) 
 = 1  - 6 \times 2^{\lfloor \log_2 x \rfloor -1 }.
 \end{equation}
-Figure~\ref{FJ:fig:walshkernel-dim1} shows $C_\bstheta (x,t)$ for order $r=1$ and various values of $\eta$ in the interval $[0,1)$. Smaller $\eta_\ell$ implies lesser variation in the amplitude of the kernel.  Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. 
+Figure~\ref{FJ:fig:walshkernel-dim1} shows $C_\bstheta (x,t)$ for order $r=1$ and various values of $\eta$ in the interval $[0,1)$. Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. 
 
 \begin{figure}
 	\centering
@@ -385,6 +386,7 @@ C_{\bstheta}(\bsx, \bst) &= K_{\bstheta} (\bsx \oplus \bst), \\
 K_{\bstheta} (\bsx) & =  
 \prod_{\ell=1}^d  [1 + \eta_\ell \omega_{r} (x_\ell)], \quad \bseta = (\eta_1, \cdots, \eta_d), \quad \bstheta = (r, \bseta).
 \end{align}
+For mutidimesnional kernel, smaller $\eta_\ell$ for $\ell \in (1, \dots d)$ implies lesser variation in the amplitude of the kernel in dimension $\ell$.  
 The parameter vector $\bstheta$ now is of dimension $d+1$.
 
 \subsection{Eigenvector-Eigenvalue Decomposition of the Gram Matrix}
@@ -447,7 +449,7 @@ Note that the Walsh-Hadamard matrices are symmetric.
         (i + 2^m) \oplus (j+2^m) +1 = (i\oplus j) + (2^m \oplus 2^m) +1= (i\oplus j) +1.
     \end{gather*}
     
-    The proof follows by induction.  Note that for the case $m=1$ and $k = 0, 1, \ldots$
+    The proof of (\ref{FJ:eq:cblock}) follows by induction.  Note that for the case $m=1$ and $k = 0, 1, \ldots$
     \begin{equation*}
         \mathsf{C}_{\bstheta}^{(1,k)} 
         =  \begin{pmatrix}
@@ -497,6 +499,14 @@ Note that the Walsh-Hadamard matrices are symmetric.
 Noting that $\mathsf{C}^{(m+1)} = \mathsf{C}^{(m+1,0)} $ completes the proof.
 \end{proof}
 
+
+The results of this chapter can be summarized as follows:
+
+\begin{theorem} \label{FJ:thm:main}
+	Any symmetric, positive definite, digitally shift-invariant kernel of the form \eqref{FJ:eqn:walsh_kernel} scaled to satisfy \eqref{FJ:addAssump}, when matched with digital sequence data sites, satisfies assumptions \eqref{FJ:eq:fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} performs the fast Bayesian transform,  $\bsb \mapsto \mathsf{V}^H \bsb$ , in $\calO(n \log n)$ operations.
+\end{theorem}
+
+\begin{proof}
 Lemma \ref{FJ:lemma:eig} establishes that covariance kernels of the form \eqref{FJ:eqn:digital_shift_in_kernel} matched with shifted digital net data sites satisfy the fast Bayesian cubature assumptions
 \begin{itemize}
     \item \eqref{FJ:eq:fastcompAssumpA}, since $\mathsf{V}$ is the Walsh-Hadamard matrix,
@@ -528,8 +538,7 @@ The computation of $\widetilde{\bsb} =\mathsf{H} \bsb$ is done iteratively as fo
 \end{align*}
 Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\mathsf{H}^{(1)}$, at a cost of $m 2^m$ each, plus an addition and a subtraction of vectors of length $2^m$, for a total cost of $2 \times m 2^m + 2 \times 2^m = (m+1) 2^{m+1}$, which is exactly what is needed.  Since $\widetilde{\bsb} =\mathsf{H} \bsb$ requires $m2^m = n \log_2(n)$ operations to compute, assumption \eqref{FJ:eq:fastcompAssumpC} is satisfied.  This completes the proof of Theorem \ref{FJ:thm:main}.
 
-
-
+\end{proof}
 
 
 
