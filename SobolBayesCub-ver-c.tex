@@ -643,20 +643,22 @@ This integrand has a kink caused by the $\max$ function, so lattice rules cannot
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed:EB]{Option pricing using the empirical Bayes stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$.}
+\caption[Sobol: Option pricing guaranteed:EB]{Option pricing using the empirical Bayes stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$. Here 33 such exceptions happened.}
 \label{FJ:fig:Sobol-optprice-guaranteed-EB}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed: Full Bayes]{Option pricing using the full-Bayes stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$. 
+\caption[Sobol: Option pricing guaranteed: Full Bayes]{Option pricing using the full-Bayes stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$. Here 41 such exceptions happened.
 }
 \label{FJ:fig:Sobol-optprice-guaranteed-FB}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$.}
+\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$. 
+Here 35 such exceptions happened.
+}
 \label{FJ:fig:Sobol-optprice-guaranteed-GCV}
 \end{figure}
 
@@ -667,7 +669,7 @@ This integrand has a kink caused by the $\max$ function, so lattice rules cannot
 
 
 As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, our algorithm computed the integral within user specified threshold with few exceptions. The exceptions occurred for the  option pricing example due to the complexity and high dimension of the integrand. 
-Also notice that our algorithm \texttt{cubBayesNet\_g}, finished within maximum 40 seconds (max value in Y-axis) for Keister and multivariate Gaussian for the smallest tolerance as shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-keister-guaranteed-GCV}. Option pricing took little above 100 seconds (max value in Y-axis) due to the complexity of integrand as shown in Figures \ref{FJ:fig:Sobol-optprice-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}.
+Also notice that our algorithm \texttt{cubBayesNet\_g}, finished within maximum 40 seconds per run (max value in Y-axis) for Keister and multivariate Gaussian for the smallest tolerance as shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-keister-guaranteed-GCV}. Option pricing took little above 100 seconds per run (max value in Y-axis) due to the complexity of integrand as shown in Figures \ref{FJ:fig:Sobol-optprice-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}.
 
 %\FJHNote{For which examples?} 
 A most noticeable aspect from the plots of \texttt{cubBayesNet\_g} is how close the error bounds are to the true error. 
