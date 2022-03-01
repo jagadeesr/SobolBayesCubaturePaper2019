@@ -147,15 +147,15 @@ Cubature is a key component of many problems in scientific computing, finance \c
 The original form of the integral may require a suitable variable transformation to become \eqref{FJ:eqn:defn_mu}. This process is addressed in \cite{BecHae92b, CriEtal07, Lau96a,  Sid93, Sid08a}. 
 
 Following the Bayesian numerics approach of \cite{BriEtal18a, Dia88a, OHa91a, RasGha03a} and others, we assume that our integrand, $f$, is an instance of a Gaussian process, $\mathcal{GP}(m,s^2 C_\bstheta)$, and construct a probabilistic error bound for $\mu$ via a Bayesian credible interval. 
-Where, the random function $f$ has constant mean, $m$, and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.   
+Here, the random function $f$ has constant mean, $m$, and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.   The parameter $\bstheta$ may affect the shape or smoothness of $C_\bstheta$.  
 The integrand is sampled until the credible interval becomes small enough to satisfy \eqref{FJ:eqn:err_crit} with high probability.  
 
-Our approach to fast Bayesian cubature \cite{RatHic19a} emphasizes two key points
+Our approach to \emph{fast} Bayesian cubature \cite{RatHic19a} relies on two key points:
 \begin{enumerate}
 \renewcommand{\labelenumi}{\roman{enumi})}
     \item Choosing covariance kernels, $C_\bstheta:[0,1]^d \times [0,1]^d \to \R$, for which the symmetric, positive definite Gram matrices, 
     \begin{equation} \label{FJ:eq:Gram}
-        \mathsf{C}_\bstheta = \left(  C_\bstheta(\bsx_i,\bsx_j)  \right)_{i,j=1}^n,
+        \mathsf{C}_\bstheta = \left(  C_\bstheta(\bsx_i,\bsx_j)  \right)_{i,j=1}^n, = (\bsC_{\bstheta,1}, \ldots, \bsC_{\bstheta,n})
     \end{equation}
     have an eigenvalue-eigenvector decomposition of the form\footnote{The presence of $1/n$ in the eigenvalue-eigenvector decomposition arises from the assumption that the first column of $\mathsf{V}$ is $\bsone$.  It could be removed by assuming that the first column of $\mathsf{V}$ is $\bsone/\sqrt{n}$.} $\mathsf{C}_\bstheta = \mathsf{V} \mathsf{\Lambda}_\bstheta \mathsf{V}^H/n$, where
     \begin{subequations} \label{FJ:eq:fastcompAssump}
@@ -188,7 +188,7 @@ The next section summarizes the key formulae from \cite{RatHic19a}.  Section \re
 
 
 
-We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  As introduced earlier, specifically, the random function $f$ has constant mean, $m$, and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.  The parameter $\bstheta$ may affect the shape or smoothness of $C_\bstheta$.  Let $\boldsymbol{y} = (y_i)_{i=1}^n = \bigl( f(\bsx_i) \bigr)_{i=1}^n$ denote the vector of sampled integrand values.  In \cite{RatHic19a} we introduce three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions (\ref{FJ:eq:fastcompAssump}a)--(\ref{FJ:eq:fastcompAssump}d) for the covariance kernel and sampling sites, it is shown in \cite[Theorem 2]{RatHic19a} that under these three approaches the credible interval for the integral takes the form
+As described above, we assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  Let $\boldsymbol{y} = (y_i)_{i=1}^n = \bigl( f(\bsx_i) \bigr)_{i=1}^n$ denote the vector of sampled integrand values.  In \cite{RatHic19a} we introduce three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions (\ref{FJ:eq:fastcompAssump}a)--(\ref{FJ:eq:fastcompAssump}d) for the covariance kernel and sampling sites, it is shown in \cite[Theorem 2]{RatHic19a} that the credible interval for the integral takes the form
 
 		\begin{align}
 			\label{FJ:eqn:CI}
@@ -197,12 +197,12 @@ We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussia
 			\right] = 99\%, \\
 			\intertext{where}
 			\label{FJ:muhatGCV-FB-MLE-Simple}
-			\widehat{\mu}_n &= \frac 1n \sum_{i=1}^n y_i = \widetilde{y}_1, \; \text{where $y_i = f(x_i)$}\\
+			\widehat{\mu}_n &= \frac 1n \sum_{i=1}^n y_i = \widetilde{y}_1,\\
 		\nonumber 
-		\widetilde{\bsy} &:= \mathsf{V}^H \bsy, \; \text{where $\widetilde{\bsy}$ fast transform of $\bsy$}  \\
+		\widetilde{\bsy} &:= \mathsf{V}^H \bsy, \; \text{where $\widetilde{\bsy}$ is the fast transform of $\bsy$,}  \\
 		\nonumber 
 		{\bslambda}_\bstheta &:= \begin{pmatrix}
-			\lambda_{\bstheta,1} \\ \vdots \\ \lambda_{\bstheta,n} \end{pmatrix} = \mathsf{V}^H \bsC_1, \text{where $\bsC_1$ first row of covariance matrix} \\
+			\lambda_{\bstheta,1} \\ \vdots \\ \lambda_{\bstheta,n} \end{pmatrix} = \mathsf{V}^H \bsC_{\bstheta,1}, \\ & \nonumber \qquad \qquad \text{where $\bsC_{\bstheta,1}$ is the first column of the Gram matrix,} \\
 		\nonumber
 		s^2_\textup{EB} 
 		& =
@@ -239,14 +239,14 @@ We assume the integrand, $f$, is an instance of a real-valued stochastic Gaussia
 	\label{FJ:errSimple}
 	\begin{align}
 		\label{FJ:eqn:err_EBGCV}
-		\textup{err}_{\textup{CI},\mathsf{x}} = \textup{err}_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{1 - \frac{n}{\lambda_{\bstheta,1}} }, \qquad \mathsf{x} \in \{\textup{EB}, \textup{GCV}\},  \\ 
+		\textup{err}_{\textup{CI},\mathsf{x}} = \textup{err}_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{1 - \frac{n}{\lambda_{\bstheta_{\mathsf{x}},1}} }, \qquad \mathsf{x} \in \{\textup{EB}, \textup{GCV}\},  \\ 
 		\textup{err}_{\textup{CI},\textup{full}} 
 		& = t_{n-1,0.995} \widehat{\sigma}_{\textup{full}} > \textup{err}_\textup{EB}. \label{FJ:eq:errFull}
 	\end{align}
 \end{subequations}
 In the formulas for the credible interval half-widths, $\bstheta$ is assumed to take on the values $\bstheta_{\textup{EB}}$ or $\bstheta_{\textup{GCV}}$ as appropriate.  There is no suitable $\bstheta_{\textup{full}}$.
 
-Our  Bayesian cubature algorithm increases the sample size until the width of the credible interval is small enough.  This is accomplished through successively doubling the sample size.  Doubling the sample size allows us to retain the preferred structure of the sample sites.  The Bayesian cubature steps are detailed in Algorithm~\ref{FJ:algorithm1}.
+Our  Bayesian cubature algorithm doubles the sample size until the width of the credible interval is small enough.   Doubling the sample size allows us to retain the preferred structure of the sample sites.  The Bayesian cubature steps are detailed in Algorithm~\ref{FJ:algorithm1}.
 
 
 \algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen\ }
@@ -293,26 +293,25 @@ The credible intervals in our automatic algorithm are homogeneous with respect t
 \label{FJ:sec:sobol_walsh}
 
 
-The previous section does not mention which sequences of data sites and  kernels satisfy assumptions \eqref{FJ:eq:fastcompAssump}.  We demonstrate in \cite{RatHic19a} that rank-1 lattice points and shift-invariant kernels do so.  In this section, we give another example, namely digital sequences and digitally shift-invariant kernels based on Walsh functions.
-
-This section defines digital sequences, digitally shift-invariant kernels, and the fast Walsh-Hadamard transform.
+The previous section does not mention which sequences of data sites and  kernels satisfy assumptions \eqref{FJ:eq:fastcompAssump}.  We demonstrate in \cite{RatHic19a} that rank-1 lattice points and shift-invariant kernels do so.  In this section, we give another example, namely digital sequences and digitally shift-invariant kernels based on Walsh functions.  For completeness, this section defines digital sequences, digitally shift-invariant kernels, and the fast Walsh-Hadamard transform.
 
 \subsection{Digital Sequences} \label{FJ:sec:sobol}
 
 
-The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and his Sobol' sequences are the most popular.  These were later generalized.  In this chapter we specialize to the case of base $2$, which includes Sobol' sequences.  Here is a definition of a digital sequence in base $2$.
+The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and his Sobol' sequences are the most popular.  These were later generalized to the concept of digital sequences.  In this chapter we focus on digital sequences in base $2$, which includes Sobol' sequences.  Here is a definition.
 
-\begin{definition} \label{FJ:def:digitalseq}
-	For any non-negative integer $i = (\dots i_3 i_2 i_1)_2$, define $\overrightarrow{i} = (i_1, i_2, \dots)^T$ as the $\infty \times 1$ vector $\overrightarrow{i}$ of its binary digits. 
-	For any point $z = ({0.z_1 z_2 \dots })_2 \in [0, 1)$ where ${(\;)}_2$ indicates base-2, define $\overrightarrow{z} = (z_1, z_2, \dots)^T$ as the $\infty \times 1$ vector of its binary digits. 
+\begin{definition} \label{FJ:def:digitalseq}  Let  ${(\;)}_2$ denote the base $2$ or binary expansion of a number.
+	For any non-negative integer $i = (\dots i_3 i_2 i_1)_2$, define $\overrightarrow{\imath} = (i_1, i_2, \dots)^T$ as the $\infty \times 1$ vector $\overrightarrow{\imath}$ of its binary digits. 
+	For any point $z = ({0.z_1 z_2 \dots })_2 \in [0, 1)$, define $\overrightarrow{z} = (z_1, z_2, \dots)^T$ as the $\infty \times 1$ vector of its binary digits. 
 	Let $ \mathsf{G}_1, \dots , \mathsf{G}_d$ denote predetermined $\infty \times \infty$ generator matrices whose elements are zeros and ones. 
 	A digital sequence in base $2$ is $\{\bsz_1, \bsz_2, \bsz_3, \dots\}$, where each $\bsz_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
 	\begin{align*}
-	\overrightarrow{z}_{i+1,\ell} = \mathsf{G}_{\ell} \, \overrightarrow{i} \pmod 2,  \quad \ell = 1, \dots, d, \quad i = 0, 1, \dots \;.
+	\overrightarrow{z}_{i+1,\ell} = \mathsf{G}_{\ell} \, \overrightarrow{\imath} \pmod 2,  \quad \ell = 1, \dots, d, \quad i = 0, 1, \dots \;.
 	\end{align*}
+For any non-negative integers $m$ and $\tau$, the finite set, $\{\bsz_{\tau 2^m +1}, \ldots, \bsz_{(\tau+1)2^m +1}\}$ is a digital net in base $2$.
 \end{definition}
 
-It is common to index digital sequences starting with $0$, whereas our data sites and matrices in the earlier section are indexed starting with $1$.  To keep our notation consistent, we define $\bsz_{i+1}$ in terms of $\overrightarrow{i}$.
+It is common to index digital sequences starting with $0$, whereas our data sites and matrices in the earlier section are indexed starting with $1$.  To keep our notation consistent, we define $\bsz_{i+1}$ in terms of $\overrightarrow{\imath}$.
 
 Digital sequences have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$ and which also corresponds to an exclusive-or. Here and in what follows we ignore the cases of measure zero for which the $\oplus$ operation leads to a binary representation ending in an infinite string of ones.  The following lemma summarizes some important properties of digital sequences. 
 
@@ -368,7 +367,7 @@ The parameter $r$ is a measure of the digital smoothness of the kernel, which do
 \omega_1(x) 
 = 1  - 6 \times 2^{\lfloor \log_2 x \rfloor -1 }.
 \end{equation}
-Figure~\ref{FJ:fig:walshkernel-dim1} shows $C_\bstheta (x,t)$ for order $r=1$ and various values of $\eta$ in the interval $[0,1)$. Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and are only piecewise constant. 
+Figure~\ref{FJ:fig:walshkernel-dim1} shows $C_\bstheta (x,t)$ for order $r=1$ and various values of $\eta$ in the interval $[0,1)$. Unlike the shift-invariant kernels used with lattice nodes, low order Walsh kernels are discontinuous and piecewise constant. 
 
 \begin{figure}
 	\centering
@@ -386,7 +385,7 @@ C_{\bstheta}(\bsx, \bst) &= K_{\bstheta} (\bsx \oplus \bst), \\
 K_{\bstheta} (\bsx) & =  
 \prod_{\ell=1}^d  [1 + \eta_\ell \omega_{r} (x_\ell)], \quad \bseta = (\eta_1, \cdots, \eta_d), \quad \bstheta = (r, \bseta).
 \end{align}
-For mutidimesnional kernel, smaller $\eta_\ell$ for $\ell \in (1, \dots d)$ implies lesser variation in the amplitude of the kernel in dimension $\ell$.  
+For mutidimesnional kernels, smaller $\eta_\ell$ for $\ell \in (1, \dots d)$ implies less variation in the amplitude of the kernel in dimension $\ell$.  
 The parameter vector $\bstheta$ now is of dimension $d+1$.
 
 \subsection{Eigenvector-Eigenvalue Decomposition of the Gram Matrix}
@@ -418,29 +417,29 @@ where $\bigotimes$ is Kronecker product.
 Note that the Walsh-Hadamard matrices are symmetric.
 
 \begin{lemma} \label{FJ:lemma:eig}
-    Let $\left(\bsx_i\right)_{i=1}^{2^m}$ be digitally shifted Sobol' nodes and let the covariance kernel take the form of \eqref{FJ:eqn:digital_shift_in_kernel}. Then, for $m = 1, 2, \ldots$ the Gram matrix, $
+    Let $\left(\bsx_i\right)_{i=1}^{2^m}$ be nodes from a digitally shifted digital net in base $2$, and let the covariance kernel take the form of \eqref{FJ:eqn:digital_shift_in_kernel}. Then, for $m = 1, 2, \ldots$ the Gram matrix, $
 	\mathsf{C}_{\bstheta}^{(m)} = \bigl(C_\bstheta(\bsx_i, \bsx_j)\bigr)_{i,j=1}^{2^m} = \bigl(K(\bsx_i \oplus \bsx_j)\bigr)_{i,j=1}^{2^m}$ is a $2\times 2$ block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks, etc.\ are also $2\times 2$ block-Toeplitz. Moreover, $\mathsf{C}_{\bstheta}^{(m)} \mathsf{H}^{(m)} = \mathsf{H}^{(m)} \mathsf{\Lambda}^{(m)}$, where $\mathsf{\Lambda}^{(m)}$ is the diagonal matrix of eigenvalues of $\mathsf{C}_{\bstheta}^{(m)}$.
 \end{lemma}
 
 \begin{proof}
     First define the matrices using the notations from Lemma \ref{FJ:lemma:digital_net_prop}, 
     \begin{align*}
-    \mathsf{C}_{\bstheta}^{(m,k)} & = \bigl(K(\bsx_i \oplus \bsx_{j + k2^m} )\bigr)_{i,j=1}^{2^m} \\
-    & = \bigl(K(\bsz_{i\oplus j+ k 2^m + 1})\bigr)_{i,j=0}^{2^m-1}, \qquad m,k  = 0, 1, \ldots
+    \mathsf{C}_{\bstheta}^{(m,\tau)} & = \bigl(K(\bsx_i \oplus \bsx_{j + k2^m} )\bigr)_{i,j=1}^{2^m} \\
+    & = \bigl(K(\bsz_{i\oplus j+ \tau 2^m + 1})\bigr)_{i,j=0}^{2^m-1}, \qquad m,\tau  = 0, 1, \ldots
     \end{align*}
-    which means that $\mathsf{C}_{\bstheta}^{(m+1,k)}$, has the following block structure
+    which means that $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$, has the following block structure:
     \begin{align} \nonumber
-    \MoveEqLeft{\mathsf{C}_{\bstheta}^{(m+1,k)}} \\
+    \MoveEqLeft{\mathsf{C}_{\bstheta}^{(m+1,\tau)}} \\
     \nonumber
     & = 
     \begin{pmatrix} 
-    \bigl(K(\bsz_{i\oplus j+ k2^{m+1} + 1})\bigr)_{i,j=0}^{2^m-1} &
-    \bigl(K(\bsz_{i\oplus (j+2^m)+ k2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1} \\
-    \bigl(K(\bsz_{(i + 2^m) \oplus j + k2^{m+1}+1})\bigr)_{i,j=0}^{2^m-1} &
-    \bigl(K(\bsz_{(i + 2^m) \oplus (j+2^m) + k2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1}
+    \bigl(K(\bsz_{i\oplus j+ \tau 2^{m+1} + 1})\bigr)_{i,j=0}^{2^m-1} &
+    \bigl(K(\bsz_{i\oplus (j+2^m)+ \tau 2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1} \\
+    \bigl(K(\bsz_{(i + 2^m) \oplus j + \tau 2^{m+1}+1})\bigr)_{i,j=0}^{2^m-1} &
+    \bigl(K(\bsz_{(i + 2^m) \oplus (j+2^m) + \tau 2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1}
     \end{pmatrix} \\
-    & = \begin{pmatrix} \mathsf{C}_{\bstheta}^{(m,2k)} & \mathsf{C}_{\bstheta}^{(m,2k+1)} \\
-    \mathsf{C}_{\bstheta}^{(m,2k+1)} & \mathsf{C}_{\bstheta}^{(m,2k)}
+    & = \begin{pmatrix} \mathsf{C}_{\bstheta}^{(m, \tau)} & \mathsf{C}_{\bstheta}^{(m,2 \tau+1)} \\
+    \mathsf{C}_{\bstheta}^{(m,2 \tau+1)} & \mathsf{C}_{\bstheta}^{(m,2 \tau)}
     \end{pmatrix} , \label{FJ:eq:cblock}
     \end{align}
     since for $i,j = 0, \ldots, 2^m-1$, it follows that 
@@ -449,34 +448,34 @@ Note that the Walsh-Hadamard matrices are symmetric.
         (i + 2^m) \oplus (j+2^m) +1 = (i\oplus j) + (2^m \oplus 2^m) +1= (i\oplus j) +1.
     \end{gather*}
     
-    The proof of (\ref{FJ:eq:cblock}) follows by induction.  Note that for the case $m=1$ and $k = 0, 1, \ldots$
+    The proof of (\ref{FJ:eq:cblock}) follows by induction.  Note that for the case $m=1$ and $\tau = 0, 1, \ldots$
     \begin{equation*}
-        \mathsf{C}_{\bstheta}^{(1,k)} 
+        \mathsf{C}_{\bstheta}^{(1,\tau)} 
         =  \begin{pmatrix}
-        K_\bstheta(\bsz_{2k+1}) & K_\bstheta(\bsz_{2k+2}) \\
-        K_\bstheta(\bsz_{2k+2}) & K_\bstheta(\bsz_{2k+1}) 
+        K_\bstheta(\bsz_{2 \tau+1}) & K_\bstheta(\bsz_{2 \tau+2}) \\
+        K_\bstheta(\bsz_{2 \tau+2}) & K_\bstheta(\bsz_{2 \tau+1}) 
         \end{pmatrix} ,
     \end{equation*}
-   which has the desired Toeplitz property. Note also the eigenvectors of $\mathsf{C}_{\bstheta}^{(1,k)}$ are the columns of $\mathsf{H}^{(1)}$ since   
+   which has the desired Toeplitz property. Note also the eigenvectors of $\mathsf{C}_{\bstheta}^{(1,\tau)}$ are the columns of $\mathsf{H}^{(1)}$ since   
    \begin{align*}
-        \mathsf{C}_{\bstheta}^{(1,k)} \mathsf{H}^{(1)} & =  \begin{pmatrix}
-        K_\bstheta(\bsz_{2k+1}) + K_\bstheta(\bsz_{2k+2}) & K_\bstheta(\bsz_{2k+1}) - K_\bstheta(\bsz_{2k+2})\\
-        K_\bstheta(\bsz_{2k+2}) + K_\bstheta(\bsz_{2k+1}) &  K_\bstheta(\bsz_{2k+2}) - K_\bstheta(\bsz_{2k+1}) 
+        \mathsf{C}_{\bstheta}^{(1,\tau)} \mathsf{H}^{(1)} & =  \begin{pmatrix}
+        K_\bstheta(\bsz_{2 \tau+1}) + K_\bstheta(\bsz_{2 \tau+2}) & K_\bstheta(\bsz_{2 \tau+1}) - K_\bstheta(\bsz_{2 \tau+2})\\
+        K_\bstheta(\bsz_{2 \tau+2}) + K_\bstheta(\bsz_{2 \tau+1}) &  K_\bstheta(\bsz_{2 \tau+2}) - K_\bstheta(\bsz_{2 \tau+1}) 
         \end{pmatrix} \\
         & = \mathsf{H}^{(1)} \underbrace{\begin{pmatrix}
-        K_\bstheta(\bsz_{2k+1}) + K_\bstheta(\bsz_{2k+2}) & 0\\
-        0 &   K_\bstheta(\bsz_{2k+1}) - K_\bstheta(\bsz_{2k+2})
-        \end{pmatrix}}_{\mathsf{\Lambda}^{(1,k)}} .
+        K_\bstheta(\bsz_{2 \tau+1}) + K_\bstheta(\bsz_{2 \tau+2}) & 0\\
+        0 &   K_\bstheta(\bsz_{2 \tau+1}) - K_\bstheta(\bsz_{2 \tau+2})
+        \end{pmatrix}}_{\mathsf{\Lambda}^{(1,\tau)}} .
     \end{align*}
 
-   Now assume that $\mathsf{C}_{\bstheta}^{(m,k)}$ is $2\times 2$ block-Toeplitz matrix with all its sub-blocks and sub-sub-blocks, etc.\ also $2\times 2$ block-Toeplitz for $k = 0, 1, \ldots$.  Then by \eqref{FJ:eq:cblock}, the same holds for $\mathsf{C}_{\bstheta}^{(m+1,k)}$ for $k = 0, 1, \ldots$. 
+   Now assume that $\mathsf{C}_{\bstheta}^{(m,\tau)}$ is $2\times 2$ block-Toeplitz matrix with all its sub-blocks and sub-sub-blocks, etc.\ also $2\times 2$ block-Toeplitz for $\tau = 0, 1, \ldots$.  Then by \eqref{FJ:eq:cblock}, the same holds for $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$ for $\tau = 0, 1, \ldots$. 
    
-    Moreover, the hypothesized eigenvectors of $\mathsf{C}_{\bstheta}^{(m+1,k)}$ can also be verified by direct calculation under the induction hypothesis:
+    Moreover, the hypothesized eigenvectors of $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$ can also be verified by direct calculation under the induction hypothesis:
      \begin{align*}
-        \MoveEqLeft{\mathsf{C}_{\bstheta}^{(m+1,k)} \mathsf{H}^{(m+1)}} \\
+        \MoveEqLeft{\mathsf{C}_{\bstheta}^{(m+1,\tau)} \mathsf{H}^{(m+1)}} \\
         & =  
-        \begin{pmatrix} \mathsf{C}_{\bstheta}^{(m,2k)} & \mathsf{C}_{\bstheta}^{(m,2k+1)} \\
-        \mathsf{C}_{\bstheta}^{(m,2k+1)} & \mathsf{C}_{\bstheta}^{(m,2k)}
+        \begin{pmatrix} \mathsf{C}_{\bstheta}^{(m,2 \tau)} & \mathsf{C}_{\bstheta}^{(m,2 \tau+1)} \\
+        \mathsf{C}_{\bstheta}^{(m,2 \tau+1)} & \mathsf{C}_{\bstheta}^{(m,2 \tau)}
         \end{pmatrix} 
         \begin{pmatrix}
         \mathsf{H}^{(m)} &   \mathsf{H}^{(m)} \\
