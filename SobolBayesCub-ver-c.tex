@@ -391,14 +391,14 @@ The parameter vector $\bstheta$ now is of dimension $d+1$.
 \subsection{Eigenvector-Eigenvalue Decomposition of the Gram Matrix}
 
 For fast Bayesian cubature to succeed, the digital net data sites (Section~\ref{FJ:sec:sobol}) and the covariance kernels (Section~\ref{FJ:sec:Walsh_kernels}) must match in a way to satisfy  conditions \eqref{FJ:eq:fastcompAssump}.  To do this, we notice that the eigenvectors of the Gram matrix defined in \eqref{FJ:eq:Gram} are the columns of the Walsh-Hadamard matrices, defined as follows:
-\begin{align}
+\begin{gather}
 \nonumber
 %\arraycolsep=1.4pt\def\arraystretch{0.9}
-\mathsf{H}^{(1)} &=
+\mathsf{H}^{0)} = 1, \quad \mathsf{H}^{(1)} =
 \begin{pmatrix}
 1 & 1 \\ 1 & -1
-\end{pmatrix}, \qquad
-\mathsf{H}^{(2)} = \mathsf{H}^{(1)} \bigotimes \mathsf{H}^{(1)} = 
+\end{pmatrix}, \quad
+\mathsf{H}^{(2)} = \mathsf{H}^{(1)} \otimes \mathsf{H}^{(1)} = 
 \begin{pmatrix}
 1 & 1 & 1 & 1 \\ 
 1 & -1 & 1 & -1 \\
@@ -407,13 +407,13 @@ For fast Bayesian cubature to succeed, the digital net data sites (Section~\ref{
 \end{pmatrix}, \cdots
 \\
 \label{FJ:eqn:hadamard_matrix}
-\mathsf{H}^{(m)} &= \mathsf{H}^{(m-1)} \otimes \mathsf{H}^{(1)} =
+\mathsf{H}^{(m)} = \mathsf{H}^{(m-1)} \otimes \mathsf{H}^{(1)} =
 \begin{pmatrix}
 \mathsf{H}^{(m-1)} & \mathsf{H}^{(m-1)} \\ \mathsf{H}^{(m-1)} & -\mathsf{H}^{(m-1)}
 \end{pmatrix} 
-= \mathsf{H}^{(1)} \underbrace{\bigotimes \cdots \bigotimes}_{m \ \text{times}}  \mathsf{H}^{(1)} 
-\end{align}
-where $\bigotimes$ is Kronecker product.
+= \mathsf{H}^{(1)} \underbrace{\otimes \cdots \otimes}_{m \ \text{times}}  \mathsf{H}^{(1)} 
+\end{gather}
+where $\otimes$ is Kronecker product.
 Note that the Walsh-Hadamard matrices are symmetric.
 
 \begin{lemma} \label{FJ:lemma:eig}
