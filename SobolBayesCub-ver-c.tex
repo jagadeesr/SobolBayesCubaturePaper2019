@@ -157,7 +157,7 @@ Our approach to \emph{fast} Bayesian cubature \cite{RatHic19a} relies on two key
     \begin{equation} \label{FJ:eq:Gram}
         \mathsf{C}_\bstheta = \left(  C_\bstheta(\bsx_i,\bsx_j)  \right)_{i,j=1}^n, = (\bsC_{\bstheta,1}, \ldots, \bsC_{\bstheta,n}),
     \end{equation}
-    have an eigenvalue-eigenvector decomposition of the form\footnote{The presence of $1/n$ in the eigenvalue-eigenvector decomposition arises from the assumption that the first column of $\mathsf{V}$ is $\bsone$.  It could be removed by assuming that the first column of $\mathsf{V}$ is $\bsone/\sqrt{n}$.} $\mathsf{C}_\bstheta = \mathsf{V} \mathsf{\Lambda}_\bstheta \mathsf{V}^H/n$, where
+    have an eigenvalue-eigenvector decomposition of the form\footnote{The presence of $1/n$ in the eigenvalue-eigenvector decomposition arises from the assumption that the first column of $\mathsf{V}$ is $\bsone$.  It could be removed by assuming that the first column of $\mathsf{V}$ is $\bsone/\sqrt{n}$.  The superscript $H$ denotes the Hermitian or complex conjugate transpose.} $\mathsf{C}_\bstheta = \mathsf{V} \mathsf{\Lambda}_\bstheta \mathsf{V}^H/n$, where
     \begin{subequations} \label{FJ:eq:fastcompAssump}
 	\begin{align}
 	\label{FJ:eq:fastcompAssumpA}
@@ -197,7 +197,7 @@ As noted above, we assume the integrand, $f$, is an instance of a real-valued st
 			\right] = 99\%, \\
 			\intertext{where}
 			\label{FJ:muhatGCV-FB-MLE-Simple}
-			\widehat{\mu}_n &= \frac 1n \sum_{i=1}^n y_i = \widetilde{y}_1,\\
+			\widehat{\mu}_n &= \frac 1n \sum_{i=1}^n y_i = \widetilde{y}_1, \;  \text{where $y_i =f(\bsx_i)$},\\
 		\nonumber 
 		\widetilde{\bsy} &:= \mathsf{V}^H \bsy, \; \text{where $\widetilde{\bsy}$ is the fast transform of $\bsy$,}  \\
 		\nonumber 
@@ -390,7 +390,7 @@ The parameter vector $\bstheta$ now is of dimension $d+1$.
 
 \subsection{Eigenvector-Eigenvalue Decomposition of the Gram Matrix}
 
-For fast Bayesian cubature to succeed, the digital net data sites (Section~\ref{FJ:sec:sobol}) and the covariance kernels (Section~\ref{FJ:sec:Walsh_kernels}) must match in a way to satisfy  conditions \eqref{FJ:eq:fastcompAssump}.  To do this, we notice that the eigenvectors of the Gram matrix defined in \eqref{FJ:eq:Gram} are Walsh-Hadamard matrices, defined as follows:
+For fast Bayesian cubature to succeed, the digital net data sites (Section~\ref{FJ:sec:sobol}) and the covariance kernels (Section~\ref{FJ:sec:Walsh_kernels}) must match in a way to satisfy  conditions \eqref{FJ:eq:fastcompAssump}.  To do this, we notice that the eigenvectors of the Gram matrix defined in \eqref{FJ:eq:Gram} are the columns of the Walsh-Hadamard matrices, defined as follows:
 \begin{align}
 \nonumber
 %\arraycolsep=1.4pt\def\arraystretch{0.9}
@@ -422,12 +422,12 @@ Note that the Walsh-Hadamard matrices are symmetric.
 \end{lemma}
 
 \begin{proof}
-    First define the matrices using the notations from Lemma \ref{FJ:lemma:digital_net_prop}, 
+    First define the following matrices using the notation from Lemma \ref{FJ:lemma:digital_net_prop}:
     \begin{align*}
     \mathsf{C}_{\bstheta}^{(m,\tau)} & = \bigl(K(\bsx_i \oplus \bsx_{j + \tau 2^m} )\bigr)_{i,j=1}^{2^m} \\
-    & = \bigl(K(\bsz_{i\oplus j+ \tau 2^m + 1})\bigr)_{i,j=0}^{2^m-1}, \qquad m,\tau  = 0, 1, \ldots
+    & = \bigl(K(\bsz_{i\oplus j+ \tau 2^m + 1})\bigr)_{i,j=0}^{2^m-1}, \qquad m,\tau  = 0, 1, \ldots.
     \end{align*}
-    which means that $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$, has the following block structure:
+    This implies that  $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$, has the following block structure:
     \begin{align} \nonumber
     \MoveEqLeft[1]{\mathsf{C}_{\bstheta}^{(m+1,\tau)}} \\
     \nonumber
@@ -552,7 +552,7 @@ Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\math
 
 The Bayesian cubature algorithm described here, the digitally shift invariant kernel in \eqref{FJ:eqn:digital_shift_in_kernel} with order $r=1$  and the Bayesian lattice cubature algorithm described in \cite{RatHic19a} have been coded as  \texttt{cubBayesNet\_g} and \texttt{cubBayesLattice\_g}, respectively, in GAIL \cite{ChoEtal21a}.  We illustrate our algorithm for three common examples, which are also discussed in \cite{RatHic19a}.  The first example evaluates a multivariate Gaussian probability, the second example is Keister's function \cite{Kei96}, and the final example is pricing an Asian arithmetic mean option.  For each example we are able to find an ``exact'' answer, either by analytic computation, or by running a numerical algorithm with a very small error tolerance.
 
-The nodes used in \texttt{cubBayesNet\_g} are the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. Four hundred different error tolerances, $\varepsilon$, are randomly chosen such that $\log(\varepsilon)$ has a uniform distribution. 
+The nodes used in \texttt{cubBayesNet\_g} are the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. Four hundred different error tolerances, $\varepsilon$, are randomly chosen such that $\log(\varepsilon)$ has a uniform distribution.   Although $\log(\varepsilon)$ is uniformly chosen, the times are stratified since the number of samples must be a power of $2$.
 For each integral example, each $\varepsilon$, and each stopping criterion---empirical Bayes, full Bayes, and generalized cross-validation---we ran \texttt{cubBayesNet\_g}.  For each run, the execution time is plotted against $\abs{\mu - \widehat{\mu}_n}/\varepsilon$.  We expect $\abs{\mu - \widehat{\mu}_n}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate that the stopping criterion  is too conservative.
 All the tests were run Matlab version 2019b running on Intel i7-7700HQ.
 
