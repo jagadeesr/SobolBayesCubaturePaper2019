@@ -155,7 +155,7 @@ Our approach to \emph{fast} Bayesian cubature \cite{RatHic19a} relies on two key
 \renewcommand{\labelenumi}{\roman{enumi})}
     \item Choosing covariance kernels, $C_\bstheta:[0,1]^d \times [0,1]^d \to \R$, for which the symmetric, positive definite Gram matrices, 
     \begin{equation} \label{FJ:eq:Gram}
-        \mathsf{C}_\bstheta = \left(  C_\bstheta(\bsx_i,\bsx_j)  \right)_{i,j=1}^n, = (\bsC_{\bstheta,1}, \ldots, \bsC_{\bstheta,n})
+        \mathsf{C}_\bstheta = \left(  C_\bstheta(\bsx_i,\bsx_j)  \right)_{i,j=1}^n, = (\bsC_{\bstheta,1}, \ldots, \bsC_{\bstheta,n}),
     \end{equation}
     have an eigenvalue-eigenvector decomposition of the form\footnote{The presence of $1/n$ in the eigenvalue-eigenvector decomposition arises from the assumption that the first column of $\mathsf{V}$ is $\bsone$.  It could be removed by assuming that the first column of $\mathsf{V}$ is $\bsone/\sqrt{n}$.} $\mathsf{C}_\bstheta = \mathsf{V} \mathsf{\Lambda}_\bstheta \mathsf{V}^H/n$, where
     \begin{subequations} \label{FJ:eq:fastcompAssump}
@@ -171,7 +171,7 @@ Our approach to \emph{fast} Bayesian cubature \cite{RatHic19a} relies on two key
 	\end{align}
 \end{subequations}
 and
-\item The hyperparameters of the Gaussian process, $m$, $s$, and $\bstheta$ are tuned to increase the likelihood that $f$ is a typical integrand and not an outlier.
+\item The hyperparameters of the Gaussian process---$m$, $s$, and $\bstheta$---are tuned to increase the likelihood that $f$ is a typical integrand and not an outlier.
 \end{enumerate}
 We call the transformation $\bsb \mapsto \mathsf{V}^H \bsb$ a \emph{fast Bayesian transform}. Our earlier work \cite{RatHic19a} focuses on lattice nodes and shift-invariant kernels. In that context the computation of $\mathsf{V}^H \bsb$ is a one-dimensional fast Fourier transform.  This chapter focuses on digital sequences, such as Sobol' sequences \cite{Sob67}, and covariance kernels that are digitally shift-invariant.  In this case the computation of $\mathsf{V}^H \bsb$ is a fast Walsh-Hadamard transform. 
 
@@ -188,7 +188,7 @@ The next section summarizes the key formulae from \cite{RatHic19a}.  Section \re
 
 
 
-As described above, we assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  Let $\boldsymbol{y} = (y_i)_{i=1}^n = \bigl( f(\bsx_i) \bigr)_{i=1}^n$ denote the vector of sampled integrand values.  In \cite{RatHic19a} we introduce three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions (\ref{FJ:eq:fastcompAssump}a)--(\ref{FJ:eq:fastcompAssump}d) for the covariance kernel and sampling sites, it is shown in \cite[Theorem 2]{RatHic19a} that the credible interval for the integral takes the form
+As noted above, we assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  Let $\boldsymbol{y} = (y_i)_{i=1}^n = \bigl( f(\bsx_i) \bigr)_{i=1}^n$ denote the vector of sampled integrand values.  In \cite{RatHic19a} we introduce three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions (\ref{FJ:eq:fastcompAssump}a)--(\ref{FJ:eq:fastcompAssump}d) for the covariance kernel and sampling sites, it is shown in \cite[Theorem 2]{RatHic19a} that the credible interval for the integral takes the form
 
 		\begin{align}
 			\label{FJ:eqn:CI}
@@ -293,12 +293,12 @@ The credible intervals in our automatic algorithm are homogeneous with respect t
 \label{FJ:sec:sobol_walsh}
 
 
-The previous section does not mention which sequences of data sites and  kernels satisfy assumptions \eqref{FJ:eq:fastcompAssump}.  We demonstrate in \cite{RatHic19a} that rank-1 lattice points and shift-invariant kernels do so.  In this section, we give another example, namely digital sequences and digitally shift-invariant kernels based on Walsh functions.  For completeness, this section defines digital sequences, digitally shift-invariant kernels, and the fast Walsh-Hadamard transform.
+The previous section does not mention which sequences of data sites and  kernels satisfy assumptions \eqref{FJ:eq:fastcompAssump}.  We demonstrate in \cite{RatHic19a} that rank-1 lattice points and shift-invariant kernels do so.  In this section, we give another example, namely digital sequences and digitally shift-invariant kernels based on Walsh functions.  For completeness, we define digital sequences, digitally shift-invariant kernels, and the fast Walsh-Hadamard transform.
 
 \subsection{Digital Sequences} \label{FJ:sec:sobol}
 
 
-The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and his Sobol' sequences are the most popular.  These were later generalized to the concept of digital sequences.  In this chapter we focus on digital sequences in base $2$, which includes Sobol' sequences.  Here is a definition.
+The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and  Sobol' sequence are the most popular digital sequence. This chapter focuses on digital sequences in base $2$, which includes Sobol' sequences. 
 
 \begin{definition} \label{FJ:def:digitalseq}  Let  ${(\;)}_2$ denote the base $2$ or binary expansion of a number.
 	For any non-negative integer $i = (\dots i_3 i_2 i_1)_2$, define $\overrightarrow{\imath} = (i_1, i_2, \dots)^T$ as the $\infty \times 1$ vector $\overrightarrow{\imath}$ of its binary digits. 
@@ -308,17 +308,17 @@ The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and
 	\begin{align*}
 	\overrightarrow{z}_{i+1,\ell} = \mathsf{G}_{\ell} \, \overrightarrow{\imath} \pmod 2,  \quad \ell = 1, \dots, d, \quad i = 0, 1, \dots \;.
 	\end{align*}
-For any non-negative integers $m$ and $\tau$, the finite set, $\{\bsz_{\tau 2^m +1}, \ldots, \bsz_{(\tau+1)2^m +1}\}$ is a digital net in base $2$.
+For any non-negative integers $m$ and $\tau$, the finite set, $\{\bsz_{\tau 2^m +1}, \ldots, \bsz_{(\tau+1)2^m +1}\}$ is a \emph{digital net} in base $2$.
 \end{definition}
 
-It is common to index digital sequences starting with $0$, whereas our data sites and matrices in the earlier section are indexed starting with $1$.  To keep our notation consistent, we define $\bsz_{i+1}$ in terms of $\overrightarrow{\imath}$.
+It is common to index digital sequences starting with $0$, whereas our data sites and matrices  are indexed starting with $1$.  To keep our notation consistent, we define $\bsz_{i+1}$ in terms of $\overrightarrow{\imath}$.
 
-Digital sequences have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$ and which also corresponds to an exclusive-or. Here and in what follows we ignore the cases of measure zero for which the $\oplus$ operation leads to a binary representation ending in an infinite string of ones.  The following lemma summarizes some important properties of digital sequences. 
+Digital sequences have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$ and which also corresponds to an exclusive-or in base $2$. Here and in what follows we ignore the cases of measure zero for which the $\oplus$ operation leads to a binary representation ending in an infinite string of ones.  The following lemma summarizes some important properties of digital sequences. 
 
 
 \begin{lemma}
 	\label{FJ:lemma:digital_net_prop}
-	Let $\{\bsz_i\}_{i=1}^{\infty}$ be a digital sequence in base $2$ as defined in Definition \ref{FJ:def:digitalseq}.  Choose any digital shift $\bsDelta \in [0,1)^d$, and define $\{\bsx_i\}_{i=1}^{\infty}$ by digitwise addition, $\bsx_{i} = \bsz_{i} \oplus \bsDelta$.
+	Let $\{\bsz_i\}_{i=1}^{\infty}$ be a digital sequence in base $2$ as defined in Definition \ref{FJ:def:digitalseq}.  Choose any digital shift $\bsDelta \in [0,1)^d$, and define the sequence of nodes $\{\bsx_i\}_{i=1}^{\infty}$ by digitwise addition, $\bsx_{i} = \bsz_{i} \oplus \bsDelta$.
 	Then for all $i,j \in \N_0$,
 	\begin{gather}
 		\label{FJ:eqn:digital_net_symmetric_prop}
@@ -327,9 +327,9 @@ Digital sequences have a group structure under digitwise, element-by-element add
 	\label{FJ:eqn:digital_shift_prop}
 	\bsx_{i+1} \oplus \bsx_{j+1} = \bsz_{i+1} \oplus \bsz_{j+1} = \bsz_{(i \oplus j) + 1 }.
 	\end{gather}
-	Therefore, $\{\bsz_i\}_{i=1}^{\infty}$ is a group.  Moreover, $\{\bsz_i\}_{i=1}^{2^m}$ is a subgroup for $m \in {\N}_0$.
+	Therefore, $\{\bsz_i\}_{i=1}^{\infty}$ is a group.  Moreover, the digital net $\{\bsz_i\}_{i=1}^{2^m}$ is a subgroup for $m \in {\N}_0$.
 \end{lemma}
-The proof follows straightforwardly from Definition \ref{FJ:def:digitalseq}, and can be found in \cite{JagThesis19a}.
+The proof follows from Definition \ref{FJ:def:digitalseq}, and can be found in \cite{JagThesis19a}.
 
 Digital sequence generators can be chosen by number theory, as are those of Sobol' \cite{Sob67} and Niederreiter and Xing  \cite{NieXin01a} (see also \cite[Chapter 8]{DicPil10a}), or they can be chosen by computer search \cite[Chapter 10]{DicPil10a}.  The original generator matrices may be scrambled using linear matrix scrambling \cite{Mat98}.
 
@@ -359,7 +359,7 @@ The symmetric, positive definite property of $ C_\bstheta (x,t)$ follows from it
 \[
 C_\bstheta (x \oplus \Delta ,t \oplus \Delta ) = K_\bstheta(x \oplus \Delta \oplus t \oplus \Delta) = K_\bstheta(x \oplus t) =  C_\bstheta (x,t).
 \]
-This follows because $\Delta \oplus \Delta = 0$.
+This follows because $\Delta \oplus \Delta = 0$ for any $\Delta \in [0,1)$.
 
 The parameter $r$ is a measure of the digital smoothness of the kernel, which does not correspond to ordinary smoothness.  An explicit expression is available for $\omega_{r}$ in the case of order $r=1$ (see \cite{Nuyens2013}):
 \begin{equation}
@@ -424,12 +424,12 @@ Note that the Walsh-Hadamard matrices are symmetric.
 \begin{proof}
     First define the matrices using the notations from Lemma \ref{FJ:lemma:digital_net_prop}, 
     \begin{align*}
-    \mathsf{C}_{\bstheta}^{(m,\tau)} & = \bigl(K(\bsx_i \oplus \bsx_{j + k2^m} )\bigr)_{i,j=1}^{2^m} \\
+    \mathsf{C}_{\bstheta}^{(m,\tau)} & = \bigl(K(\bsx_i \oplus \bsx_{j + \tau 2^m} )\bigr)_{i,j=1}^{2^m} \\
     & = \bigl(K(\bsz_{i\oplus j+ \tau 2^m + 1})\bigr)_{i,j=0}^{2^m-1}, \qquad m,\tau  = 0, 1, \ldots
     \end{align*}
     which means that $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$, has the following block structure:
     \begin{align} \nonumber
-    \MoveEqLeft{\mathsf{C}_{\bstheta}^{(m+1,\tau)}} \\
+    \MoveEqLeft[1]{\mathsf{C}_{\bstheta}^{(m+1,\tau)}} \\
     \nonumber
     & = 
     \begin{pmatrix} 
@@ -438,19 +438,22 @@ Note that the Walsh-Hadamard matrices are symmetric.
     \bigl(K(\bsz_{(i + 2^m) \oplus j + \tau 2^{m+1}+1})\bigr)_{i,j=0}^{2^m-1} &
     \bigl(K(\bsz_{(i + 2^m) \oplus (j+2^m) + \tau 2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1}
     \end{pmatrix} \\
-    & = \begin{pmatrix} \mathsf{C}_{\bstheta}^{(m, \tau)} & \mathsf{C}_{\bstheta}^{(m,2 \tau+1)} \\
+    & = \begin{pmatrix} \mathsf{C}_{\bstheta}^{(m, 2\tau)} & \mathsf{C}_{\bstheta}^{(m,2 \tau+1)} \\
     \mathsf{C}_{\bstheta}^{(m,2 \tau+1)} & \mathsf{C}_{\bstheta}^{(m,2 \tau)}
     \end{pmatrix} , \label{FJ:eq:cblock}
     \end{align}
     since for $i,j = 0, \ldots, 2^m-1$, it follows that 
     \begin{gather*}
-        i\oplus (j+2^m) +1 = (i\oplus j) + 2^m +1 = (i + 2^m) \oplus j +1 ,\\
-        (i + 2^m) \oplus (j+2^m) +1 = (i\oplus j) + (2^m \oplus 2^m) +1= (i\oplus j) +1.
+        i\oplus (j+2^m)  = (i\oplus j) + 2^m  = (i + 2^m) \oplus j  ,\\
+        (i + 2^m) \oplus (j+2^m)  = (i\oplus j) + (2^m \oplus 2^m)= i\oplus j.
     \end{gather*}
     
     The proof of (\ref{FJ:eq:cblock}) follows by induction.  Note that for the case $m=1$ and $\tau = 0, 1, \ldots$
     \begin{equation*}
         \mathsf{C}_{\bstheta}^{(1,\tau)} 
+        = \begin{pmatrix} \mathsf{C}_{\bstheta}^{(0, 2\tau)} & \mathsf{C}_{\bstheta}^{(0,2 \tau+1)} \\
+        	\mathsf{C}_{\bstheta}^{(0,2 \tau+1)} & \mathsf{C}_{\bstheta}^{(0,2 \tau)}
+        \end{pmatrix}
         =  \begin{pmatrix}
         K_\bstheta(\bsz_{2 \tau+1}) & K_\bstheta(\bsz_{2 \tau+2}) \\
         K_\bstheta(\bsz_{2 \tau+2}) & K_\bstheta(\bsz_{2 \tau+1}) 
@@ -499,7 +502,7 @@ Noting that $\mathsf{C}^{(m+1)} = \mathsf{C}^{(m+1,0)} $ completes the proof.
 \end{proof}
 
 
-The results of this chapter can be summarized as follows:
+The theoretical results of this chapter can be summarized as follows:
 
 \begin{theorem} \label{FJ:thm:main}
 	Any symmetric, positive definite, digitally shift-invariant kernel of the form \eqref{FJ:eqn:walsh_kernel} scaled to satisfy \eqref{FJ:addAssump}, when matched with digital sequence data sites, satisfies assumptions \eqref{FJ:eq:fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} performs the fast Bayesian transform,  $\bsb \mapsto \mathsf{V}^H \bsb$ , in $\calO(n \log n)$ operations.
@@ -516,26 +519,26 @@ Lemma \ref{FJ:lemma:eig} establishes that covariance kernels of the form \eqref{
 \end{itemize}
 What remains to be shown is how $\mathsf{V}^H \bsb = \mathsf{H} \bsb$ can be calculated in $\calO(n \log{n})$ operations for arbitrary $\bsb$.
 
-The computation of $\widetilde{\bsb} =\mathsf{H} \bsb$ is done iteratively as follows.  We claim that it requires $m2^m$ operations for vectors $\bsb$ of length $2^m$. For the case $m=0$, $\widetilde{\bsb} = \mathsf{H}^{(m)} \bsb = \bsb$, which requires no arithmetic operations.  Now, Let $\bsb = (\bsb_1^{T},  \bsb_2^{T})$, where $\bsb_1$ and $\bsb_2$ are each of length $2^m$, and so $\bsb$ is of length $2^{m+1}$.  Let $\widetilde{\bsb} = \mathsf{H}^{(m+1)} \bsb$,  $\widetilde{\bsb}_1 = \mathsf{H}^{(m)} \bsb_1$, and $\widetilde{\bsb}_2 = \mathsf{H}^{(m)} \bsb_2$.  It follows from the definition of the Walsh-Hadamard matrix that 
+The computation of $\widetilde{\bsb} =\mathsf{H} \bsb$ is done iteratively as follows.  We claim that it requires $m2^m$ operations for vectors $\bsb$ of length $2^m$. For the case $m=0$, the Hadamard matrix $\mathsf{H}^{(0)}$ is the scalar $1$, and $\widetilde{\bsb} = \mathsf{H}^{(m)} \bsb = \bsb$, which requires no arithmetic operations.  Now, Let $\bsb = (\bsb_U^{T},  \bsb_L^{T})$, where $\bsb_U$ and $\bsb_L$ are each of length $2^m$, and so $\bsb$ is of length $2^{m+1}$.  Let $\widetilde{\bsb} = \mathsf{H}^{(m+1)} \bsb$,  $\widetilde{\bsb}_U = \mathsf{H}^{(m)} \bsb_U$, and $\widetilde{\bsb}_L = \mathsf{H}^{(m)} \bsb_L$.  It follows from the definition of the Walsh-Hadamard matrix that 
 \begin{align*}
 \widetilde{\bsb} &= \mathsf{H}^{({m+1})} \bsb = \begin{pmatrix}
 \mathsf{H}^{(m)} & \mathsf{H}^{(m)} \\ \mathsf{H}^{(m)} & - \mathsf{H}^{(m)}
 \end{pmatrix} 
 \begin{pmatrix}
-\bsb_1 \\ \bsb_2
+\bsb_U\\ \bsb_L
 \end{pmatrix} \qquad \text{by \eqref{FJ:eqn:hadamard_matrix}} \\
 &= 
 \begin{pmatrix}
-\mathsf{H}^{(m)} \bsb_1 + \mathsf{H}^{(m)}\bsb_2 \\ 
-\mathsf{H}^{(m)} \bsb_1 - \mathsf{H}^{(m)} \bsb_2
+\mathsf{H}^{(m)} \bsb_U + \mathsf{H}^{(m)}\bsb_L \\ 
+\mathsf{H}^{(m)} \bsb_U - \mathsf{H}^{(m)} \bsb_L
 \end{pmatrix}
 = 
 \begin{pmatrix}
-\widetilde{\bsb}_1 + \widetilde{\bsb}_2 \\ 
-\widetilde{\bsb}_1 - \widetilde{\bsb}_2
+\widetilde{\bsb}_U + \widetilde{\bsb}_L \\ 
+\widetilde{\bsb}_U - \widetilde{\bsb}_L
 \end{pmatrix}.
 \end{align*}
-Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\mathsf{H}^{(1)}$, at a cost of $m 2^m$ each, plus an addition and a subtraction of vectors of length $2^m$, for a total cost of $2 \times m 2^m + 2 \times 2^m = (m+1) 2^{m+1}$, which is exactly what is needed.  Since $\widetilde{\bsb} =\mathsf{H} \bsb$ requires $m2^m = n \log_2(n)$ operations to compute, assumption \eqref{FJ:eq:fastcompAssumpC} is satisfied.  This completes the proof of Theorem \ref{FJ:thm:main}.
+Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\mathsf{H}^{(1)}$, at a cost of $m 2^m$ each, plus an addition and a subtraction of vectors of length $2^m$, for a total cost of $2 \times m 2^m + 2 \times 2^m = (m+1) 2^{m+1}$, which is exactly what is hypothesized.  Since $\widetilde{\bsb} =\mathsf{H} \bsb$ requires $m2^m = n \log_2(n)$ operations to compute, assumption \eqref{FJ:eq:fastcompAssumpC} is satisfied.  This completes the proof of Theorem \ref{FJ:thm:main}.
 
 \end{proof}
 
@@ -557,10 +560,10 @@ All the tests were run Matlab version 2019b running on Intel i7-7700HQ.
 
 This integral is formulated as in \cite{RatHic19a} following the variable transformation introduced by Alan Genz \cite{Gen92}. The simulation results are summarized in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB}, \ref{FJ:fig:Sobol-mvn-guaranteed-FB}, and \ref{FJ:fig:Sobol-mvn-guaranteed-GCV}.  In all cases, \texttt{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, \texttt{cubBayesNet\_g} takes about 3 seconds as shown in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-EB} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-up possible using fast Bayesian cubature.
 
-The \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform.  This is slower than MATLAB's fast Fourier transform, which is implemented in compiled code. This may help explain why \texttt{cubBayesLattice\_g} is faster than \texttt{cubBayesNet\_g} for this example. Also, \texttt{cubBayesLattice\_g} here uses higher order kernels whereas higher order digitally shift-invariant kernels are inappropriate for these examples. The \texttt{cubBayesLattice\_g} uses on average $n \approx 16{,}000$ samples for $\varepsilon = 10^{-5}$, whereas \texttt{cubBayesNet\_g} uses on average $n \approx 32{,}000$ samples.
+The algorithm \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform.  This is slower than MATLAB's fast Fourier transform, which is implemented in compiled code. This may help explain why \texttt{cubBayesLattice\_g} is faster than \texttt{cubBayesNet\_g} for this example. Also, \texttt{cubBayesLattice\_g} here uses higher order kernels whereas higher order digitally shift-invariant kernels are inappropriate for these examples. On average, \texttt{cubBayesLattice\_g} uses $n \approx 16{,}000$ samples for $\varepsilon = 10^{-5}$, whereas \texttt{cubBayesNet\_g} uses  $n \approx 32{,}000$ samples.
 
 Amongst the three stopping criteria, GCV achieves an acceptable approximation faster than others but it is less conservative. 
-One can also observe from the figures that the credible intervals are narrower than empirical Bayes as in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-EB}.
+\FJHNote{I do not understand these next two sentences.} One can also observe from the figures that the credible intervals are narrower than empirical Bayes as in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-EB}.
 This shows that \texttt{cubBayesNet\_g} with $d=2, r=1$ kernel more accurately approximates the integrand than the empirical Bayes.
 
 \begin{figure}
@@ -605,10 +608,7 @@ and $\bsPhi$ is the component-wise standard normal distribution.
 The true value of $\mu$ can be calculated iteratively in terms of  quadrature as found in \cite[Section 5.2]{RatHic19a}.
 
 
-Figures \ref{FJ:fig:Sobol-keister-guaranteed-EB}, \ref{FJ:fig:Sobol-keister-guaranteed-FB} and \ref{FJ:fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case for dimension $d=4$ and order $r=1$.  
-
-In \cite{RatHic19a} \texttt{cubBayesLattice\_g} used a much smoother kernel that used here.
-This explains why \texttt{cubBayesNet\_g} uses more samples for integration.
+Figures \ref{FJ:fig:Sobol-keister-guaranteed-EB}, \ref{FJ:fig:Sobol-keister-guaranteed-FB} and \ref{FJ:fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case for dimension $d=4$ and order $r=1$.  The \texttt{cubBayesLattice\_g} algorithm in  \cite{RatHic19a} uses a much smoother kernel than that used here. This explains why \texttt{cubBayesNet\_g} uses more samples for integration than  \texttt{cubBayesLattice\_g}. \FJHNote{How many more?}
 As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:Sobol-keister-guaranteed-GCV} achieves the results faster than the others but it is less conservative which is also the case with the multivariate Gaussian example.
 
 \begin{figure}
@@ -642,10 +642,10 @@ The price of financial derivatives can often be modeled by high dimensional inte
 We refer to the formulation of the fair price of the option as in \cite{RatHic19a}, where the underlying asset is described in terms of a discretized geometric Brownian motion.
 
 
-The Figures \ref{FJ:fig:Sobol-optprice-guaranteed-EB}, \ref{FJ:fig:Sobol-optprice-guaranteed-FB} and 
-\ref{FJ:fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the values for,
-time horizon $T = 1/4$ of a year, $d = 13$ time steps, initial asset price of $S_0 = 100$, interest rate of $r =  0.05$ per year, volatility of $\sigma = 0.5$ per root year, and strike price of  $K = 200$, the same as used in the experiments of \texttt{cubBayesLattice\_g} \cite{RatHic19a}.
-This integrand has a kink caused by the $\max$ function, so lattice rules cannot perform better, even if the integrand were to be periodized.  We observe that \texttt{cubBayesNet\_g} is more efficient (with number of samples used in integration) than \texttt{cubBayesLattice\_g}.  For the error tolerance, $\varepsilon=10^{-3}$,  \texttt{cubBayesLattice\_g} uses $n \approx 2^{20}$ samples, whereas \texttt{cubBayesNet\_g} uses $n \approx 2^{17}$ samples.
+Figures \ref{FJ:fig:Sobol-optprice-guaranteed-EB}, \ref{FJ:fig:Sobol-optprice-guaranteed-FB} and 
+\ref{FJ:fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the values for
+time horizon $T = 1/4$ of a year, $d = 13$ time steps, initial asset price of $S_0 = 100$, interest rate of $r =  0.05$ per year, volatility of $\sigma = 0.5$ per root year, and strike price of  $K = 200$, the same as used in the experiments with \texttt{cubBayesLattice\_g} \cite{RatHic19a}.
+This integrand has a kink caused by the $\max$ function, so lattice rules cannot perform better, even if the integrand were to be periodized.  We observe that \texttt{cubBayesNet\_g} is more efficient in terms of the number of samples used than \texttt{cubBayesLattice\_g}.  For the error tolerance, $\varepsilon=10^{-3}$,  \texttt{cubBayesLattice\_g} uses $n \approx 2^{20}$ samples, whereas \texttt{cubBayesNet\_g} uses $n \approx 2^{17}$ samples.
 
 
 \begin{figure}
@@ -677,14 +677,14 @@ Here 35 such exceptions happened.
 
 
 As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, our algorithm computed the integral within user specified threshold with few exceptions. The exceptions occurred for the  option pricing example due to the complexity and high dimension of the integrand. 
-Also notice that our algorithm \texttt{cubBayesNet\_g}, finished within maximum 40 seconds per run (max value in Y-axis) for Keister and multivariate Gaussian for the smallest tolerance as shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-keister-guaranteed-GCV}. Option pricing took little above 100 seconds per run (max value in Y-axis) due to the complexity of integrand as shown in Figures \ref{FJ:fig:Sobol-optprice-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}.
+Also notice that our algorithm \texttt{cubBayesNet\_g}, finished within 40 seconds per run for the multivariate Gaussian and Keister examples  for the smallest tolerance as shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-keister-guaranteed-GCV}. Option pricing took little above 100 seconds per run due to the complexity of integrand as shown in Figures \ref{FJ:fig:Sobol-optprice-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}.
 
 %\FJHNote{For which examples?} 
-A most noticeable aspect from the plots of \texttt{cubBayesNet\_g} is how close the error bounds are to the true error. 
+A  noticeable aspect from the plots of \texttt{cubBayesNet\_g} is how close the error bounds are to the true error in many cases. 
 This shows that the \texttt{cubBayesNet\_g}'s error bounding is not too conservative.
 
-In nearly all of the examples, the ratio $\abs{\mu - \widehat{\mu}_n}/\varepsilon$  is closer to one for the Bayesian net cubature in comparison to the Bayesian lattice cubature.  
-A possible reason is that the periodization transform speeds the convergence in the former case and makes the error bounds too conservative.
+In nearly all of the examples, the ratio $\abs{\mu - \widehat{\mu}_n}/\varepsilon$  is closer to one for the Bayesian net cubature in contrast to the Bayesian lattice cubature.  
+A possible reason is that the periodization transform speeds the convergence in the latter case and our data based error bounds are unable to capture this smaller error. 
 
 
 
