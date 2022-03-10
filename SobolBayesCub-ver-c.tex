@@ -202,7 +202,7 @@ As noted above, we assume the integrand, $f$, is an instance of a real-valued st
 		\widetilde{\bsy} &:= \mathsf{V}^H \bsy, \; \text{where $\widetilde{\bsy}$ is the fast transform of $\bsy$,}  \\
 		\nonumber 
 		{\bslambda}_\bstheta &:= \begin{pmatrix}
-			\lambda_{\bstheta,1} \\ \vdots \\ \lambda_{\bstheta,n} \end{pmatrix} = \mathsf{V}^H \bsC_{\bstheta,1}, \\ & \nonumber \qquad \qquad \text{where $\bsC_{\bstheta,1}$ is the first column of the Gram matrix,} \\
+			\lambda_{\bstheta,1} \\ \vdots \\ \lambda_{\bstheta,n} \end{pmatrix} = \mathsf{V}^H \bsC_{\bstheta,1}, \\ & \nonumber \qquad \text{where $\bsC_{\bstheta,1}$ is the first column of the Gram matrix (\ref{FJ:eq:Gram}),} \\
 		\nonumber
 		s^2_\textup{EB} 
 		& =
@@ -298,7 +298,7 @@ The previous section does not mention which sequences of data sites and  kernels
 \subsection{Digital Sequences} \label{FJ:sec:sobol}
 
 
-The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and  Sobol' sequence are the most popular digital sequence. This chapter focuses on digital sequences in base $2$, which includes Sobol' sequences. 
+The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and  are also the most popular digital sequence. This chapter focuses on digital sequences in base $2$, which includes Sobol' sequences. 
 
 \begin{definition} \label{FJ:def:digitalseq}  Let  ${(\;)}_2$ denote the base $2$ or binary expansion of a number.
 	For any non-negative integer $i = (\dots i_3 i_2 i_1)_2$, define $\overrightarrow{\imath} = (i_1, i_2, \dots)^T$ as the $\infty \times 1$ vector $\overrightarrow{\imath}$ of its binary digits. 
@@ -508,7 +508,7 @@ The theoretical results of this chapter can be summarized as follows:
 	Any symmetric, positive definite, digitally shift-invariant kernel of the form \eqref{FJ:eqn:walsh_kernel} scaled to satisfy \eqref{FJ:addAssump}, when matched with digital sequence data sites, satisfies assumptions \eqref{FJ:eq:fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} performs the fast Bayesian transform,  $\bsb \mapsto \mathsf{V}^H \bsb$ , in $\calO(n \log n)$ operations.
 \end{theorem}
 
-\begin{proof}
+\begin{proof}{
 Lemma \ref{FJ:lemma:eig} establishes that covariance kernels of the form \eqref{FJ:eqn:digital_shift_in_kernel} matched with shifted digital net data sites satisfy the fast Bayesian cubature assumptions
 \begin{itemize}
     \item \eqref{FJ:eq:fastcompAssumpA}, since $\mathsf{V}$ is the Walsh-Hadamard matrix,
@@ -539,7 +539,7 @@ The computation of $\widetilde{\bsb} =\mathsf{H} \bsb$ is done iteratively as fo
 \end{pmatrix}.
 \end{align*}
 Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\mathsf{H}^{(1)}$, at a cost of $m 2^m$ each, plus an addition and a subtraction of vectors of length $2^m$, for a total cost of $2 \times m 2^m + 2 \times 2^m = (m+1) 2^{m+1}$, which is exactly what is hypothesized.  Since $\widetilde{\bsb} =\mathsf{H} \bsb$ requires $m2^m = n \log_2(n)$ operations to compute, assumption \eqref{FJ:eq:fastcompAssumpC} is satisfied.  This completes the proof of Theorem \ref{FJ:thm:main}.
-
+}
 \end{proof}
 
 
@@ -565,6 +565,7 @@ The algorithm \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform.  This 
 Amongst the three stopping criteria, GCV achieves an acceptable approximation faster than others but it is less conservative. 
 \FJHNote{I do not understand these next two sentences.} One can also observe from the figures that the credible intervals are narrower than empirical Bayes as in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-EB}.
 This shows that \texttt{cubBayesNet\_g} with $d=2, r=1$ kernel more accurately approximates the integrand than the empirical Bayes.
+\JRNote{The points are clustered to a smaller region that the other cases.}
 
 \begin{figure}
 \centering
@@ -608,7 +609,7 @@ and $\bsPhi$ is the component-wise standard normal distribution.
 The true value of $\mu$ can be calculated iteratively in terms of  quadrature as found in \cite[Section 5.2]{RatHic19a}.
 
 
-Figures \ref{FJ:fig:Sobol-keister-guaranteed-EB}, \ref{FJ:fig:Sobol-keister-guaranteed-FB} and \ref{FJ:fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case for dimension $d=4$ and order $r=1$.  The \texttt{cubBayesLattice\_g} algorithm in  \cite{RatHic19a} uses a much smoother kernel than that used here. This explains why \texttt{cubBayesNet\_g} uses more samples for integration than  \texttt{cubBayesLattice\_g}. \FJHNote{How many more?}
+Figures \ref{FJ:fig:Sobol-keister-guaranteed-EB}, \ref{FJ:fig:Sobol-keister-guaranteed-FB} and \ref{FJ:fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case for dimension $d=4$ and order $r=1$.  The \texttt{cubBayesLattice\_g} algorithm in  \cite{RatHic19a} uses a much smoother kernel than that used here. This explains why \texttt{cubBayesNet\_g} uses more samples for integration than  \texttt{cubBayesLattice\_g}. \FJHNote{How many more?} \JRNote{on average basis. We talked about the in previous paragraphs. Almost double ?}
 As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:Sobol-keister-guaranteed-GCV} achieves the results faster than the others but it is less conservative which is also the case with the multivariate Gaussian example.
 
 \begin{figure}
