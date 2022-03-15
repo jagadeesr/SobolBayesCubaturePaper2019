@@ -157,7 +157,7 @@ Our approach to \emph{fast} Bayesian cubature \cite{RatHic19a} relies on two key
     \begin{equation} \label{FJ:eq:Gram}
         \mathsf{C}_\bstheta = \left(  C_\bstheta(\bsx_i,\bsx_j)  \right)_{i,j=1}^n, = (\bsC_{\bstheta,1}, \ldots, \bsC_{\bstheta,n}),
     \end{equation}
-    have an eigenvalue-eigenvector decomposition of the form\footnote{The presence of $1/n$ in the eigenvalue-eigenvector decomposition arises from the assumption that the first column of $\mathsf{V}$ is $\bsone$.  It could be removed by assuming that the first column of $\mathsf{V}$ is $\bsone/\sqrt{n}$.  The superscript $H$ denotes the Hermitian or complex conjugate transpose.} $\mathsf{C}_\bstheta = \mathsf{V} \mathsf{\Lambda}_\bstheta \mathsf{V}^H/n$, where
+    have an eigenvalue-eigenvector decomposition of the form\footnote{The presence of $1/n$ in the eigenvalue-eigenvector decomposition arises from the assumption that the first column of $\mathsf{V}$ is $\bsone$.  It could be removed by assuming that the first column of $\mathsf{V}$ is $\bsone/\sqrt{n}$.  The superscript $H$ denotes the complex conjugate transpose \cite{Ber09a}.} $\mathsf{C}_\bstheta = \mathsf{V} \mathsf{\Lambda}_\bstheta \mathsf{V}^H/n$, where
     \begin{subequations} \label{FJ:eq:fastcompAssump}
 	\begin{align}
 	\label{FJ:eq:fastcompAssumpA}
@@ -418,7 +418,7 @@ Note that the Walsh-Hadamard matrices are symmetric.
 
 \begin{lemma} \label{FJ:lemma:eig}
     Let $\left\{\bsx_i \right\}_{i=1}^{2^m}$ be nodes from a digitally shifted digital net in base $2$, and let the covariance kernel take the form of \eqref{FJ:eqn:digital_shift_in_kernel}. Then, for $m = 1, 2, \ldots$ the Gram matrix, $
-	\mathsf{C}_{\bstheta}^{(m)} = \bigl(C_\bstheta(\bsx_i, \bsx_j)\bigr)_{i,j=1}^{2^m} = \bigl(K(\bsx_i \oplus \bsx_j)\bigr)_{i,j=1}^{2^m}$ is a $2\times 2$ block-Hankel matrix \cite[Definition 3.1.3]{Ber09a}and all the sub-blocks and their sub-sub-blocks, etc.\ are also $2\times 2$ block-Hankel. Moreover, $\mathsf{C}_{\bstheta}^{(m)} \mathsf{H}^{(m)} = \mathsf{H}^{(m)} \mathsf{\Lambda}^{(m)}$, where $\mathsf{\Lambda}^{(m)}$ is the diagonal matrix of eigenvalues of $\mathsf{C}_{\bstheta}^{(m)}$.
+	\mathsf{C}_{\bstheta}^{(m)} = \bigl(C_\bstheta(\bsx_i, \bsx_j)\bigr)_{i,j=1}^{2^m} = \bigl(K(\bsx_i \oplus \bsx_j)\bigr)_{i,j=1}^{2^m}$ is a $2\times 2$ block-Hankel matrix \cite[Definition 3.1.3]{Ber09a}, and all the sub-blocks and their sub-sub-blocks, etc.\ are also $2\times 2$ block-Hankel. Moreover, $\mathsf{C}_{\bstheta}^{(m)} \mathsf{H}^{(m)} = \mathsf{H}^{(m)} \mathsf{\Lambda}^{(m)}$, where $\mathsf{\Lambda}^{(m)}$ is the diagonal matrix of eigenvalues of $\mathsf{C}_{\bstheta}^{(m)}$.
 \end{lemma}
 
 \begin{proof}
@@ -550,7 +550,7 @@ Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\math
 \label{FJ:sec:NumExp}
 
 
-The Bayesian cubature algorithm described here, the digitally shift invariant kernel in \eqref{FJ:eqn:digital_shift_in_kernel} with order $r=1$  and the Bayesian lattice cubature algorithm described in \cite{RatHic19a} have been coded as  \texttt{cubBayesNet\_g} and \texttt{cubBayesLattice\_g}, respectively, in GAIL \cite{ChoEtal21a}.  We illustrate our algorithm for three common examples, which are also discussed in \cite{RatHic19a}.  The first example evaluates a multivariate Gaussian probability, the second example is Keister's function \cite{Kei96}, and the final example is pricing an Asian arithmetic mean option.  For each example we are able to find an ``exact'' answer, either by analytic computation, or by running a numerical algorithm with a very small error tolerance.
+The Bayesian cubature algorithm described here, the digitally shift invariant kernel in \eqref{FJ:eqn:digital_shift_in_kernel} with order $r=1$  and the Bayesian lattice cubature algorithm described in \cite{RatHic19a} have been coded as  \texttt{cubBayesNet\_g} and \texttt{cubBayesLattice\_g}, respectively, in GAIL \cite{ChoEtal21a}.  We illustrate our algorithm for three common examples, which are also discussed in \cite{RatHic19a}.  The first example evaluates a multivariate Gaussian probability, the second example is Keister's function \cite{Kei96}, and the final example is pricing an Asian arithmetic mean option.  For each example we are able to find the true integral value, $\mu$, either by analytic computation, or by running a numerical algorithm with a very small error tolerance.
 
 The nodes used in \texttt{cubBayesNet\_g} are the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. Four hundred different error tolerances, $\varepsilon$, are randomly chosen such that $\log(\varepsilon)$ has a uniform distribution.   Although $\log(\varepsilon)$ is uniformly chosen, the times are stratified since the number of samples must be a power of $2$.
 For each integral example, each $\varepsilon$, and each stopping criterion---empirical Bayes, full Bayes, and generalized cross-validation---we ran \texttt{cubBayesNet\_g}.  For each run, the execution time is plotted against $\abs{\mu - \widehat{\mu}_n}/\varepsilon$.  We expect $\abs{\mu - \widehat{\mu}_n}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate that the stopping criterion  is too conservative.
@@ -608,7 +608,8 @@ and $\bsPhi$ is the component-wise standard normal distribution.
 The true value of $\mu$ can be calculated iteratively in terms of  quadrature as found in \cite[Section 5.2]{RatHic19a}.
 
 
-Figures \ref{FJ:fig:Sobol-keister-guaranteed-EB}, \ref{FJ:fig:Sobol-keister-guaranteed-FB} and \ref{FJ:fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case for dimension $d=4$ and order $r=1$.  The \texttt{cubBayesLattice\_g} algorithm in  \cite{RatHic19a} uses a much smoother kernel than that used here. This explains why \texttt{cubBayesNet\_g} uses more samples for integration than  \texttt{cubBayesLattice\_g}. \FJHNote{How many more?} \JRNote{on average basis. We talked about the in previous paragraphs. Almost double ?}
+Figures \ref{FJ:fig:Sobol-keister-guaranteed-EB}, \ref{FJ:fig:Sobol-keister-guaranteed-FB} and \ref{FJ:fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case for dimension $d=4$ and order $r=1$.  The \texttt{cubBayesLattice\_g} algorithm in  \cite{RatHic19a} uses a much smoother kernel than that used here. This explains why \texttt{cubBayesNet\_g} uses more samples for integration than  \texttt{cubBayesLattice\_g} on average. 
+%\FJHNote{How many more?} \JRNote{on average basis. We talked about the in previous paragraphs. Almost double ?}
 As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:Sobol-keister-guaranteed-GCV} achieves the results faster than the others but it is less conservative which is also the case with the multivariate Gaussian example.
 
 \begin{figure}
