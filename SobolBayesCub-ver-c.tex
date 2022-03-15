@@ -119,7 +119,7 @@
 
 \abstract{
 	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern to focus on peaks because peaks can hide more easily in high dimensional space.  But, one can automatically determine the sample size, $n$, given a reasonable, fixed sampling pattern. This approach is pursued in Jagadeeswaran and Hickernell, Stat.\ Comput., 29:1214-1229, 2019, where a Bayesian perspective is used to construct a credible interval for the integral, and the computation is terminated when the half-width of the interval is no greater than the required error tolerance.  Our earlier work employs integration lattice sampling, and the computations are expedited by the fast Fourier transform because the covariance kernels for the Gaussian process prior on the integrand are chosen to be shift-invariant.  In this chapter, we extend our fast automatic Bayesian cubature to digital net sampling via \emph{digitally} shift-invariant covariance kernels and fast Walsh transforms.
-	Our algorithm is implemented in the MATLAB Guaranteed Automatic Integration Library (GAIL) and QMCPy Python library.
+	Our algorithm is implemented in the MATLAB Guaranteed Automatic Integration Library (GAIL) and the QMCPy Python library.
 }
 
 
