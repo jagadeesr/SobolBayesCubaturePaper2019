@@ -517,9 +517,9 @@ Lemma \ref{FJ:lemma:eig} establishes that covariance kernels of the form \eqref{
     
     \item \eqref{FJ:addAssump}, since all Walsh functions but the zeroth integrate to zero.
 \end{itemize}
-What remains to be shown is how $\mathsf{V}^H \bsb = \mathsf{H} \bsb$ can be calculated in $\calO(n \log{n})$ operations for arbitrary $\bsb$.
+What remains to be shown is \eqref{FJ:eq:fastcompAssumpC}, namely how $\mathsf{V}^H \bsb = \mathsf{H} \bsb$ can be calculated in $\calO(n \log{n})$ operations for arbitrary $\bsb$.
 
-The computation of $\widetilde{\bsb} =\mathsf{H} \bsb$ is done iteratively as follows.  We claim that it requires $m2^m$ operations for vectors $\bsb$ of length $2^m$. For the case $m=0$, the Hadamard matrix $\mathsf{H}^{(0)}$ is the scalar $1$, and $\widetilde{\bsb} = \mathsf{H}^{(m)} \bsb = \bsb$, which requires no arithmetic operations.  Now, Let $\bsb = (\bsb_U^{T},  \bsb_L^{T})$, where $\bsb_U$ and $\bsb_L$ are each of length $2^m$, and so $\bsb$ is of length $2^{m+1}$.  Let $\widetilde{\bsb} = \mathsf{H}^{(m+1)} \bsb$,  $\widetilde{\bsb}_U = \mathsf{H}^{(m)} \bsb_U$, and $\widetilde{\bsb}_L = \mathsf{H}^{(m)} \bsb_L$.  It follows from the definition of the Walsh-Hadamard matrix that 
+The computation of $\widetilde{\bsb} =\mathsf{H} \bsb$ is done iteratively as follows.  We claim that it requires $m2^m$ operations for vectors $\bsb$ of length $2^m$. For the case $m=0$, the Hadamard matrix $\mathsf{H}^{(0)}$ is the scalar $1$, and $\widetilde{\bsb} = \mathsf{H}^{(m)} \bsb = \bsb$, which requires no arithmetic operations.  Now, Let $\bsb = (\bsb_U^{T},  \bsb_L^{T})^T$, where $\bsb_U$ and $\bsb_L$ are each of length $2^m$, and so $\bsb$ is of length $2^{m+1}$.  Let $\widetilde{\bsb} = \mathsf{H}^{(m+1)} \bsb$,  $\widetilde{\bsb}_U = \mathsf{H}^{(m)} \bsb_U$, and $\widetilde{\bsb}_L = \mathsf{H}^{(m)} \bsb_L$.  It follows from the definition of the Walsh-Hadamard matrix that 
 \begin{align*}
 \widetilde{\bsb} &= \mathsf{H}^{({m+1})} \bsb = \begin{pmatrix}
 \mathsf{H}^{(m)} & \mathsf{H}^{(m)} \\ \mathsf{H}^{(m)} & - \mathsf{H}^{(m)}
@@ -538,7 +538,7 @@ The computation of $\widetilde{\bsb} =\mathsf{H} \bsb$ is done iteratively as fo
 \widetilde{\bsb}_U - \widetilde{\bsb}_L
 \end{pmatrix}.
 \end{align*}
-Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\mathsf{H}^{(1)}$, at a cost of $m 2^m$ each, plus an addition and a subtraction of vectors of length $2^m$, for a total cost of $2 \times m 2^m + 2 \times 2^m = (m+1) 2^{m+1}$, which is exactly what is hypothesized.  Since $\widetilde{\bsb} =\mathsf{H} \bsb$ requires $m2^m = n \log_2(n)$ operations to compute, assumption \eqref{FJ:eq:fastcompAssumpC} is satisfied.  This completes the proof of Theorem \ref{FJ:thm:main}.
+Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\mathsf{H}^{(m)}$, at a cost of $m 2^m$ each, plus an addition and a subtraction of vectors of length $2^m$, for a total cost of $2 \times m 2^m + 2 \times 2^m = (m+1) 2^{m+1}$, which is exactly what is hypothesized.  Since $\widetilde{\bsb} =\mathsf{H} \bsb$ requires $m2^m = n \log_2(n)$ operations to compute, assumption \eqref{FJ:eq:fastcompAssumpC} is satisfied.  This completes the proof of Theorem \ref{FJ:thm:main}.
 }
 \end{proof}
 
