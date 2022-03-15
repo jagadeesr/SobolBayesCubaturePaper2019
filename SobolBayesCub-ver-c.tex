@@ -486,16 +486,16 @@ Note that the Walsh-Hadamard matrices are symmetric.
         \end{pmatrix}\\
         & = 
     \begin{pmatrix}
-        [\mathsf{C}_{\bstheta}^{(m,2k)} + \mathsf{C}_{\bstheta}^{(m,2k+1)}] \mathsf{H}^{(m)} & [\mathsf{C}_{\bstheta}^{(m,2k)} - \mathsf{C}_{\bstheta}^{(m,2k+1)}] \mathsf{H}^{(m)}\\
-        [\mathsf{C}_{\bstheta}^{(m,2k+1)} + \mathsf{C}_{\bstheta}^{(m,2k)}] \mathsf{H}^{(m)} &   [\mathsf{C}_{\bstheta}^{(m,2k+1)} - \mathsf{C}_{\bstheta}^{(m,2k)}] \mathsf{H}^{(m)}
+        [\mathsf{C}_{\bstheta}^{(m,2\tau)} + \mathsf{C}_{\bstheta}^{(m,2\tau+1)}] \mathsf{H}^{(m)} & [\mathsf{C}_{\bstheta}^{(m,2\tau)} - \mathsf{C}_{\bstheta}^{(m,2\tau+1)}] \mathsf{H}^{(m)}\\
+        [\mathsf{C}_{\bstheta}^{(m,2\tau+1)} + \mathsf{C}_{\bstheta}^{(m,2\tau)}] \mathsf{H}^{(m)} &   [\mathsf{C}_{\bstheta}^{(m,2\tau+1)} - \mathsf{C}_{\bstheta}^{(m,2\tau)}] \mathsf{H}^{(m)}
         \end{pmatrix} \\
         & = \begin{pmatrix}
         \mathsf{H}^{(m)} & \mathsf{H}^{(m)} \\ \mathsf{H}^{(m)} & -\mathsf{H}^{(m)}
         \end{pmatrix} 
         \underbrace{\begin{pmatrix}
-        \mathsf{\Lambda}_\bstheta^{(m,2k)} + \mathsf{\Lambda}_\bstheta^{(m,2k+1)}  & \mathsf{0}\\
-        \mathsf{0} &   \mathsf{\Lambda}_\bstheta^{(m,2k)} - \mathsf{\Lambda}_\bstheta^{(m,2k+1)}
-        \end{pmatrix}}_{\mathsf{\Lambda}_\bstheta^{(m+1,2k)}} 
+        \mathsf{\Lambda}_\bstheta^{(m,2\tau)} + \mathsf{\Lambda}_\bstheta^{(m,2\tau+1)}  & \mathsf{0}\\
+        \mathsf{0} &   \mathsf{\Lambda}_\bstheta^{(m,2\tau)} - \mathsf{\Lambda}_\bstheta^{(m,2\tau+1)}
+        \end{pmatrix}}_{\mathsf{\Lambda}_\bstheta^{(m+1,2\tau)}} 
         .
     \end{align*}
 Noting that $\mathsf{C}^{(m+1)} = \mathsf{C}^{(m+1,0)} $ completes the proof.
