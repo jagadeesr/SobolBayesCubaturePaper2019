@@ -418,7 +418,7 @@ Note that the Walsh-Hadamard matrices are symmetric.
 
 \begin{lemma} \label{FJ:lemma:eig}
     Let $\left\{\bsx_i \right\}_{i=1}^{2^m}$ be nodes from a digitally shifted digital net in base $2$, and let the covariance kernel take the form of \eqref{FJ:eqn:digital_shift_in_kernel}. Then, for $m = 1, 2, \ldots$ the Gram matrix, $
-	\mathsf{C}_{\bstheta}^{(m)} = \bigl(C_\bstheta(\bsx_i, \bsx_j)\bigr)_{i,j=1}^{2^m} = \bigl(K(\bsx_i \oplus \bsx_j)\bigr)_{i,j=1}^{2^m}$ is a $2\times 2$ block-Toeplitz matrix and all the sub-blocks and their sub-sub-blocks, etc.\ are also $2\times 2$ block-Toeplitz. Moreover, $\mathsf{C}_{\bstheta}^{(m)} \mathsf{H}^{(m)} = \mathsf{H}^{(m)} \mathsf{\Lambda}^{(m)}$, where $\mathsf{\Lambda}^{(m)}$ is the diagonal matrix of eigenvalues of $\mathsf{C}_{\bstheta}^{(m)}$.
+	\mathsf{C}_{\bstheta}^{(m)} = \bigl(C_\bstheta(\bsx_i, \bsx_j)\bigr)_{i,j=1}^{2^m} = \bigl(K(\bsx_i \oplus \bsx_j)\bigr)_{i,j=1}^{2^m}$ is a $2\times 2$ block-Hankel matrix \cite[Definition 3.1.3]{Ber09a}and all the sub-blocks and their sub-sub-blocks, etc.\ are also $2\times 2$ block-Hankel. Moreover, $\mathsf{C}_{\bstheta}^{(m)} \mathsf{H}^{(m)} = \mathsf{H}^{(m)} \mathsf{\Lambda}^{(m)}$, where $\mathsf{\Lambda}^{(m)}$ is the diagonal matrix of eigenvalues of $\mathsf{C}_{\bstheta}^{(m)}$.
 \end{lemma}
 
 \begin{proof}
@@ -459,7 +459,7 @@ Note that the Walsh-Hadamard matrices are symmetric.
         K_\bstheta(\bsz_{2 \tau+2}) & K_\bstheta(\bsz_{2 \tau+1}) 
         \end{pmatrix} ,
     \end{equation*}
-   which has the desired Toeplitz property. Note also the eigenvectors of $\mathsf{C}_{\bstheta}^{(1,\tau)}$ are the columns of $\mathsf{H}^{(1)}$ since   
+   which has the desired Hankel property. Note also the eigenvectors of $\mathsf{C}_{\bstheta}^{(1,\tau)}$ are the columns of $\mathsf{H}^{(1)}$ since   
    \begin{align*}
         \mathsf{C}_{\bstheta}^{(1,\tau)} \mathsf{H}^{(1)} & =  \begin{pmatrix}
         K_\bstheta(\bsz_{2 \tau+1}) + K_\bstheta(\bsz_{2 \tau+2}) & K_\bstheta(\bsz_{2 \tau+1}) - K_\bstheta(\bsz_{2 \tau+2})\\
@@ -471,7 +471,7 @@ Note that the Walsh-Hadamard matrices are symmetric.
         \end{pmatrix}}_{\mathsf{\Lambda}^{(1,\tau)}} .
     \end{align*}
 
-   Now assume that $\mathsf{C}_{\bstheta}^{(m,\tau)}$ is $2\times 2$ block-Toeplitz matrix with all its sub-blocks and sub-sub-blocks, etc.\ also $2\times 2$ block-Toeplitz for $\tau = 0, 1, \ldots$.  Then by \eqref{FJ:eq:cblock}, the same holds for $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$ for $\tau = 0, 1, \ldots$. 
+   Now assume that $\mathsf{C}_{\bstheta}^{(m,\tau)}$ is $2\times 2$ block-Hankel matrix with all its sub-blocks and sub-sub-blocks, etc.\ also $2\times 2$ block-Hankel for $\tau = 0, 1, \ldots$.  Then by \eqref{FJ:eq:cblock}, the same holds for $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$ for $\tau = 0, 1, \ldots$. 
    
     Moreover, the hypothesized eigenvectors of $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$ can also be verified by direct calculation under the induction hypothesis:
      \begin{align*}
@@ -561,11 +561,10 @@ All the tests were run MATLAB version 2019b running on Intel i7-7700HQ.
 This integral is formulated as in \cite{RatHic19a} following the variable transformation introduced by Alan Genz \cite{Gen92}. The simulation results are summarized in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB}, \ref{FJ:fig:Sobol-mvn-guaranteed-FB}, and \ref{FJ:fig:Sobol-mvn-guaranteed-GCV}.  In all cases, \texttt{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, \texttt{cubBayesNet\_g} takes about 3 seconds as shown in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-EB} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-up possible using fast Bayesian cubature.
 
 The algorithm \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform.  This is slower than MATLAB's fast Fourier transform, which is implemented in compiled code. This may help explain why \texttt{cubBayesLattice\_g} is faster than \texttt{cubBayesNet\_g} for this example. Also, \texttt{cubBayesLattice\_g} here uses higher order kernels whereas higher order digitally shift-invariant kernels are inappropriate for these examples. On average, \texttt{cubBayesLattice\_g} uses $n \approx 16{,}000$ samples for $\varepsilon = 10^{-5}$, whereas \texttt{cubBayesNet\_g} uses  $n \approx 32{,}000$ samples.
-
-Amongst the three stopping criteria, GCV achieves an acceptable approximation faster than others but it is less conservative. 
-\FJHNote{I do not understand these next two sentences.} One can also observe from the figures that the credible intervals are narrower than empirical Bayes as in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-EB}.
-This shows that \texttt{cubBayesNet\_g} with $d=2, r=1$ kernel more accurately approximates the integrand than the empirical Bayes.
-\JRNote{The points are clustered to a smaller region that the other cases.}
+Amongst the three stopping criteria for \texttt{cubBayesNet\_g}, GCV achieves an acceptable approximation faster than others and is also less conservative. 
+%\FJHNote{I do not understand these next two sentences.} One can also observe from the figures that the credible intervals are narrower than empirical Bayes as in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-EB}.
+%This shows that \texttt{cubBayesNet\_g} with $d=2, r=1$ kernel more accurately approximates the integrand than the empirical Bayes.
+%\JRNote{The points are clustered to a smaller region that the other cases.}
 
 \begin{figure}
 \centering
@@ -652,21 +651,20 @@ This integrand has a kink caused by the $\max$ function, so lattice rules cannot
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed:EB]{Option pricing using the empirical Bayes stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$. Here 33 such exceptions happened.}
+\caption[Sobol: Option pricing guaranteed:EB]{Option pricing using the empirical Bayes stopping criterion. The $33$ hollow stars at the higher time indicate that the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$.}
 \label{FJ:fig:Sobol-optprice-guaranteed-EB}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed: Full Bayes]{Option pricing using the full-Bayes stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$. Here 41 such exceptions happened.
+\caption[Sobol: Option pricing guaranteed: Full Bayes]{Option pricing using the full-Bayes stopping criterion. The $41$ hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$.
 }
 \label{FJ:fig:Sobol-optprice-guaranteed-FB}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$. 
-Here 35 such exceptions happened.
+\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The $35$ hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$. 
 }
 \label{FJ:fig:Sobol-optprice-guaranteed-GCV}
 \end{figure}
@@ -677,7 +675,7 @@ Here 35 such exceptions happened.
 \subsection{Discussion}
 
 
-As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, our algorithm computed the integral within user specified threshold with few exceptions. The exceptions occurred for the  option pricing example due to the complexity and high dimension of the integrand. 
+As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, our algorithm computed the integral within user specified threshold with some exceptions. The exceptions occurred for the  option pricing example due to the complexity and higher dimension of the integrand, the small tolerance, and the limit on the sample size.  This indicates that fast Bayesian cubature may suffer in such cases and that further study is needed. 
 Also notice that our algorithm \texttt{cubBayesNet\_g}, finished within 40 seconds per run for the multivariate Gaussian and Keister examples  for the smallest tolerance as shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-keister-guaranteed-GCV}. Option pricing took little above 100 seconds per run due to the complexity of integrand as shown in Figures \ref{FJ:fig:Sobol-optprice-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}.
 
 %\FJHNote{For which examples?} 
