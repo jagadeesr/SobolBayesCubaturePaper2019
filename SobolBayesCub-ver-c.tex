@@ -77,7 +77,7 @@
 \setlength{\belowdisplayskip}{1pt}
 
 \title{Fast Automatic Bayesian Cubature Using Sobol' Sampling
-%\thanks{}
+\thanks{We are grateful to Professor Pierre L'Ecuyer for his friendship and many fruitful discussions on Monte Carlo methods.  Thanks to the referees for their helpful comments.}
 }
 % Grants or other notes about the article that should go on the front
 % page should be placed within the \thanks{} command in the title
@@ -553,12 +553,12 @@ Thus to compute $\widetilde{\bsb}$ requires two matrix multiplications by $\math
 The Bayesian cubature algorithm described here, the digitally shift invariant kernel in \eqref{FJ:eqn:digital_shift_in_kernel} with order $r=1$  and the Bayesian lattice cubature algorithm described in \cite{RatHic19a} have been coded as  \texttt{cubBayesNet\_g} and \texttt{cubBayesLattice\_g}, respectively, in GAIL \cite{ChoEtal21a}.  We illustrate our algorithm for three common examples, which are also discussed in \cite{RatHic19a}.  The first example evaluates a multivariate Gaussian probability, the second example is Keister's function \cite{Kei96}, and the final example is pricing an Asian arithmetic mean option.  For each example we are able to find the true integral value, $\mu$, either by analytic computation, or by running a numerical algorithm with a very small error tolerance.
 
 The nodes used in \texttt{cubBayesNet\_g} are the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. Four hundred different error tolerances, $\varepsilon$, are randomly chosen such that $\log(\varepsilon)$ has a uniform distribution.   Although $\log(\varepsilon)$ is uniformly chosen, the times are stratified since the number of samples must be a power of $2$.
-For each integral example, each $\varepsilon$, and each stopping criterion---empirical Bayes, full Bayes, and generalized cross-validation---we ran \texttt{cubBayesNet\_g}.  For each run, the execution time is plotted against $\abs{\mu - \widehat{\mu}_n}/\varepsilon$.  We expect $\abs{\mu - \widehat{\mu}_n}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate that the stopping criterion  is too conservative.
+For each integral example, each $\varepsilon$, and each stopping criterion---empirical Bayes, full Bayes, and generalized cross-validation---we ran \texttt{cubBayesNet\_g}.  For each run, the execution time is plotted against $\abs{\mu - \widehat{\mu}_n}/\varepsilon$.  We expect $\abs{\mu - \widehat{\mu}_n}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate that the stopping criterion  is too conservative. Throughout the experiments we use $\eta_1 = \cdots = \eta_d = \eta$.
 All the tests were run MATLAB version 2019b running on Intel i7-7700HQ.
 
 \subsection{Multivariate Gaussian Probability}
 
-This integral is formulated as in \cite{RatHic19a} following the variable transformation introduced by Alan Genz \cite{Gen92}. The simulation results are summarized in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB}, \ref{FJ:fig:Sobol-mvn-guaranteed-FB}, and \ref{FJ:fig:Sobol-mvn-guaranteed-GCV}.  In all cases, \texttt{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, \texttt{cubBayesNet\_g} takes about 3 seconds as shown in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-EB} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-up possible using fast Bayesian cubature.
+This integral is formulated as in \cite{RatHic19a} following the variable transformation introduced by Alan Genz \cite{Gen92}. The problem is originally three-dimensional but is transformed to a $d=2$ dimensional problem.  The simulation results are summarized in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB}, \ref{FJ:fig:Sobol-mvn-guaranteed-FB}, and \ref{FJ:fig:Sobol-mvn-guaranteed-GCV}.  In all cases, \texttt{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, \texttt{cubBayesNet\_g} takes about 3 seconds as shown in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-EB} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-up possible using fast Bayesian cubature.
 
 The algorithm \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform.  This is slower than MATLAB's fast Fourier transform, which is implemented in compiled code. This may help explain why \texttt{cubBayesLattice\_g} is faster than \texttt{cubBayesNet\_g} for this example. Also, \texttt{cubBayesLattice\_g} here uses higher order kernels whereas higher order digitally shift-invariant kernels are inappropriate for these examples. On average, \texttt{cubBayesLattice\_g} uses $n \approx 16{,}000$ samples for $\varepsilon = 10^{-5}$, whereas \texttt{cubBayesNet\_g} uses  $n \approx 32{,}000$ samples.
 Amongst the three stopping criteria for \texttt{cubBayesNet\_g}, GCV achieves an acceptable approximation faster than others and is also less conservative. 
@@ -569,7 +569,7 @@ Amongst the three stopping criteria for \texttt{cubBayesNet\_g}, GCV achieves an
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Sep-1"}
-\caption[Sobol: MVN guaranteed:EB]{Multivariate normal probability example with empirical Bayes stopping criterion.  Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
+\caption[Sobol: MVN guaranteed:EB]{Multivariate normal probability example with empirical Bayes stopping criterion.  Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
 
 \label{FJ:fig:Sobol-mvn-guaranteed-EB}
 \end{figure}
@@ -577,14 +577,14 @@ Amongst the three stopping criteria for \texttt{cubBayesNet\_g}, GCV achieves an
 \centering
 %d=3 problem transformed into d=2
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_full__d2_r1_2019-Sep-1"}
-\caption[Sobol: MVN guaranteed: Full Bayes]{Multivariate normal probability example with the full-Bayes stopping criterion. Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
+\caption[Sobol: MVN guaranteed: Full Bayes]{Multivariate normal probability example with the full-Bayes stopping criterion. Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
 \label{FJ:fig:Sobol-mvn-guaranteed-FB}
 \end{figure}
 \begin{figure}
 \centering
 %d=3 problem transformed into d=2
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_GCV__d2_r1_2019-Sep-1"}
-\caption[Sobol: MVN guaranteed: GCV]{Multivariate normal probability example with the GCV stopping criterion. Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
+\caption[Sobol: MVN guaranteed: GCV]{Multivariate normal probability example with the GCV stopping criterion. Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
 \label{FJ:fig:Sobol-mvn-guaranteed-GCV}
 \end{figure}
 
@@ -615,19 +615,19 @@ As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_MLE__d4_r1_2019-Sep-1"}
-\caption[Sobol: Keister guaranteed:EB]{Keister example using the empirical Bayes stopping criterion. Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
+\caption[Sobol: Keister guaranteed:EB]{Keister example using the empirical Bayes stopping criterion. Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
 \label{FJ:fig:Sobol-keister-guaranteed-EB}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_full__d4_r1_2019-Sep-1"}
-\caption[Sobol: Keister guaranteed: Full Bayes]{Keister example using the full-Bayes stopping criterion. Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
+\caption[Sobol: Keister guaranteed: Full Bayes]{Keister example using the full-Bayes stopping criterion. Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
 \label{FJ:fig:Sobol-keister-guaranteed-FB}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_GCV__d4_r1_2019-Sep-1"}
-\caption[Sobol: Keister guaranteed: GCV]{Keister example using the GCV stopping criterion. Algorithm meets the error threshold for all the $\epsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
+\caption[Sobol: Keister guaranteed: GCV]{Keister example using the GCV stopping criterion. Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
 \label{FJ:fig:Sobol-keister-guaranteed-GCV}
 \end{figure}
 
@@ -645,27 +645,27 @@ We refer to the formulation of the fair price of the option as in \cite{RatHic19
 
 Figures \ref{FJ:fig:Sobol-optprice-guaranteed-EB}, \ref{FJ:fig:Sobol-optprice-guaranteed-FB} and 
 \ref{FJ:fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the values for
-time horizon $T = 1/4$ of a year, $d = 13$ time steps, initial asset price of $S_0 = 100$, interest rate of $r =  0.05$ per year, volatility of $\sigma = 0.5$ per root year, and strike price of  $K = 200$, the same as used in the experiments with \texttt{cubBayesLattice\_g} \cite{RatHic19a}.
+time horizon $T = 1/4$ of a year, $d = 13$ time steps, initial asset price of $S_0 = 100$, interest rate of $0.05$ per year, volatility of $\sigma = 0.5$ per root year, and strike price of  $K = 200$, the same as used in the experiments with \texttt{cubBayesLattice\_g} \cite{RatHic19a}.
 This integrand has a kink caused by the $\max$ function, so lattice rules cannot perform better, even if the integrand were to be periodized.  We observe that \texttt{cubBayesNet\_g} is more efficient in terms of the number of samples used than \texttt{cubBayesLattice\_g}.  For the error tolerance, $\varepsilon=10^{-3}$,  \texttt{cubBayesLattice\_g} uses $n \approx 2^{20}$ samples, whereas \texttt{cubBayesNet\_g} uses $n \approx 2^{17}$ samples.
 
 
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed:EB]{Option pricing using the empirical Bayes stopping criterion. The $33$ hollow stars at the higher time indicate that the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$.}
+\caption[Sobol: Option pricing guaranteed:EB]{Option pricing using the empirical Bayes stopping criterion. The $33$ hollow stars at the higher time indicate that the half-width of the credible interval did not meet the error threshold $\varepsilon$ before reaching maximum $n$.}
 \label{FJ:fig:Sobol-optprice-guaranteed-EB}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed: Full Bayes]{Option pricing using the full-Bayes stopping criterion. The $41$ hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$.
+\caption[Sobol: Option pricing guaranteed: Full Bayes]{Option pricing using the full-Bayes stopping criterion. The $41$ hollow stars indicate the half-width of the credible interval did not meet the error threshold $\varepsilon$ before reaching maximum $n$.
 }
 \label{FJ:fig:Sobol-optprice-guaranteed-FB}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Sep-1"}
-\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The $35$ hollow stars indicate the half-width of the credible interval did not meet the error threshold $\epsilon$ before reaching maximum $n$. 
+\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The $35$ hollow stars indicate the half-width of the credible interval did not meet the error threshold $\varepsilon$ before reaching maximum $n$. 
 }
 \label{FJ:fig:Sobol-optprice-guaranteed-GCV}
 \end{figure}
