@@ -1,0 +1,700 @@
+% This is a general template file for the LaTeX package SVJour3
+% for Springer journals. Original by Springer Heidelberg, 2010/09/16
+%
+% Use it as the basis for your article. Delete % signs as needed.
+%
+% This template includes a few options for different layouts and
+% content for various journals. Please consult a previous issue of
+% your journal as needed.
+%
+%
+\documentclass[graybox,footinfo]{svmult}
+
+\smartqed
+\usepackage{helvet}         % selects Helvetica as sans-serif font
+\usepackage{courier}        % selects Courier as typewriter font
+\usepackage{type1cm}        % activate if the above 3 fonts are
+% not available on your system
+\usepackage{graphicx}       % standard LaTeX graphics tool when including figure files
+
+
+% This approach is better than the above
+% remove the definition of \vec by svjour3
+\let\vec\relax
+% restore the original definition in fontmath.ltx
+\DeclareMathAccent{\vec}{\mathord}{letters}{"7E}
+
+\usepackage{amssymb}
+\usepackage{xspace}
+
+%%%%%%%%%%%%%%%%%%%%%% Macros from the editors
+\input{macros.tex}
+%%%%%%%%%%%%%%%%%%%%%% Macros from the editors
+
+
+%
+% insert here the call for the packages your document requires
+%
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs, mathtools}
+\usepackage{url} %added by the authors
+
+
+% please place your own definitions here and don't use \def but
+% \newcommand{}{}
+\providecommand{\HickernellFJ}{Hickernell\xspace}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+\newcommand{\norm}[2][{}]{\ensuremath{\left \lVert #2 \right \rVert}_{#1}}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert} % abs
+\newcommand{\FJHNote}[1]{{\textcolor{blue}{FJH: #1}}}
+\newcommand{\JRNote}[1]{{\textcolor{green}{JR: #1}}}
+
+\newenvironment{nalign}{
+    \begin{equation}
+    \begin{aligned}
+}{
+    \end{aligned}
+    \end{equation}
+    \ignorespacesafterend
+}
+
+\graphicspath{{.}{./figures/grey/}}
+
+%
+% Insert the name of "your journal" with
+% \journalname{Automatic Bayesian Cubature}
+%
+
+
+
+\allowdisplaybreaks
+\begin{document}
+\setlength\abovedisplayskip{1pt}
+\setlength{\belowdisplayskip}{1pt}
+
+\title{Fast Automatic Bayesian Cubature Using Sobol' Sampling%
+\thanks{We are grateful to Professor Pierre L'Ecuyer for his friendship and many fruitful and enjoyable discussions on Monte Carlo methods.  Thanks to the referees for their helpful comments.}
+}
+% Grants or other notes about the article that should go on the front
+% page should be placed within the \thanks{} command in the title
+% (and the %-sign in front of \thanks{} should be deleted)
+%
+% General acknowledgments should be placed at the end of the article.
+
+%\subtitle{Do you have a subtitle?\\ If so, write it here}
+
+%\titlerunning{Short form of title}        % if too long for running head
+
+\author{R. Jagadeeswaran         \and
+        Fred J. Hickernell %etc.
+}
+
+%\authorrunning{Short form of author list} % if too long for running head
+
+\institute{R. Jagadeeswaran \at
+              Department of Applied Mathematics, \\
+              Illinois Institute of Technology \\
+              10 W. 32nd St., Room 220,
+              Chicago IL 60616\\
+              \email{jrathin1@iit.edu}            \\
+           \and
+           Fred J. Hickernell \at
+           Center for Interdisciplinary Scientific Computation and \\
+           Department of Applied Mathematics \\
+           Illinois Institute of Technology \\
+           10 W. 32nd St., Room 220, 
+           Chicago IL 60616
+           \\
+           \email{hickernell@iit.edu} 
+}
+
+\date{Received: date / Accepted: date}
+% The correct dates will be entered by the editor
+
+\maketitle
+
+\abstract{
+	Automatic cubatures approximate integrals to user-specified error tolerances.  For high dimensional problems, it is difficult to adaptively change the sampling pattern to focus on peaks because peaks can hide more easily in high dimensional space.  But, one can automatically determine the sample size, $n$, given a reasonable, fixed sampling pattern. This approach is pursued in Jagadeeswaran and Hickernell, Stat.\ Comput., 29:1214-1229, 2019, where a Bayesian perspective is used to construct a credible interval for the integral, and the computation is terminated when the half-width of the interval is no greater than the required error tolerance.  Our earlier work employs integration lattice sampling, and the computations are expedited by the fast Fourier transform because the covariance kernels for the Gaussian process prior on the integrand are chosen to be shift-invariant.  In this chapter, we extend our fast automatic Bayesian cubature to digital net sampling via \emph{digitally} shift-invariant covariance kernels and fast Walsh transforms.
+	Our algorithm is implemented in the MATLAB Guaranteed Automatic Integration Library (GAIL) and the QMCPy Python library.
+}
+
+
+
+
+
+\section{Introduction}
+\label{FJ:intro}
+
+Cubature, or numerical multivariate integration, is the problem of inferring a numerical value for a definite integral, 
+\begin{equation}
+\label{FJ:eqn:defn_mu}
+\mu:= \mu(f) := \int_{[0,1]^d} f(\bsx)\, \textup{d}\bsx, 
+\end{equation}
+when no closed-form analytic expression exists or is easily available. Typically, values of $f$ are accessible through a black-box function routine. Our goal is to construct a cubature, $\widehat{\mu}_n = \widehat{\mu}_n(f)$, depending only on integrand values at the nodes $\{\bsx_i\}_{i=1}^n$, and determine the $n$ that satisfies the error criterion
+\begin{equation}
+\label{FJ:eqn:err_crit} 
+\abs{\mu - \widehat{\mu}_n} \leq \varepsilon
+\end{equation}
+with high probability. This article extends the fast Bayesian cubature ideas presented in \cite{RatHic19a} to digital sequences \cite{DicPil10a}.
+
+
+Cubature is a key component of many problems in scientific computing, finance \cite{Gla03}, statistical modeling, imaging \cite{Keller2013}, uncertainty quantification, and machine learning \cite{Goodfellow-et-al-2016}. 
+The original form of the integral may require a suitable variable transformation to become \eqref{FJ:eqn:defn_mu}. This process is addressed in \cite{BecHae92b, CriEtal07, Lau96a,  Sid93, Sid08a}. 
+
+Following the Bayesian numerics approach of \cite{BriEtal18a, Dia88a, OHa91a, RasGha03a} and others, we assume that our integrand, $f$, is an instance of a Gaussian process, $\mathcal{GP}(m,s^2 C_\bstheta)$, and construct a probabilistic error bound for $\mu$ via a Bayesian credible interval. 
+Here, the random function $f$ has constant mean, $m$, and covariance kernel $s^2C_\bstheta$, where $s$ is a positive scale factor, and $C_\bstheta: [0,1]^d \times [0,1]^d \to \mathbb{R} $ is a symmetric, positive-definite kernel parameterized by $\bstheta$.   The parameter $\bstheta$ may affect the shape or smoothness of $C_\bstheta$.  
+The integrand is sampled until the credible interval becomes small enough to satisfy \eqref{FJ:eqn:err_crit} with high probability.  
+
+Our approach to \emph{fast} Bayesian cubature \cite{RatHic19a} relies on two key points:
+\begin{enumerate}
+\renewcommand{\labelenumi}{\roman{enumi})}
+    \item Choosing covariance kernels, $C_\bstheta:[0,1]^d \times [0,1]^d \to \R$, for which the symmetric, positive definite Gram matrices, 
+    \begin{equation} \label{FJ:eq:Gram}
+        \mathsf{C}_\bstheta = \left(  C_\bstheta(\bsx_i,\bsx_j)  \right)_{i,j=1}^n, = (\bsC_{\bstheta,1}, \ldots, \bsC_{\bstheta,n}),
+    \end{equation}
+    have an eigenvalue-eigenvector decomposition of the form\footnote{The presence of $1/n$ in the eigenvalue-eigenvector decomposition arises from the assumption that the first column of $\mathsf{V}$ is $\bsone$.  It could be removed by assuming that the first column of $\mathsf{V}$ is $\bsone/\sqrt{n}$.  The superscript $H$ denotes the complex conjugate transpose \cite{Ber09a}.} \;$\mathsf{C}_\bstheta = \mathsf{V} \mathsf{\Lambda}_\bstheta \mathsf{V}^H/n$, where
+    \begin{subequations} \label{FJ:eq:fastcompAssump}
+	\begin{align}
+	\label{FJ:eq:fastcompAssumpA}
+	& \mathsf{V} \text{ may be identified analytically}, \\
+	\label{FJ:eq:fastcompAssumpB}
+	&\text{The first row and column of $\mathsf{V}$ are } \bsone, \\
+	\label{FJ:eq:fastcompAssumpC}
+	& \text{Computing $\mathsf{V}^H \bsb$ requires only $\calO(n \log n)$ operations } \forall \bsb, \text{ and} \\
+	\label{FJ:addAssump}
+    & \int_{[0,1]^d} C_\bstheta(\bst,\bsx) \, \D \bst = 1 \qquad \forall \bsx \in [0,1]^d,
+	\end{align}
+\end{subequations}
+and
+\item The hyperparameters of the Gaussian process---$m$, $s$, and $\bstheta$---are tuned to increase the likelihood that $f$ is a typical integrand and not an outlier.
+\end{enumerate}
+We call the transformation $\bsb \mapsto \mathsf{V}^H \bsb$ a \emph{fast Bayesian transform}. Our earlier work \cite{RatHic19a} focuses on lattice nodes and shift-invariant kernels. In that context the computation of $\mathsf{V}^H \bsb$ is a one-dimensional fast Fourier transform.  This chapter focuses on digital sequences, such as Sobol' sequences \cite{Sob67}, and covariance kernels that are digitally shift-invariant.  In this case the computation of $\mathsf{V}^H \bsb$ is a fast Walsh-Hadamard transform. 
+
+
+
+The next section summarizes the key formulae from \cite{RatHic19a}.  Section \ref{FJ:sec:sobol_walsh} extends fast Bayesian cubature to digital nets and digital-shift invariant kernels defined in terms of Walsh functions.  Section \ref{FJ:sec:NumExp} presents numerical experiments that illustrate these ideas.  
+
+
+
+
+\section{Bayesian Cubature}
+\label{FJ:sec:BC} 
+
+
+
+
+As noted above, we assume the integrand, $f$, is an instance of a real-valued stochastic Gaussian process, i.e., $f \sim \mathcal{GP}(m,s^2 C_\bstheta)$.  Let $\boldsymbol{y} = (y_i)_{i=1}^n = \bigl( f(\bsx_i) \bigr)_{i=1}^n$ denote the vector of sampled integrand values.  In \cite{RatHic19a} we introduce three methods for resolving the hyperparameters:  empirical Bayes (EB), full Bayes (full), and generalized cross-validation (GCV).  Under assumptions \eqref{FJ:eq:fastcompAssumpA}--\eqref{FJ:addAssump} for the covariance kernel and sampling sites, it is shown in \cite[Theorem 2]{RatHic19a} that the credible interval for the integral takes the form
+
+		\begin{align}
+			\nonumber
+			&\mathbb{P}_f \left[
+			|\mu-\widehat{\mu}_n| \leq \textup{err}_{\textup{CI}}
+			\right] = 99\%, \\
+			\intertext{where}
+			\label{FJ:muhatGCV-FB-MLE-Simple}
+			\widehat{\mu}_n &= \frac 1n \sum_{i=1}^n y_i = \widetilde{y}_1, \;  \text{where $y_i =f(\bsx_i)$},\\
+		\nonumber 
+		\widetilde{\bsy} &:= \mathsf{V}^H \bsy, \; \text{where $\widetilde{\bsy}$ is the fast transform of $\bsy$,}  \\
+		\nonumber 
+		{\bslambda}_\bstheta &:= \begin{pmatrix}
+			\lambda_{\bstheta,1} \\ \vdots \\ \lambda_{\bstheta,n} \end{pmatrix} = \mathsf{V}^H \bsC_{\bstheta,1}, \\ & \nonumber \qquad \text{where $\bsC_{\bstheta,1}$ is the first column of the Gram matrix \eqref{FJ:eq:Gram},} \\
+		\nonumber
+		s^2_\textup{EB} 
+		& =
+		\frac{1}{n^2} 
+		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}},  \\
+		\nonumber 
+		s^2_{\textup{GCV}} & =  \frac 1{n} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}^2}  \left [ \sum_{i=1}^n \frac{1}{\lambda_{\bstheta,i}} \right]^{-1}, \\
+		\nonumber
+		\widehat{\sigma}^2_{\textup{full}} &= \frac{1}{n(n-1)} \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}}  \left(\frac{\lambda_{\bstheta,1}}{n}  - 1  \right), 
+		\end{align}
+
+	\begin{subequations}
+		\label{FJ:eqn:fastTheta}
+		\begin{align}
+		\label{FJ:eqn:fastThetaEB}
+		\bstheta_\textup{EB}
+		&= 
+		\argmin_{\bstheta}
+		\left[
+		\log\left(
+		\sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}}
+		\right) 
+		+ \frac{1}{n}\sum_{i=1}^n \log(\lambda_{\bstheta,i})
+		\right],\\
+		\label{FJ:eqn:fastThetaGCV} 
+		\bstheta_{\textup{GCV}} 
+		&= \argmin_\bstheta \left[ \log \left ( \sum_{i=2}^n \frac{\abs{\widetilde{y}_i}^2}{\lambda_{\bstheta,i}^2} 
+		\right)  
+		-2\log\left( \sum_{i=1}^n \frac{1}{\lambda_{\bstheta,i}} \right)
+		\right].
+		\end{align}
+	\end{subequations}
+\begin{subequations}
+	\label{FJ:errSimple}
+	\begin{align}
+		\label{FJ:eqn:err_EBGCV}
+		\textup{err}_{\textup{CI},\mathsf{x}} = \textup{err}_{\mathsf{x}} & = 2.58 s_{\mathsf{x}} \sqrt{1 - \frac{n}{\lambda_{\bstheta_{\mathsf{x}},1}} }, \qquad \mathsf{x} \in \{\textup{EB}, \textup{GCV}\},  \\ 
+		\textup{err}_{\textup{CI},\textup{full}} 
+		& = t_{n-1,0.995} \widehat{\sigma}_{\textup{full}} > \textup{err}_\textup{EB}. \label{FJ:eq:errFull}
+	\end{align}
+\end{subequations}
+In the formulas for the credible interval half-widths, $\bstheta$ is assumed to take on the values $\bstheta_{\textup{EB}}$ or $\bstheta_{\textup{GCV}}$ as appropriate.  There is no suitable $\bstheta_{\textup{full}}$.
+
+Our  Bayesian cubature algorithm doubles the sample size until the width of the credible interval is small enough.   Doubling the sample size allows us to retain the preferred structure of the sample sites.  The Bayesian cubature steps are detailed in Algorithm~\ref{FJ:algorithm1}.
+
+
+\algnewcommand{\IIf}[1]{\State\algorithmicif\ #1\ \algorithmicthen\ }
+\algnewcommand{\IElse}{\unskip\ \algorithmicelse\ }
+\algnewcommand{\EndIIf}{\unskip\ \algorithmicend\ \algorithmicif}
+
+
+\begin{algorithm}
+	\caption{Automatic Bayesian Cubature}\label{FJ:algorithm1}
+	\begin{algorithmic}[1]
+		\Require a generator for the sequence
+		$\bsx_1, \bsx_2, \ldots$; 
+		a black-box function, $f$; 
+		an absolute error tolerance,
+		$\varepsilon>0$; the positive initial sample size, $n_0$;
+		the maximum sample size $n_{\textup{max}}$
+		
+		\State $n \gets n_0, \; n' \gets 0, \; \textup{err}_\textup{CI} \gets \infty$
+		
+		\While{$\textup{err}_\textup{CI} > \varepsilon$ and $n \le n_{\textup{max}}$}
+		\State Generate $\{ \bsx_i\}_{i=n' + 1}^{n}$ and sample $\{f(\bsx_i)\}_{i=n'+1}^{n}$
+		\State Compute $\bstheta$ by \eqref{FJ:eqn:fastThetaEB} or \eqref{FJ:eqn:fastThetaGCV}
+		\State Compute $\textup{err}_\textup{CI}$  according to \eqref{FJ:eqn:err_EBGCV} or \eqref{FJ:eq:errFull}
+		
+		\State	$n' \gets n, \; n \gets 2n'$
+		
+		\EndWhile
+		
+		\State Sample size to compute $\widehat{\mu}_n$, $n \gets n'$
+		\State Compute $\widehat{\mu}_n$, the approximate integral, according to \eqref{FJ:muhatGCV-FB-MLE-Simple}
+		\State \Return $\widehat{\mu}_n$, $n$,  and $\textup{err}_\textup{CI}$
+	\end{algorithmic}
+\end{algorithm}
+
+We recognize that multiple applications of our credible intervals in one run of the algorithm is not strictly justified.  However, if our integrand comes from the middle of the sample space  and not the extremes, we expect our automatic Bayesian cubature to approximate the integral within the desired error tolerance with high probability. The examples in Section~\ref{FJ:sec:NumExp} support that expectation. 
+
+The credible intervals in our automatic algorithm are homogeneous with respect to the function data.  If they are valid for some integrand, $f$, they are also valid for the integrand $a f$ for any constant $a$.  
+
+
+
+
+
+\section{Digital Nets and Walsh Kernels}
+\label{FJ:sec:sobol_walsh}
+
+
+The previous section does not mention which sequences of data sites and  kernels satisfy assumptions \eqref{FJ:eq:fastcompAssump}.  We demonstrate in \cite{RatHic19a} that rank-1 lattice points and shift-invariant kernels do so.  In this section, we give another example, namely digital sequences and digitally shift-invariant kernels based on Walsh functions.  For completeness, we define digital sequences, digitally shift-invariant kernels, and the fast Walsh-Hadamard transform.
+
+\subsection{Digital Sequences} \label{FJ:sec:sobol}
+
+
+The first example of a digital sequence was proposed by Sobol' \cite{Sob67}, and  are also the most popular digital sequence. This chapter focuses on digital sequences in base $2$, which includes Sobol' sequences. 
+
+\begin{definition} \label{FJ:def:digitalseq}  Let  ${(\;)}_2$ denote the base $2$ or binary expansion of a number.
+	For any non-negative integer $i = (\dots i_3 i_2 i_1)_2$, define $\overrightarrow{\imath} = (i_1, i_2, \dots)^T$ as the $\infty \times 1$ vector $\overrightarrow{\imath}$ of its binary digits. 
+	For any point $z = ({0.z_1 z_2 \dots })_2 \in [0, 1)$, define $\overrightarrow{z} = (z_1, z_2, \dots)^T$ as the $\infty \times 1$ vector of its binary digits. 
+	Let $ \mathsf{G}_1, \dots , \mathsf{G}_d$ denote predetermined $\infty \times \infty$ generator matrices whose elements are zeros and ones. 
+	A \emph{digital sequence} in base $2$ is $\{\bsz_1, \bsz_2, \bsz_3, \dots\}$, where each $\bsz_i = ( z_{i1}, \dots , z_{id})^T \in [0, 1)^d$ is defined by
+	\begin{align*}
+	\overrightarrow{z}_{i+1,\ell} = \mathsf{G}_{\ell} \, \overrightarrow{\imath} \pmod 2,  \quad \ell = 1, \dots, d, \quad i = 0, 1, \dots \;.
+	\end{align*}
+For any non-negative integers $m$ and $\tau$, the set $\{\bsz_{\tau 2^m +1}, \ldots, \bsz_{(\tau+1)2^m +1}\}$ is a \emph{digital net} in base $2$.
+\end{definition}
+
+It is common to index digital sequences starting with $0$, whereas our data sites and matrices  are indexed starting with $1$.  To keep our notation consistent, we define $\bsz_{i+1}$ in terms of $\overrightarrow{\imath}$.
+
+Digital sequences have a group structure under digitwise, element-by-element addition modulo the base, which we denote by $\oplus$ and which also corresponds to an exclusive-or in base $2$. Here and in what follows we ignore the cases of measure zero for which the $\oplus$ operation leads to a binary representation ending in an infinite string of ones.  The following lemma summarizes some important properties of digital sequences. 
+
+
+\begin{lemma}
+	\label{FJ:lemma:digital_net_prop}
+	Let $\{\bsz_i\}_{i=1}^{\infty}$ be a digital sequence in base $2$ as defined in Definition \ref{FJ:def:digitalseq}.  Choose any digital shift $\bsDelta \in [0,1)^d$, and define the sequence of nodes $\{\bsx_i\}_{i=1}^{\infty}$ by digitwise addition, $\bsx_{i} = \bsz_{i} \oplus \bsDelta$.
+	Then for all $i,j \in \N_0$,
+	\begin{equation*}
+	\bsx_{i+1} \oplus \bsx_{i+1} = \boldsymbol{0}, \quad 
+	\bsx_{i+1} \oplus \bsx_{j+1} = \bsx_{j+1} \oplus \bsx_{i+1} = \bsz_{i+1} \oplus \bsz_{j+1} = \bsz_{(i \oplus j) + 1 }.
+	\end{equation*}
+	Therefore, $\{\bsz_i\}_{i=1}^{\infty}$ is a group.  Moreover, the digital net $\{\bsz_i\}_{i=1}^{2^m}$ is a subgroup for $m \in {\N}_0$.
+\end{lemma}
+The proof follows from Definition \ref{FJ:def:digitalseq}, and can be found in \cite{JagThesis19a}.
+
+Digital sequence generators can be chosen by number theory, as are those of Sobol' \cite{Sob67} and Niederreiter and Xing  \cite{NieXin01a} (see also \cite[Chapter 8]{DicPil10a}), or they can be chosen by computer search \cite[Chapter 10]{DicPil10a}.  The original generator matrices may be scrambled using linear matrix scrambling \cite{Mat98}.
+
+
+\subsection{Covariance Kernels Constructed via Walsh Functions} \label{FJ:sec:Walsh_kernels}
+
+The digitally shift invariant kernels required for fast Bayesian cubature using digital nets are constructed via Walsh functions, again specializing to base $2$. 
+The one-dimensional Walsh functions in base $2$ are defined as
+\begin{align}
+    \nonumber
+\textup{wal}_{k}(x) & := (-1)^{k_0 x_1 + k_1 x_2 + \cdots} = (-1)^{\langle \overrightarrow{k}, \overrightarrow{x} \rangle},  \qquad k \in {\N}_0, \ x \in [0,1), \\
+\nonumber
+\langle \overrightarrow{k}, \overrightarrow{x} \rangle & : = k_{0} x_{1} + k_{1} x_{2} + \cdots .
+\end{align}
+where again $\overrightarrow{k}$ is a vector containing the binary digits of $k$, and $\overrightarrow{x}$ is a vector containing the binary digits of $x$.  Note that by this definition, $\textup{wal}_{k}(x \oplus t) =  \textup{wal}_{k}(x) \textup{wal}_{k}(t)$.  
+
+These Walsh functions can be used to construct a covariance kernel for univariate integrands as follows
+\begin{align}
+    \nonumber
+    C_\bstheta (x,t) & = K_\bstheta(x \oplus t), \qquad K_\bstheta(x) : = 1 + \eta \omega_{r} (x), \qquad \bstheta = (r,\eta), \\
+    \nonumber
+    \omega_r(x) & := \sum_{k=1}^\infty \frac{\textup{wal}_{k}(x) }{2^{2r \lfloor \log_2 k \rfloor}}, \qquad r \in {\N}, \qquad \eta \in (0, 1)\\
+    \nonumber
+    \omega_{r} (x_\ell \oplus t_\ell) & = \sum_{k=1}^\infty \frac{\textup{wal}_{k}(x) \textup{wal}_{k}(t)  }{2^{2r \lfloor \log_2 k \rfloor}}.
+\end{align}
+The symmetric, positive definite property of $ C_\bstheta (x,t)$ follows from its definition.  This kernel is digitally shift invariant because 
+\[
+C_\bstheta (x \oplus \Delta ,t \oplus \Delta ) = K_\bstheta(x \oplus \Delta \oplus t \oplus \Delta) = K_\bstheta(x \oplus t) =  C_\bstheta (x,t).
+\]
+This follows because $\Delta \oplus \Delta = 0$ for any $\Delta \in [0,1)$.
+
+The parameter $r$ is a measure of the digital smoothness of the kernel, which does not correspond to ordinary smoothness.  An explicit expression is available for $\omega_{r}$ in the case of order $r=1$ (see \cite{Nuyens2013}):
+\begin{equation}
+\nonumber
+\omega_1(x) 
+= 1  - 6 \times 2^{\lfloor \log_2 x \rfloor -1 }.
+\end{equation}
+Figure~\ref{FJ:fig:walshkernel-dim1} shows $C_\bstheta (x,t)$ for order $r=1$ and various values of $\eta$ in the interval $[0,1)$. Unlike the shift-invariant kernels used with lattice nodes, Walsh kernels are discontinuous and piecewise constant. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{"figures/walsh_kernel dim_1"}
+	\caption[Walsh kernel]{Walsh kernel of order $r=1$ in dimension $d=1$. This figure can be reproduced using \texttt{plot\_walsh\_kernel.m}. 
+	}
+	\label{FJ:fig:walshkernel-dim1}
+\end{figure}
+
+Covariance kernels for multivariate integrands defined on $[0,1)^d$ are constructed as tensor products:
+\begin{align}
+\label{FJ:eqn:digital_shift_in_kernel}
+C_{\bstheta}(\bsx, \bst) &= K_{\bstheta} (\bsx \oplus \bst), \\
+\label{FJ:eqn:walsh_kernel_multi}
+K_{\bstheta} (\bsx) & =  
+\prod_{\ell=1}^d  [1 + \eta_\ell \omega_{r} (x_\ell)], \quad \bseta = (\eta_1, \ldots, \eta_d), \quad \bstheta = (r, \bseta).
+\end{align}
+For mutidimensional kernels, smaller $\eta_\ell$ for $\ell \in (1, \dots, d)$ implies less variation in the amplitude of the kernel in dimension $\ell$.  
+The parameter vector $\bstheta$ now is of dimension $d+1$.  One might also choose $\eta_1 = \cdots = \eta_d = \eta$, in which case the parameter vector $\bstheta = (r,\eta)$ has dimension two.
+
+\subsection{Eigenvector-Eigenvalue Decomposition of the Gram Matrix}
+
+For fast Bayesian cubature to succeed, the digital net data sites (Section~\ref{FJ:sec:sobol}) and the covariance kernels (Section~\ref{FJ:sec:Walsh_kernels}) must match in a way to satisfy  conditions \eqref{FJ:eq:fastcompAssump}.  To do this, we notice that the eigenvectors of the Gram matrix defined in \eqref{FJ:eq:Gram} are the columns of the Walsh-Hadamard matrices, defined as follows:
+\begin{gather}
+\nonumber
+\mathsf{H}^{0)} = 1, \quad \mathsf{H}^{(1)} =
+\begin{pmatrix}
+1 & 1 \\ 1 & -1
+\end{pmatrix}, \quad
+\mathsf{H}^{(2)} = \mathsf{H}^{(1)} \otimes \mathsf{H}^{(1)} = 
+\begin{pmatrix}
+1 & 1 & 1 & 1 \\ 
+1 & -1 & 1 & -1 \\
+1 & 1 & -1 & -1 \\ 
+1 & -1 & -1 & 1 \\
+\end{pmatrix}, \cdots
+\\
+\label{FJ:eqn:hadamard_matrix}
+\mathsf{H}^{(m)} = \mathsf{H}^{(m-1)} \otimes \mathsf{H}^{(1)} =
+\begin{pmatrix}
+\mathsf{H}^{(m-1)} & \mathsf{H}^{(m-1)} \\ \mathsf{H}^{(m-1)} & -\mathsf{H}^{(m-1)}
+\end{pmatrix} 
+= \mathsf{H}^{(1)} \underbrace{\otimes \cdots \otimes}_{m \ \text{times}}  \mathsf{H}^{(1)} 
+\end{gather}
+where $\otimes$ is Kronecker product.
+Note that the Walsh-Hadamard matrices are symmetric.
+
+\begin{lemma} \label{FJ:lemma:eig}
+    Let $\left\{\bsx_i \right\}_{i=1}^{2^m}$ be nodes from a digitally shifted digital net in base $2$, and let the covariance kernel take the form of \eqref{FJ:eqn:digital_shift_in_kernel}. Then, for $m = 1, 2, \ldots$ the Gram matrix, $
+	\mathsf{C}_{\bstheta}^{(m)} = \bigl(C_\bstheta(\bsx_i, \bsx_j)\bigr)_{i,j=1}^{2^m} = \bigl(K(\bsx_i \oplus \bsx_j)\bigr)_{i,j=1}^{2^m}$ is a $2\times 2$ block-Hankel matrix \cite[Definition 3.1.3]{Ber09a}, and all the sub-blocks and their sub-sub-blocks, etc.\ are also $2\times 2$ block-Hankel. Moreover, $\mathsf{C}_{\bstheta}^{(m)} \mathsf{H}^{(m)} = \mathsf{H}^{(m)} \mathsf{\Lambda}_{\bstheta}^{(m)}$, where $\mathsf{\Lambda}_{\bstheta}^{(m)}$ is the diagonal matrix of eigenvalues of $\mathsf{C}_{\bstheta}^{(m)}$.
+\end{lemma}
+
+\begin{proof}
+    First define the following matrices using the notation from Lemma \ref{FJ:lemma:digital_net_prop}:
+    \begin{align*}
+    \mathsf{C}_{\bstheta}^{(m,\tau)} & = \bigl(K(\bsx_i \oplus \bsx_{j + \tau 2^m} )\bigr)_{i,j=1}^{2^m} \\
+    & = \bigl(K(\bsz_{i\oplus j+ \tau 2^m + 1})\bigr)_{i,j=0}^{2^m-1}, \qquad m,\tau  = 0, 1, \ldots.
+    \end{align*}
+    This implies that  $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$, has the following block structure:
+    \begin{align} \nonumber
+    \MoveEqLeft[1]{\mathsf{C}_{\bstheta}^{(m+1,\tau)}} \\
+    \nonumber
+    & = 
+    \begin{pmatrix} 
+    \bigl(K(\bsz_{i\oplus j+ \tau 2^{m+1} + 1})\bigr)_{i,j=0}^{2^m-1} &
+    \bigl(K(\bsz_{i\oplus (j+2^m)+ \tau 2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1} \\
+    \bigl(K(\bsz_{(i + 2^m) \oplus j + \tau 2^{m+1}+1})\bigr)_{i,j=0}^{2^m-1} &
+    \bigl(K(\bsz_{(i + 2^m) \oplus (j+2^m) + \tau 2^{m+1} +1})\bigr)_{i,j=0}^{2^m-1}
+    \end{pmatrix} \\
+    & = \begin{pmatrix} \mathsf{C}_{\bstheta}^{(m, 2\tau)} & \mathsf{C}_{\bstheta}^{(m,2 \tau+1)} \\
+    \mathsf{C}_{\bstheta}^{(m,2 \tau+1)} & \mathsf{C}_{\bstheta}^{(m,2 \tau)}
+    \end{pmatrix} , \label{FJ:eq:cblock}
+    \end{align}
+    since for $i,j = 0, \ldots, 2^m-1$, it follows that 
+    \begin{gather*}
+        i\oplus (j+2^m)  = (i\oplus j) + 2^m  = (i + 2^m) \oplus j  ,\\
+        (i + 2^m) \oplus (j+2^m)  = (i\oplus j) + (2^m \oplus 2^m)= i\oplus j.
+    \end{gather*}
+    
+    The proof of \eqref{FJ:eq:cblock} follows by induction.  Note that for the case $m=1$ and $\tau = 0, 1, \ldots$
+    \begin{equation*}
+        \mathsf{C}_{\bstheta}^{(1,\tau)} 
+        = \begin{pmatrix} \mathsf{C}_{\bstheta}^{(0, 2\tau)} & \mathsf{C}_{\bstheta}^{(0,2 \tau+1)} \\
+        	\mathsf{C}_{\bstheta}^{(0,2 \tau+1)} & \mathsf{C}_{\bstheta}^{(0,2 \tau)}
+        \end{pmatrix}
+        =  \begin{pmatrix}
+        K_\bstheta(\bsz_{2 \tau+1}) & K_\bstheta(\bsz_{2 \tau+2}) \\
+        K_\bstheta(\bsz_{2 \tau+2}) & K_\bstheta(\bsz_{2 \tau+1}) 
+        \end{pmatrix} ,
+    \end{equation*}
+   which has the desired Hankel property. Note also the eigenvectors of $\mathsf{C}_{\bstheta}^{(1,\tau)}$ are the columns of $\mathsf{H}^{(1)}$ since   
+   \begin{align*}
+        \mathsf{C}_{\bstheta}^{(1,\tau)} \mathsf{H}^{(1)} & =  \begin{pmatrix}
+        K_\bstheta(\bsz_{2 \tau+1}) + K_\bstheta(\bsz_{2 \tau+2}) & K_\bstheta(\bsz_{2 \tau+1}) - K_\bstheta(\bsz_{2 \tau+2})\\
+        K_\bstheta(\bsz_{2 \tau+2}) + K_\bstheta(\bsz_{2 \tau+1}) &  K_\bstheta(\bsz_{2 \tau+2}) - K_\bstheta(\bsz_{2 \tau+1}) 
+        \end{pmatrix} \\
+        & = \mathsf{H}^{(1)} \underbrace{\begin{pmatrix}
+        K_\bstheta(\bsz_{2 \tau+1}) + K_\bstheta(\bsz_{2 \tau+2}) & 0\\
+        0 &   K_\bstheta(\bsz_{2 \tau+1}) - K_\bstheta(\bsz_{2 \tau+2})
+        \end{pmatrix}}_{\mathsf{\Lambda}_{\bstheta}^{(1,\tau)}} .
+    \end{align*}
+
+   Now assume that $\mathsf{C}_{\bstheta}^{(m,\tau)}$ is $2\times 2$ block-Hankel matrix with all its sub-blocks and sub-sub-blocks, etc.\ also $2\times 2$ block-Hankel for $\tau = 0, 1, \ldots$.  Then by \eqref{FJ:eq:cblock}, the same holds for $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$ for $\tau = 0, 1, \ldots$. 
+   
+    Moreover, the hypothesized eigenvectors of $\mathsf{C}_{\bstheta}^{(m+1,\tau)}$ can also be verified by direct calculation under the induction hypothesis:
+     \begin{align*}
+        \MoveEqLeft{\mathsf{C}_{\bstheta}^{(m+1,\tau)} \mathsf{H}^{(m+1)}} \\
+        & =  
+        \begin{pmatrix} \mathsf{C}_{\bstheta}^{(m,2 \tau)} & \mathsf{C}_{\bstheta}^{(m,2 \tau+1)} \\
+        \mathsf{C}_{\bstheta}^{(m,2 \tau+1)} & \mathsf{C}_{\bstheta}^{(m,2 \tau)}
+        \end{pmatrix} 
+        \begin{pmatrix}
+        \mathsf{H}^{(m)} &   \mathsf{H}^{(m)} \\
+         \mathsf{H}^{(m)} & - \mathsf{H}^{(m)}
+        \end{pmatrix}\\
+        & = 
+    \begin{pmatrix}
+        [\mathsf{C}_{\bstheta}^{(m,2\tau)} + \mathsf{C}_{\bstheta}^{(m,2\tau+1)}] \mathsf{H}^{(m)} & [\mathsf{C}_{\bstheta}^{(m,2\tau)} - \mathsf{C}_{\bstheta}^{(m,2\tau+1)}] \mathsf{H}^{(m)}\\
+        [\mathsf{C}_{\bstheta}^{(m,2\tau+1)} + \mathsf{C}_{\bstheta}^{(m,2\tau)}] \mathsf{H}^{(m)} &   [\mathsf{C}_{\bstheta}^{(m,2\tau+1)} - \mathsf{C}_{\bstheta}^{(m,2\tau)}] \mathsf{H}^{(m)}
+        \end{pmatrix} \\
+        & = \begin{pmatrix}
+        \mathsf{H}^{(m)} & \mathsf{H}^{(m)} \\ \mathsf{H}^{(m)} & -\mathsf{H}^{(m)}
+        \end{pmatrix} 
+        \underbrace{\begin{pmatrix}
+        \mathsf{\Lambda}_\bstheta^{(m,2\tau)} + \mathsf{\Lambda}_\bstheta^{(m,2\tau+1)}  & \mathsf{0}\\
+        \mathsf{0} &   \mathsf{\Lambda}_\bstheta^{(m,2\tau)} - \mathsf{\Lambda}_\bstheta^{(m,2\tau+1)}
+        \end{pmatrix}}_{\mathsf{\Lambda}_\bstheta^{(m+1,2\tau)}} 
+        .
+    \end{align*}
+Noting that $\mathsf{C}_\bstheta^{(m+1)} = \mathsf{C}_\bstheta^{(m+1,0)} $ completes the proof.
+\end{proof}
+
+
+The theoretical results of this chapter can be summarized as follows:
+
+\begin{theorem} \label{FJ:thm:main}
+	Any symmetric, positive definite, digitally shift-invariant kernel of the form \eqref{FJ:eqn:walsh_kernel_multi} scaled to satisfy \eqref{FJ:addAssump}, when matched with digital sequence data sites, satisfies assumptions \eqref{FJ:eq:fastcompAssump}.  The \emph{fast Walsh-Hadamard transform} performs the fast Bayesian transform,  $\bsb \mapsto \mathsf{V}^H \bsb$ , in $\calO(n \log n)$ operations.
+\end{theorem}
+
+\begin{proof}{
+Lemma \ref{FJ:lemma:eig} establishes that covariance kernels of the form \eqref{FJ:eqn:digital_shift_in_kernel} matched with shifted digital net data sites satisfy the fast Bayesian cubature assumptions
+\begin{itemize}
+    \item \eqref{FJ:eq:fastcompAssumpA}, since $\mathsf{V}$ is the Walsh-Hadamard matrix,
+    
+    \item  \eqref{FJ:eq:fastcompAssumpB}, since the first column and row of the  Walsh-Hadamard matrix consist of all ones, and
+    
+    \item \eqref{FJ:addAssump}, since all Walsh functions but the zeroth integrate to zero.
+\end{itemize}
+What remains to be shown is \eqref{FJ:eq:fastcompAssumpC}, namely how $\mathsf{V}^H \bsb = \mathsf{H} \bsb$ can be calculated in $\calO(n \log{n})$ operations for arbitrary $\bsb$.
+
+The computation of $\widetilde{\bsb}^{(m)} =\mathsf{H}^{(m)} \bsb^{(m)}$ is done iteratively in what we  show to be $m2^m$ operations, where $\mathsf{H}^{(m)}$ is $2^m \times 2^m$.  The proof proceeds by induction.  For the case $m=0$, the Hadamard matrix $\mathsf{H}^{(0)}$ is the scalar $1$, and $\widetilde{\bsb}^{(0)} = \mathsf{H}^{(0)} \bsb^{(0)} = \bsb^{(0)}$, which requires no arithmetic operations.  Now, assume that $\mathsf{H}^{(m)} \bsb^{(m)}$ requires $m2^m$ operations, and let $\bsb^{(m+1)} = (\bsb^{(m)T}_U,  \bsb^{(m)T}_L)^T$.  Let $\widetilde{\bsb}^{(m+1)} = \mathsf{H}^{(m+1)} \bsb^{(m+1)}$,  $\widetilde{\bsb}^{(m)}_U = \mathsf{H}^{(m)} \bsb^{(m)}_U$, and $\widetilde{\bsb}^{(m)}_L = \mathsf{H}^{(m)} \bsb^{(m)}_L$.  It follows from the definition of the Walsh-Hadamard matrix that 
+\begin{align*}
+\widetilde{\bsb}^{(m+1)} &= \mathsf{H}^{({m+1})} \bsb^{(m+1)} = \begin{pmatrix}
+\mathsf{H}^{(m)} & \mathsf{H}^{(m)} \\ \mathsf{H}^{(m)} & - \mathsf{H}^{(m)}
+\end{pmatrix} 
+\begin{pmatrix}
+\bsb^{(m)}_U\\ \bsb^{(m)}_L
+\end{pmatrix} \qquad \text{by \eqref{FJ:eqn:hadamard_matrix}} \\
+&= 
+\begin{pmatrix}
+\mathsf{H}^{(m)} \bsb^{(m)}_U + \mathsf{H}^{(m)}\bsb^{(m)}_L \\ 
+\mathsf{H}^{(m)} \bsb^{(m)}_U - \mathsf{H}^{(m)} \bsb^{(m)}_L
+\end{pmatrix}
+= 
+\begin{pmatrix}
+\widetilde{\bsb}^{(m)}_U + \widetilde{\bsb}^{(m)}_L \\ 
+\widetilde{\bsb}^{(m)}_U - \widetilde{\bsb}^{(m)}_L
+\end{pmatrix}.
+\end{align*}
+Thus, to compute $\widetilde{\bsb}^{({m+1})}$ requires two matrix multiplications by $\mathsf{H}^{(m)}$, at a cost of $m 2^m$ each, plus an addition and a subtraction of vectors of length $2^m$, for a total cost of $2 \times m 2^m + 2 \times 2^m = (m+1) 2^{m+1}$, which is exactly what is hypothesized.  Since $\widetilde{\bsb}^{(m)} =\mathsf{H}^{(m)} \bsb^{(m)}$ requires $m2^m = n \log_2(n)$ operations to compute, assumption \eqref{FJ:eq:fastcompAssumpC} is satisfied.  This completes the proof of Theorem \ref{FJ:thm:main}.
+}
+\end{proof}
+
+
+
+
+\section{Numerical Experiments}
+
+\label{FJ:sec:NumExp}
+
+
+The Bayesian cubature algorithm described here, using the digitally shift invariant kernel in \eqref{FJ:eqn:digital_shift_in_kernel} with order $r=1$  and the Bayesian lattice cubature algorithm described in \cite{RatHic19a} have been coded as  \texttt{cubBayesNet\_g} and \texttt{cubBayesLattice\_g}, respectively, in GAIL \cite{ChoEtal21a}.  We illustrate our algorithm for three common examples, which are also discussed in \cite{RatHic19a}.  The first example evaluates a multivariate Gaussian probability, the second example is Keister's function \cite{Kei96}, and the final example is pricing an Asian arithmetic mean option.  For each example we are able to find the true integral value, $\mu$, either by analytic computation, or by running a numerical algorithm with a very small error tolerance.
+
+The nodes used in \texttt{cubBayesNet\_g} are the randomly scrambled and shifted Sobol' points supplied by MATLAB's Sobol' sequence generator. Four hundred different error tolerances, $\varepsilon$, are randomly chosen such that $\log(\varepsilon)$ has a uniform distribution.   Although $\log(\varepsilon)$ is uniformly chosen, the times are stratified since the number of samples must be a power of $2$.
+For each integral example, each $\varepsilon$, and each stopping criterion---empirical Bayes, full Bayes, and generalized cross-validation---we ran \texttt{cubBayesNet\_g}.  For each run, the execution time is plotted against $\abs{\mu - \widehat{\mu}_n}/\varepsilon$.  We expect $\abs{\mu - \widehat{\mu}_n}/\varepsilon$ to be no greater than one, but hope that it is not too much smaller than one, which would indicate that the stopping criterion  is too conservative. Throughout the experiments we use $\eta_1 = \cdots = \eta_d = \eta$.
+All the tests were run in MATLAB version 2019b running on Intel i7-7700HQ.
+
+\subsection{Multivariate Gaussian Probability}
+
+This integral is formulated as in \cite{RatHic19a} following the variable transformation introduced by Alan Genz \cite{Gen92}. The problem is originally three-dimensional but is transformed to a $d=2$ dimensional problem.  The simulation results are summarized in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB}, \ref{FJ:fig:Sobol-mvn-guaranteed-FB}, and \ref{FJ:fig:Sobol-mvn-guaranteed-GCV}.  In all cases, \texttt{cubBayesNet\_g} returns an approximation within the prescribed error tolerance. For  $\varepsilon=10^{-5}$ with the empirical Bayes stopping criterion, \texttt{cubBayesNet\_g} takes about 3 seconds as shown in Figure~\ref{FJ:fig:Sobol-mvn-guaranteed-EB} whereas using a Mat\'ern kernel requires 30 seconds to obtain the same accuracy as shown in \cite{RatHic19a}. This highlights the speed-up possible using fast Bayesian cubature.
+
+The algorithm \texttt{cubBayesNet\_g} uses MATLAB's fast Walsh transform.  This is slower than MATLAB's fast Fourier transform, which is implemented in compiled code. This may help explain why \texttt{cubBayesLattice\_g} is faster than \texttt{cubBayesNet\_g} for this example. Also, \texttt{cubBayesLattice\_g} uses higher order kernels whereas higher order digitally shift-invariant kernels are inappropriate for these examples. On average, \texttt{cubBayesLattice\_g} uses $n \approx 16{,}000$ samples for $\varepsilon = 10^{-5}$, whereas \texttt{cubBayesNet\_g} uses  $n \approx 32{,}000$ samples.
+Amongst the three stopping criteria for \texttt{cubBayesNet\_g}, GCV achieves an acceptable approximation faster than others and is also less conservative. 
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_MLE__d2_r1_2019-Sep-1"}
+\caption[Sobol: MVN guaranteed:EB]{Multivariate normal probability example with empirical Bayes stopping criterion.  Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
+
+\label{FJ:fig:Sobol-mvn-guaranteed-EB}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_full__d2_r1_2019-Sep-1"}
+\caption[Sobol: MVN guaranteed: Full Bayes]{Multivariate normal probability example with the full-Bayes stopping criterion. Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
+\label{FJ:fig:Sobol-mvn-guaranteed-FB}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_MVN_guaranteed_time_GCV__d2_r1_2019-Sep-1"}
+\caption[Sobol: MVN guaranteed: GCV]{Multivariate normal probability example with the GCV stopping criterion. Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-5}, 10^{-2}]$.}
+\label{FJ:fig:Sobol-mvn-guaranteed-GCV}
+\end{figure}
+
+
+
+
+
+
+\subsection{Keister's Example}
+
+This multidimensional integral function comes from \cite{Kei96} and is inspired by a physics application:
+\begin{align}
+\nonumber
+\mu  &=  \int_{\R^d} \cos(\norm{ \bst}) \exp(-\norm{ \bst }^2) \, \textup{d}\bst 
+ = \int_{[0,1]^d} f_{\textup{Keister}}(\bsx) \, \textup{d}\bsx,\\
+\intertext{where }
+\nonumber
+f_\textup{Keister}(\bsx) &= \pi^{d/2} \cos\left(\norm{ \bsPhi^{-1}(\bsx)/2}\right)  ,
+\end{align}
+and $\bsPhi$ is the component-wise standard normal distribution.
+The true value of $\mu$ can be calculated iteratively in terms of  quadrature as found in \cite[Section 5.2]{RatHic19a}.
+
+
+Figures \ref{FJ:fig:Sobol-keister-guaranteed-EB}, \ref{FJ:fig:Sobol-keister-guaranteed-FB} and \ref{FJ:fig:Sobol-keister-guaranteed-GCV} summarize the numerical tests for this case for dimension $d=4$ and order $r=1$.  The \texttt{cubBayesLattice\_g} algorithm in  \cite{RatHic19a} uses a much smoother kernel than that used here. This explains why \texttt{cubBayesNet\_g} uses more samples than  \texttt{cubBayesLattice\_g} on average. 
+As observed from the figures, the GCV stopping criterion, in Figure \ref{FJ:fig:Sobol-keister-guaranteed-GCV} achieves the results faster than the others but it is less conservative which is also the case with the multivariate Gaussian example.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_MLE__d4_r1_2019-Sep-1"}
+\caption[Sobol: Keister guaranteed:EB]{Keister example using the empirical Bayes stopping criterion. Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
+\label{FJ:fig:Sobol-keister-guaranteed-EB}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_full__d4_r1_2019-Sep-1"}
+\caption[Sobol: Keister guaranteed: Full Bayes]{Keister example using the full-Bayes stopping criterion. Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
+\label{FJ:fig:Sobol-keister-guaranteed-FB}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_Keister_guaranteed_time_GCV__d4_r1_2019-Sep-1"}
+\caption[Sobol: Keister guaranteed: GCV]{Keister example using the GCV stopping criterion. Algorithm meets the error threshold for all the $\varepsilon$ randomly chosen in $[10^{-4}, 10^{-1}]$.}
+\label{FJ:fig:Sobol-keister-guaranteed-GCV}
+\end{figure}
+
+
+
+
+
+
+
+\subsection{Asian Option Pricing}
+
+The price of financial derivatives can often be modeled by high dimensional integrals. 
+We refer to the formulation of the fair price of the option as in \cite{RatHic19a}, where the underlying asset is described in terms of a discretized geometric Brownian motion.
+
+
+Figures \ref{FJ:fig:Sobol-optprice-guaranteed-EB}, \ref{FJ:fig:Sobol-optprice-guaranteed-FB} and 
+\ref{FJ:fig:Sobol-optprice-guaranteed-GCV} summarize the numerical results for the option pricing example using the values for
+time horizon $T = 1/4$ of a year, $d = 13$ time steps, initial asset price of $S_0 = 100$, interest rate of $0.05$ per year, volatility of $\sigma = 0.5$ per root year, and strike price of  $K = 200$, the same as used in the experiments with \texttt{cubBayesLattice\_g} \cite{RatHic19a}.
+This integrand has a kink caused by the $\max$ function, so lattice rules cannot perform better, even if the integrand were to be periodized.  We observe that \texttt{cubBayesNet\_g} is more efficient in terms of the number of samples used than \texttt{cubBayesLattice\_g}.  For the error tolerance, $\varepsilon=10^{-3}$,  \texttt{cubBayesLattice\_g} uses $n \approx 2^{20}$ samples, whereas \texttt{cubBayesNet\_g} uses $n \approx 2^{17}$ samples.
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_MLE__d12_r1_2019-Sep-1"}
+\caption[Sobol: Option pricing guaranteed:EB]{Option pricing using the empirical Bayes stopping criterion. The $33$ hollow stars at the higher time indicate that the half-width of the credible interval did not meet the error threshold $\varepsilon$ before reaching maximum $n$.}
+\label{FJ:fig:Sobol-optprice-guaranteed-EB}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_full__d12_r1_2019-Sep-1"}
+\caption[Sobol: Option pricing guaranteed: Full Bayes]{Option pricing using the full-Bayes stopping criterion. The $41$ hollow stars indicate the half-width of the credible interval did not meet the error threshold $\varepsilon$ before reaching maximum $n$.
+}
+\label{FJ:fig:Sobol-optprice-guaranteed-FB}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{"figures/Sobol/Sobol_optPrice_guaranteed_time_GCV__d12_r1_2019-Sep-1"}
+\caption[Sobol: Option pricing guaranteed: GCV]{Option pricing using the GCV stopping criterion. The $35$ hollow stars indicate the half-width of the credible interval did not meet the error threshold $\varepsilon$ before reaching maximum $n$. 
+}
+\label{FJ:fig:Sobol-optprice-guaranteed-GCV}
+\end{figure}
+
+
+
+
+\subsection{Discussion}
+
+
+As shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}, our algorithm computed the integral within user specified threshold with some exceptions. The exceptions occurred for the  option pricing example due to the complexity and higher dimension of the integrand, the small tolerance, and the limit on the sample size.  This indicates that fast Bayesian cubature may suffer in such cases and that further study is needed. 
+Also notice that our algorithm \texttt{cubBayesNet\_g}, finished within 40 seconds per run for the multivariate Gaussian and Keister examples  for the smallest tolerance as shown in Figures \ref{FJ:fig:Sobol-mvn-guaranteed-EB} to \ref{FJ:fig:Sobol-keister-guaranteed-GCV}. Option pricing took little above 100 seconds per run due to the complexity of integrand as shown in Figures \ref{FJ:fig:Sobol-optprice-guaranteed-EB} to \ref{FJ:fig:Sobol-optprice-guaranteed-GCV}.
+
+A  noticeable aspect from the plots of \texttt{cubBayesNet\_g} is how close the error bounds are to the true error in many cases. 
+This shows that the \texttt{cubBayesNet\_g}'s error bounding is not too conservative.
+
+In nearly all of the examples, the ratio $\abs{\mu - \widehat{\mu}_n}/\varepsilon$  is closer to one for the Bayesian net cubature in contrast to the Bayesian lattice cubature.  
+A possible reason is that the periodization transform speeds the convergence in the latter case and our data based error bounds are unable to capture this smaller error. 
+
+
+
+
+
+\section{Conclusion and Future Work}
+\label{FJ:sec:conclusion-future-work}
+
+We have extended our fast automatic Bayesian cubature to digital net sampling via digitally shift-invariant covariance kernels and fast Walsh transforms.  Implementation of our algorithm \texttt{cubBayesNet\_g}, is available in the Guaranteed Automatic Integration Library (GAIL) \cite{ChoEtal21a} and Quasi-Monte-Carlo Software in Python (QMCPy) \cite{QMCPy2020a}.  We demonstrated \texttt{cubBayesNet\_g} using three example integrands compared with \texttt{cubBayesLattice\_g}. 
+One major advantage of this algorithm, unlike the \texttt{cubBayesLattice\_g} developed in \cite{RatHic19a}, is that the integrand does not have to be periodic.  However, unlike \texttt{cubBayesNet\_g}, \texttt{cubBayesLattice\_g} is more efficient for smoother, periodic functions when using sufficiently smooth and periodic covariance kernels.
+
+The \texttt{cubBayesNet\_g} in the current implementation uses only the first order kernel and digital nets. Accuracy and speed of the algorithm could be improved by using higher order digital nets and smoother digitally shift-invariant covariance kernels. This could help with the smoother integrands. This is a promising direction for future work.
+
+For higher dimensions, both Bayesian cubature algorithms  sometimes fail to produce an acceptable answer within a reasonable amount of time.  This seems to be related to an excessive amount of time required to identify the optimal shape parameter $\boldsymbol{\theta}$.  The root of the problem and its resolution is a matter for future investigation.
+
+
+
+
+\bibliographystyle{spmpsci}
+\bibliography{FJHown23,FJH23,mybib}
+
+\end{document}
+
+
+
+
